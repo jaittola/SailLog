@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, SailLogActivity!</string>
+    <string name="app_name">SailLog</string>
+    <string name="track_location">Track location</string>
+    <string name="engine">Engine</string>
+    <string name="trip_name">Name of the trip</string>
+    <string name="start_location">Start location</string>
+    <string name="destination">Destination</string>
+    <string name="speed">Speed</string>
+    <string name="heading">Heading</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+</resources>
