@@ -29,6 +29,7 @@ public class SailLogActivity extends Activity implements SailLogLocationSink {
     	headingView.setText(String.format("%.0f", bearing));
     	latitudeView.setText(String.format("%.4f", latitude));
     	longitudeView.setText(String.format("%.4f", longitude));
+    	setLocationAvailable(true);
     }
     
     public void setLocationAvailable(boolean isAvailable) {
