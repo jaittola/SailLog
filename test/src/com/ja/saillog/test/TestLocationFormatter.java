@@ -1,10 +1,11 @@
 package com.ja.saillog.test;
 
-import com.ja.saillog.LocationFormatter;
 import junit.framework.Assert;
-import android.test.AndroidTestCase;
+import junit.framework.TestCase;
 
-public class TestLocationFormatter extends AndroidTestCase {
+import com.ja.saillog.LocationFormatter;
+
+public class TestLocationFormatter extends TestCase {
 	public void testLatitudeFormatting() {
 		// Normal values, north hemisphere.
 		Assert.assertEquals("N 60¡ 0.0'", LocationFormatter.formatLatitude(60.0));
