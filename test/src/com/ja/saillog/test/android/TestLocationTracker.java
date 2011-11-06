@@ -62,8 +62,8 @@ public class TestLocationTracker extends AndroidTestCase {
 			FakeSink sink = (FakeSink) s;
 			Assert.assertEquals(location.getLatitude(), sink.lastLatitude);
 			Assert.assertEquals(location.getLongitude(), sink.lastLongitude);
-			Assert.assertEquals(location.getSpeed(), sink.lastSpeed);
-			Assert.assertEquals(location.getBearing(), sink.lastBearing);
+			Assert.assertEquals(location.getBearing(), sink.lastBearing, 0.1);
+			Assert.assertEquals(location.getSpeed(), sink.lastSpeed, 0.1);
 		}
 	}
 	
