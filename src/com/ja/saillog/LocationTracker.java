@@ -12,17 +12,17 @@ import android.os.Bundle;
 
 public class LocationTracker implements LocationListener {
 	
-	private static final String TAG = "SailLogLocationTracker";
-	private static final int locationMinimumInterval = 2000; // ms
-	
-	private List<LocationSink> locationSinks;
-	
-	public LocationTracker(Activity activity, List<LocationSink> sinks) {
-		locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+	public LocationTracker(Activity act, List<LocationSink> sinks) {
+		activity = act;
 		locationSinks = sinks;
 	}
 	
 	public void setEnabled(boolean isEnabled) {
+
+		if (null == locationManager) {
+			locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+		}
+
 		if (true == isEnabled) {
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, locationMinimumInterval, 0, this);
 		}
@@ -55,4 +55,8 @@ public class LocationTracker implements LocationListener {
 	public void onProviderDisabled(String provider) { }
 	
 	private LocationManager locationManager;
+	private Activity activity;
+	private List<LocationSink> locationSinks;
+	private static final String TAG = "SailLogLocationTracker";
+	private static final int locationMinimumInterval = 2000; // ms
 }

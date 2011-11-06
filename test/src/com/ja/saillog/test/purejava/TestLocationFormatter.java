@@ -1,4 +1,4 @@
-package com.ja.saillog.test;
+package com.ja.saillog.test.purejava;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
