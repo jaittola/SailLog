@@ -29,7 +29,6 @@ public class SailLogLocationTracker implements LocationListener {
 	}
 	
 	public void onLocationChanged(Location location) {
-		Log.i(TAG, "Location: " + location.toString());
 		sink.updateLocation(location.getLatitude(),
 							location.getLongitude(),
 							location.getSpeed(),
