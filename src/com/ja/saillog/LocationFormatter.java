@@ -30,7 +30,4 @@ public class LocationFormatter {
 		
 		return String.format("%s %d¡ %.1f'", hemisphere, decimal, minutes);
 	}
-										   
-										   
-										   
 }

@@ -1,6 +1,6 @@
 package com.ja.saillog;
 
-public interface SailLogLocationSink {
+public interface LocationSink {
 	public void updateLocation(double latitude,
 							   double longitude,
 							   double speed,

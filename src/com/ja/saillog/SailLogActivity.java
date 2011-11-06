@@ -1,12 +1,14 @@
 package com.ja.saillog;
 
+import java.util.LinkedList;
+import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class SailLogActivity extends Activity implements SailLogLocationSink {
+public class SailLogActivity extends Activity implements LocationSink {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -15,7 +17,9 @@ public class SailLogActivity extends Activity implements SailLogLocationSink {
                 
         setupWidgetListeners();
         
-        locationTracker = new SailLogLocationTracker(this);
+        LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
+        sinks.add(this);
+        locationTracker = new LocationTracker(this, sinks);
 
         trackingStatusChanged(false);  // We start with everything turned off.
         							   // This may need changing.
@@ -49,7 +53,7 @@ public class SailLogActivity extends Activity implements SailLogLocationSink {
        	}
     }
     
-    private SailLogLocationTracker locationTracker;
+    private LocationTracker locationTracker;
  
     private CompoundButton trackLocationButton;
     private CompoundButton engineButton;
