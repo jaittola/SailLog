@@ -29,7 +29,8 @@ public class SailLogActivity extends Activity implements SailLogLocationSink {
     	headingView.setText(String.format("%.0f", bearing));
     	latitudeView.setText(String.format("%.4f", latitude));
     	longitudeView.setText(String.format("%.4f", longitude));
-    	setLocationAvailable(true);
+    	setLocationAvailable(true);   // THis also is wrong. But the fake location data seems
+    	                              // to have the location availability status with random content.
     }
     
     public void setLocationAvailable(boolean isAvailable) {
