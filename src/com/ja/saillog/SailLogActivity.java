@@ -14,7 +14,8 @@ public class SailLogActivity extends Activity implements LocationSink {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-                
+        
+        setupDbInterfaces();
         setupWidgetListeners();
         
         LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
@@ -53,15 +54,6 @@ public class SailLogActivity extends Activity implements LocationSink {
        	}
     }
     
-    private LocationTracker locationTracker;
- 
-    private CompoundButton trackLocationButton;
-    private CompoundButton engineButton;
-    private TextView speedView;
-    private TextView headingView;
-    private TextView latitudeView;
-    private TextView longitudeView;
-    
     private void setupWidgetListeners() {
     	trackLocationButton = (CompoundButton) findViewById(R.id.trackLocationButton);
     	engineButton = (CompoundButton) findViewById(R.id.engineButton);
@@ -72,6 +64,20 @@ public class SailLogActivity extends Activity implements LocationSink {
     	
     	trackLocationButton.setOnCheckedChangeListener(locationTrackStartListener);
     }
+    
+    private void setupDbInterfaces() {
+    	dbIf = new DbIf(this);
+    }
+    
+    private DbIf dbIf;
+    private LocationTracker locationTracker;
+    
+    private CompoundButton trackLocationButton;
+    private CompoundButton engineButton;
+    private TextView speedView;
+    private TextView headingView;
+    private TextView latitudeView;
+    private TextView longitudeView;
     
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
