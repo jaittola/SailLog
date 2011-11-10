@@ -20,6 +20,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         
         LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
         sinks.add(this);
+        sinks.add(new DBLocationSink(dbIf));
         locationTracker = new LocationTracker(this, sinks);
 
         trackingStatusChanged(false);  // We start with everything turned off.
@@ -66,10 +67,10 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
     
     private void setupDbInterfaces() {
-    	dbIf = new DbIf(this);
+    	dbIf = new DB(this, "SLDB.db");
     }
     
-    private DbIf dbIf;
+    private DB dbIf;
     private LocationTracker locationTracker;
     
     private CompoundButton trackLocationButton;
