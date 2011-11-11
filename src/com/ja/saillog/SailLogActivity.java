@@ -1,7 +1,6 @@
 package com.ja.saillog;
 
 import java.util.LinkedList;
-import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.CompoundButton;
@@ -47,7 +46,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
     
     private void trackingStatusChanged(boolean isEnabled) {
-    	engineButton.setEnabled(isEnabled);	
+    	// engineButton.setEnabled(isEnabled);	
        	locationTracker.setEnabled(isEnabled);
 
        	if (false == isEnabled) {
@@ -57,7 +56,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     
     private void setupWidgetListeners() {
     	trackLocationButton = (CompoundButton) findViewById(R.id.trackLocationButton);
-    	engineButton = (CompoundButton) findViewById(R.id.engineButton);
+    	// engineButton = (CompoundButton) findViewById(R.id.engineButton);
     	speedView = (TextView) findViewById(R.id.speedView);
     	headingView = (TextView) findViewById(R.id.headingView);
     	latitudeView = (TextView) findViewById(R.id.latitudeView);
@@ -74,7 +73,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     private LocationTracker locationTracker;
     
     private CompoundButton trackLocationButton;
-    private CompoundButton engineButton;
+    // private CompoundButton engineButton;
     private TextView speedView;
     private TextView headingView;
     private TextView latitudeView;
