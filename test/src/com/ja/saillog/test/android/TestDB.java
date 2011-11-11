@@ -1,6 +1,7 @@
 package com.ja.saillog.test.android;
 
 import java.io.File;
+import java.io.IOException;
 
 import junit.framework.Assert;
 import android.database.Cursor;
@@ -76,6 +77,31 @@ public class TestDB extends AndroidTestCase {
 		Assert.assertEquals(350.0, c.getDouble(5), 0.01);
 		
 		c.close();
+	}
+	
+	public void testDbExport() {
+	    dbif.insertTrip("Something to export");
+
+	    String filename = "";
+	    
+	    try {
+	        File exportDir = mContext.getCacheDir();
+	        Assert.assertNotNull(exportDir);
+	        filename = exportDir.getCanonicalPath() + File.separator + "testDbExport.db";
+	        dbif.exportDbAsSQLite(filename);
+	    } catch (IOException iox) {
+	        Assert.assertTrue("Got io exception: " + iox.toString(), false);
+	    }
+	    
+	    File dbCopy = new File(filename);
+	    dbCopy.deleteOnExit();
+	    File origDb = new File(dbif.getReadableDatabase().getPath());
+	    
+	    // Just compare sizes.
+	    Assert.assertEquals(String.format("The sizes of the original (%s) and db copy (%s) differ. ", 
+	                                      origDb.getAbsolutePath(), filename), 
+	                        origDb.length(), dbCopy.length());	    
+        Assert.assertTrue("The database copy is empty", dbCopy.length() > 0);
 	}
 	
 	private void checkTablesExist(SQLiteDatabase db, String[] requiredTables) {

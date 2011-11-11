@@ -1,5 +1,10 @@
 package com.ja.saillog;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ResourceBundle;
 
 import android.content.Context;
@@ -11,8 +16,7 @@ import android.database.sqlite.SQLiteStatement;
 public class DB extends SQLiteOpenHelper implements DBInterface {
 	
     public DB(Context context, String databaseName) {
-       super(context, databaseName, null, dbVersion);
-
+        super(context, databaseName, null, dbVersion);
         sqlBundle = ResourceBundle.getBundle("com.ja.saillog.sql");
     }
     
@@ -106,11 +110,37 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     
     /**
      * Create a copy of the database on another file. The idea is to export 
-     * this file on the MMC memory so tha it can be transferred from
+     * this file on the MMC memory so that it can be transferred from
      * the device.
+     * 
+     * Note that this method is really crappy because ignores many potential 
+     * and is probably very slow with real file sizes.
+     * 
+     * A better one should be written.
      */
-    public void exportDb(String targeFileName) {
-    	
+    public void exportDbAsSQLite(String targetFileName) throws IOException {
+
+        File targetFile = new File(targetFileName);
+        File sourceFile = new File(getReadableDatabase().getPath());
+        
+        if (!targetFile.exists()) {
+            targetFile.createNewFile();
+        }
+        FileChannel source = null;
+        FileChannel target = null;
+        
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            target = new FileOutputStream(targetFile).getChannel();
+            target.transferFrom(source, 0, source.size());
+        } finally {
+            if (null != source) {
+                source.close();
+            }
+            if (null != target) {
+                target.close();
+            }
+        }
     }
 
     private static final int dbVersion = 1;
