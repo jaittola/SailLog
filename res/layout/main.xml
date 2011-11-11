@@ -32,4 +32,5 @@
         <EditText android:layout_width="wrap_content" android:layout_weight="1" android:layout_height="wrap_content" android:editable="false" android:id="@+id/longitudeView" android:focusable="false" android:focusableInTouchMode="false"></EditText>
 	</TableRow>
     </TableLayout>
+    <ProgressBar android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/progressBar1"></ProgressBar>
  </LinearLayout>

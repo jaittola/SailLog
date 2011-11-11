@@ -11,4 +11,6 @@
     <string name="heading">Heading</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="export">Export data</string>
+    <string name="short_export">Export</string>
 </resources>
