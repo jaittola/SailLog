@@ -122,17 +122,17 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
 
         File targetFile = new File(targetFileName);
         File sourceFile = new File(getReadableDatabase().getPath());
-        
+                
         if (!targetFile.exists()) {
             targetFile.createNewFile();
         }
         FileChannel source = null;
         FileChannel target = null;
         
-        try {
+        try {           
             source = new FileInputStream(sourceFile).getChannel();
             target = new FileOutputStream(targetFile).getChannel();
-            target.transferFrom(source, 0, source.size());
+            target.transferFrom(source, 0, source.size());      
         } finally {
             if (null != source) {
                 source.close();

@@ -32,7 +32,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         
         LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
         sinks.add(this);
-        sinks.add(new DBLocationSink(dbIf));
+        sinks.add(new DBLocationSink(db));
         locationTracker = new LocationTracker(this, sinks);
 
         trackingStatusChanged(false);  // We start with everything turned off.
@@ -104,20 +104,21 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void exportData() {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            Toast.makeText(this, "Exporting failed: MMC file system not available", 
-                           Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(), "Exporting failed: MMC file system not available", 
+                           Toast.LENGTH_LONG).show();
             return;
         }
            
         Date now = Calendar.getInstance().getTime();
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss-ZZZZ").format(now);
+        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(now);
         
-        File exportFile = new File(getExternalFilesDir(null),
+        File exportFile = new File(Environment.getExternalStorageDirectory(),
                                    String.format("saillog-export-%s.db", timestamp));
         
         exportFileName = exportFile.getAbsolutePath();
         if (null == exportFileName) {
-            Toast.makeText(this, "Creating the export file name failed", Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(), "Creating the export file name failed", Toast.LENGTH_LONG)
+                .show();
             return;
         }
      
@@ -126,27 +127,31 @@ public class SailLogActivity extends Activity implements LocationSink {
         
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    dbIf.exportDbAsSQLite(exportFileName);
+                
+               resultMsg = String.format("Exported to %s", exportFileName);
+                
+               try {
+                    db.exportDbAsSQLite(exportFileName);
                 } catch (IOException ex) {
-                    // TODO.
+                    resultMsg = String.format("Exporting to %s failed: %s", 
+                                              exportFileName, 
+                                              ex.getLocalizedMessage());
                 }
                 
                 sla.runOnUiThread(new Runnable() {
                     public void run() {
-                        sla.exportDone(String.format("Exported to %s", exportFileName));
+                        sla.exportDone();
                     }
                 });
             }
         }).start();
     }
     
-    private void exportDone(String msg) {
+    private void exportDone() {
         showSpinner(false);
         allowLocationTracking(true);
 
-        System.out.println(msg);
-        Toast.makeText(this, msg, Toast.LENGTH_LONG);
+        Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_LONG).show();
     }
     
     private void allowLocationTracking(boolean allow) {
@@ -160,7 +165,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
     
     private void setupDbInterfaces() {
-    	dbIf = new DB(this, "SLDB.db");
+    	db = new DB(this, "SLDB.db");
     }
     
     private void showSpinner(boolean show) {
@@ -174,7 +179,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         progressBar.setVisibility(visibility);
     }
        
-    private DB dbIf;
+    private DB db;
     private LocationTracker locationTracker;
     
     private CompoundButton trackLocationButton;
@@ -189,6 +194,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     // TODO, these are horrendous hacks.
     SailLogActivity sla;
     String exportFileName;
+    String resultMsg;
     
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

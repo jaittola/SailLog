@@ -96,7 +96,7 @@ public class TestDB extends AndroidTestCase {
 	    File dbCopy = new File(filename);
 	    dbCopy.deleteOnExit();
 	    File origDb = new File(dbif.getReadableDatabase().getPath());
-	    
+	    	    
 	    // Just compare sizes.
 	    Assert.assertEquals(String.format("The sizes of the original (%s) and db copy (%s) differ. ", 
 	                                      origDb.getAbsolutePath(), filename), 
