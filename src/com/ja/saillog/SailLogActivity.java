@@ -102,37 +102,24 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
     
     private void exportData() {
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
+        exportFile = new ExportFile("db");
+        if (false == exportFile.isExportDirAvailable()) {
             toast("Exporting failed: MMC file system not available");
             return;
         }
-           
-        Date now = Calendar.getInstance().getTime();
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(now);
-        
-        File exportFile = new File(Environment.getExternalStorageDirectory(),
-                                   String.format("saillog-export-%s.db", timestamp));
-        
-        exportFileName = exportFile.getAbsolutePath();
-        if (null == exportFileName) {
-            toast("Creating the export file name failed");
-            return;
-        }
-     
+                
         showSpinner(true);
         allowLocationTracking(false);
         
         new Thread(new Runnable() {
             public void run() {
-                
-               resultMsg = String.format("Exported to %s", exportFileName);
-                
+                             
+               resultMsg = String.format("Exported to %s", exportFile.fileName());
                try {
-                    db.exportDbAsSQLite(exportFileName);
+                   db.exportDbAsSQLite(exportFile);
                 } catch (IOException ex) {
                     resultMsg = String.format("Exporting to %s failed: %s", 
-                                              exportFileName, 
+                                              exportFile.fileName(), 
                                               ex.getLocalizedMessage());
                 }
                 
@@ -194,7 +181,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     
     // TODO, these are horrendous hacks.
     SailLogActivity sla;
-    String exportFileName;
+    ExportFile exportFile;
     String resultMsg;
     
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {

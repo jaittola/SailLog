@@ -38,11 +38,10 @@ public class LocationTracker implements LocationListener {
 							    location.getSpeed(),
 							    location.getBearing());
 		}
-		// TODO, also save to the log.
 	}
 	
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// This isn't correct
+		// TODO, This isn't correct
 		boolean locationAvailable = (LocationProvider.OUT_OF_SERVICE != status);	
 		
 		for (LocationSink sink: locationSinks) {
@@ -57,6 +56,5 @@ public class LocationTracker implements LocationListener {
 	private LocationManager locationManager;
 	private Activity activity;
 	private List<LocationSink> locationSinks;
-	private static final String TAG = "SailLogLocationTracker";
 	private static final int locationMinimumInterval = 2000; // ms
 }

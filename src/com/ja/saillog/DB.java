@@ -118,20 +118,16 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
      * 
      * A better one should be written.
      */
-    public void exportDbAsSQLite(String targetFileName) throws IOException {
+    public void exportDbAsSQLite(ExportFile exportFile) throws IOException {
 
-        File targetFile = new File(targetFileName);
         File sourceFile = new File(getReadableDatabase().getPath());
-                
-        if (!targetFile.exists()) {
-            targetFile.createNewFile();
-        }
+ 
         FileChannel source = null;
         FileChannel target = null;
         
         try {           
             source = new FileInputStream(sourceFile).getChannel();
-            target = new FileOutputStream(targetFile).getChannel();
+            target = new FileOutputStream(exportFile.file()).getChannel();
             target.transferFrom(source, 0, source.size());      
         } finally {
             if (null != source) {
