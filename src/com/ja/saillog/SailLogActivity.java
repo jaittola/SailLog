@@ -104,8 +104,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void exportData() {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            Toast.makeText(getApplicationContext(), "Exporting failed: MMC file system not available", 
-                           Toast.LENGTH_LONG).show();
+            toast("Exporting failed: MMC file system not available");
             return;
         }
            
@@ -117,8 +116,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         
         exportFileName = exportFile.getAbsolutePath();
         if (null == exportFileName) {
-            Toast.makeText(getApplicationContext(), "Creating the export file name failed", Toast.LENGTH_LONG)
-                .show();
+            toast("Creating the export file name failed");
             return;
         }
      
@@ -150,8 +148,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void exportDone() {
         showSpinner(false);
         allowLocationTracking(true);
-
-        Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_LONG).show();
+        toast(resultMsg);
     }
     
     private void allowLocationTracking(boolean allow) {
@@ -178,7 +175,11 @@ public class SailLogActivity extends Activity implements LocationSink {
         progressBar.setIndeterminate(show);
         progressBar.setVisibility(visibility);
     }
-       
+    
+    private void toast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+    }
+    
     private DB db;
     private LocationTracker locationTracker;
     
