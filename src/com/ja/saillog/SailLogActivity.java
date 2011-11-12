@@ -1,15 +1,11 @@
 package com.ja.saillog;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,8 +33,6 @@ public class SailLogActivity extends Activity implements LocationSink {
 
         trackingStatusChanged(false);  // We start with everything turned off.
         							   // This may need changing.
-        
-        sla = this;  // Shortcut used in asynchronous messaging.
     }
     
     @Override
@@ -101,41 +95,54 @@ public class SailLogActivity extends Activity implements LocationSink {
     	showSpinner(false);
     }
     
-    private void exportData() {
-        exportFile = new ExportFile("db");
-        if (false == exportFile.isExportDirAvailable()) {
-            toast("Exporting failed: MMC file system not available");
-            return;
+    private class ExportDbTask extends AsyncTask<Void, Void, String> {
+ 
+        public ExportDbTask() {
+            super(); 
+            exportFile = new ExportFile("db");
         }
-                
-        showSpinner(true);
-        allowLocationTracking(false);
         
-        new Thread(new Runnable() {
-            public void run() {
-                             
-               resultMsg = String.format("Exported to %s", exportFile.fileName());
-               try {
-                   db.exportDbAsSQLite(exportFile);
-                } catch (IOException ex) {
-                    resultMsg = String.format("Exporting to %s failed: %s", 
-                                              exportFile.fileName(), 
-                                              ex.getLocalizedMessage());
-                }
-                
-                sla.runOnUiThread(new Runnable() {
-                    public void run() {
-                        sla.exportDone();
-                    }
-                });
+        @Override
+        protected void onPreExecute() {
+            if (false == exportFile.isExportDirAvailable()) {
+                preExecError = "Exporting failed: MMC file system not available";
+                return;
             }
-        }).start();
+            
+            showSpinner(true);
+            allowLocationTracking(false);
+        }
+        
+        @Override
+        protected String doInBackground(Void... ignore) {
+            if (null != preExecError) {
+                return preExecError;
+            }
+            
+           try {
+                db.exportDbAsSQLite(exportFile);
+             } catch (IOException ex) {
+                 return String.format("Exporting to %s failed: %s", 
+                                      exportFile.fileName(), 
+                                      ex.getLocalizedMessage());
+             }
+             
+             return "Exported to " + exportFile.fileName();
+        }
+        
+        @Override
+        protected void onPostExecute(String result) {
+            showSpinner(false);
+            allowLocationTracking(true);
+            toast(result);
+        }
+        
+        private ExportFile exportFile;
+        private String preExecError;
     }
     
-    private void exportDone() {
-        showSpinner(false);
-        allowLocationTracking(true);
-        toast(resultMsg);
+    private void exportData() {
+        new ExportDbTask().execute();
     }
     
     private void allowLocationTracking(boolean allow) {
@@ -179,10 +186,6 @@ public class SailLogActivity extends Activity implements LocationSink {
     
     private ProgressBar progressBar;
     
-    // TODO, these are horrendous hacks.
-    SailLogActivity sla;
-    ExportFile exportFile;
-    String resultMsg;
     
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -190,9 +193,11 @@ public class SailLogActivity extends Activity implements LocationSink {
 		}
 	};
 	
+	/*
 	private OnCheckedChangeListener engineStateListener = new OnCheckedChangeListener() {
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			// TODO Auto-generated method stub
 		}
 	};
+	*/
 }
