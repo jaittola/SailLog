@@ -14,5 +14,6 @@
     <string name="export">Export data</string>
     <string name="short_export">Export</string>
     <string name="position">Position</string>
-    <string name="empty"></string>
+    <string name="no_position_data">Position: -</string>
+    <string name="no_speed_heading_data">Speed: -, Heading: -</string>
 </resources>

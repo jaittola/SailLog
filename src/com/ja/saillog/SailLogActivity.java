@@ -32,7 +32,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         locationTracker = new LocationTracker(this, sinks);
 
         trackingStatusChanged(false);  // We start with everything turned off.
-        // This may need changing.
+                                       // This may need changing.
     }
 
     @Override
@@ -57,7 +57,7 @@ public class SailLogActivity extends Activity implements LocationSink {
                                double longitude,
                                double speed,
                                double bearing) {
-        speedHeadingView.setText(String.format("Speed: %.1f Heading: %.0f¡",
+        speedHeadingView.setText(String.format("Speed: %.1f, Heading: %.0f¡",
                                                speed,
                                                bearing));
         positionView.setText(String.format("Position: %s %s", 
@@ -68,7 +68,12 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
 
     public void setLocationAvailable(boolean isAvailable) {
-        // TODO, add a location status widget.
+        if (false == isAvailable) {
+            speedHeadingView.setText(getResources().getText(R.string.no_speed_heading_data));
+            positionView.setText(getResources().getText(R.string.no_speed_heading_data));
+        }
+        
+        // TODO, make a GPS status widget.
     }
 
     private void trackingStatusChanged(boolean isEnabled) {

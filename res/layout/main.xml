@@ -14,7 +14,7 @@
         <ToggleButton android:text="ToggleButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/engineButton"></ToggleButton>
     </LinearLayout>
      -->
-    <TextView android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_width="match_parent" android:id="@+id/speedHeading" android:text="@string/empty"></TextView>
-    <TextView android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_width="match_parent" android:id="@+id/position" android:text="@string/empty"></TextView>
+    <TextView android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_width="match_parent" android:id="@+id/speedHeading" android:text="@string/no_speed_heading_data"></TextView>
+    <TextView android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_width="match_parent" android:id="@+id/position" android:text="@string/no_position_data"></TextView>
     <ProgressBar android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/progressBar1"></ProgressBar>
  </LinearLayout>
