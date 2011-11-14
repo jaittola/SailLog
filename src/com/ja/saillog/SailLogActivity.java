@@ -45,9 +45,11 @@ public class SailLogActivity extends Activity implements LocationSink {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.export:
+        case R.id.export_db:
             exportData();
             return true;
+        case R.id.export_kml:
+            exportDataAsKML();
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -97,11 +99,10 @@ public class SailLogActivity extends Activity implements LocationSink {
         showSpinner(false);
     }
 
-    private class ExportDbTask extends AsyncTask<Void, Void, String> {
+    private abstract class ExportDbTask extends AsyncTask<Void, Void, String> {
 
         public ExportDbTask() {
-            super(); 
-            exportFile = new ExportFile("db");
+            super();
         }
 
         @Override
@@ -122,7 +123,7 @@ public class SailLogActivity extends Activity implements LocationSink {
             }
 
             try {
-                db.exportDbAsSQLite(exportFile);
+                doExport();
             } catch (IOException ex) {
                 return String.format("Exporting to %s failed: %s", 
                                      exportFile.fileName(), 
@@ -138,13 +139,41 @@ public class SailLogActivity extends Activity implements LocationSink {
             allowLocationTracking(true);
             toast(result);
         }
+        
+        protected abstract void doExport() throws IOException;
 
-        private ExportFile exportFile;
+        protected ExportFile exportFile;
         private String preExecError;
+    }
+    
+    private class ExportDbAsSQLiteTask extends ExportDbTask {
+        public ExportDbAsSQLiteTask() {
+            super();
+            exportFile = new ExportFile("db");
+        }
+        
+        protected void doExport() throws IOException {
+            db.exportDbAsSQLite(exportFile);
+        }
+    }
+    
+    private class ExportDbAsKMLTask extends ExportDbTask {
+        public ExportDbAsKMLTask() {
+            super();
+            exportFile = new ExportFile("kml");
+        }
+  
+        protected void doExport() throws IOException {
+            db.exportDbAsKML(exportFile);
+        }
     }
 
     private void exportData() {
-        new ExportDbTask().execute();
+        new ExportDbAsSQLiteTask().execute();
+    }
+    
+    private void exportDataAsKML() {
+        new ExportDbAsKMLTask().execute();
     }
 
     private void allowLocationTracking(boolean allow) {

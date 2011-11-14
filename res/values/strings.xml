@@ -11,9 +11,11 @@
     <string name="heading">Heading</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
-    <string name="export">Export data</string>
-    <string name="short_export">Export</string>
+    <string name="export_db">Export as database</string>
+    <string name="short_export_db">Export db</string>
     <string name="position">Position</string>
     <string name="no_position_data">Position: -</string>
     <string name="no_speed_heading_data">Speed: -, Heading: -</string>
+    <string name="export_kml">Export as KML</string>
+    <string name="export_kml_short">Export KML</string>
 </resources>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/export" android:id="@+id/export" android:titleCondensed="@string/short_export"></item>
+    <item android:title="@string/export_db" android:titleCondensed="@string/short_export_db" android:id="@+id/export_db"></item>
+    <item android:title="@string/export_kml" android:id="@+id/export_kml" android:titleCondensed="@string/export_kml_short"></item>
     
 </menu>

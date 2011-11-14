@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
 import java.util.ResourceBundle;
 
@@ -112,11 +113,6 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
      * Create a copy of the database on another file. The idea is to export 
      * this file on the MMC memory so that it can be transferred from
      * the device.
-     * 
-     * Note that this method is really crappy because ignores many potential 
-     * and is probably very slow with real file sizes.
-     * 
-     * A better one should be written.
      */
     public void exportDbAsSQLite(ExportFile exportFile) throws IOException {
 
@@ -136,6 +132,46 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
             if (null != target) {
                 target.close();
             }
+        }
+    }
+    
+    public void exportDbAsKML(ExportFile exportFile) throws IOException {
+  
+        SQLiteDatabase db = getReadableDatabase();
+        String [] selectionArgs = {};
+        Cursor c = db.rawQuery("SELECT position_id, longitude, latitude FROM position ORDER BY position_id", selectionArgs);
+        
+        if (0 >= c.getCount()) {
+            return;
+        }
+        
+        try {
+            PrintWriter pw = new PrintWriter(exportFile.file(), "utf-8");
+
+            // Start of XML.
+            pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            pw.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
+            pw.println("<Document>");
+            pw.println("<Style id=\"red\">");
+            pw.println("<LineStyle><color>ffffff00</color><width>4</width></LineStyle></Style>");
+            pw.println("<Placemark>");
+            pw.println("<styleUrl>#red</styleUrl>");
+            pw.println("<LineString>");
+            pw.println("<coordinates>");
+
+            while (true == c.moveToNext()) {
+                pw.println(String.format("%f,%f", c.getDouble(1), c.getDouble(2)));
+            }
+
+            pw.println("</coordinates>");
+            pw.println("</LineString>");
+            pw.println("</Placemark>");
+            pw.println("</Document>");
+            pw.println("</kml>");
+
+            pw.close();
+        } finally {
+            c.close();
         }
     }
 
