@@ -2,9 +2,6 @@ package com.ja.saillog.test.purejava;
 
 import junit.framework.TestCase;
 
-import android.test.FlakyTest;
-import android.test.suitebuilder.annotation.Suppress;
-
 import com.ja.saillog.LocationFilter;
 
 public class TestLocationFilter extends TestCase {
