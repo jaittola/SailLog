@@ -205,6 +205,12 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void toast(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
+    
+    private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            trackingStatusChanged(isChecked);           
+        }
+    };
 
     private DB db;
     private LocationTracker locationTracker;
@@ -215,19 +221,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     private TextView positionView;
 
     private ProgressBar progressBar;
-
-
-    private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            trackingStatusChanged(isChecked);			
-        }
-    };
-
-    /*
-	private OnCheckedChangeListener engineStateListener = new OnCheckedChangeListener() {
-		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-			// TODO Auto-generated method stub
-		}
-	};
-     */
 }
+
+
+ 

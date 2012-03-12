@@ -43,6 +43,8 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     			"create_trip",
     			"drop_pos",
     			"create_pos",
+    			"drop_event",
+    			"create_event",
     	};
  
        for (String s: statements) {
@@ -107,6 +109,48 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     	} finally {
     		db.endTransaction();
     	}
+    }
+   
+    public long fetchLastPositionId(SQLiteDatabase dbToUse) {
+
+        SQLiteDatabase db = dbToUse;
+        if (null == db) {
+            db = getReadableDatabase();
+        }       
+        
+        if (null == fetchLastPositionStm) {
+            fetchLastPositionStm = db.compileStatement("SELECT MAX(position_id) from position");
+        }
+        
+        long lastPosId = fetchLastPositionStm.simpleQueryForLong();
+        
+        return lastPosId;
+    }
+    
+    public void insertEvent(int tripId, int engine, int sailplan) {
+       
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (null == insertEventStm) {
+            insertEventStm = db.compileStatement("INSERT INTO event (trip_id, position_id, engine, sailplan) " +
+            		"VALUES (?, ?, ?, ?)");
+        }
+        
+        try {
+            db.beginTransaction();
+
+            long lastPosId = fetchLastPositionId(db);
+            
+            insertEventStm.bindLong(1, tripId);
+            insertEventStm.bindLong(2, lastPosId);
+            insertEventStm.bindLong(3, engine);
+            insertEventStm.bindLong(4, sailplan);
+            insertEventStm.executeInsert();
+            db.setTransactionSuccessful();
+        }
+        finally {
+            db.endTransaction();
+        }
     }
     
     /**
@@ -181,4 +225,6 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     
     private SQLiteStatement insertPosStm;
     private SQLiteStatement insertTripStm;
+    private SQLiteStatement fetchLastPositionStm;
+    private SQLiteStatement insertEventStm;
 }

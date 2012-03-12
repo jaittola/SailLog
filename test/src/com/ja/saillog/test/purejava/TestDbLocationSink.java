@@ -19,7 +19,11 @@ public class TestDbLocationSink extends TestCase {
 			mBearing = bearing;
 			mSpeed = speed;
 		}
-		
+
+		@Override
+		public void insertEvent(int tripId, int engine, int sailplan) {	    
+	    }
+
 		public int mTripId = -1;
 		public double mLatitude = -91;
 		public double mLongitude = -181;
