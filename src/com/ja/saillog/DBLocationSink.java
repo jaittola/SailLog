@@ -18,6 +18,10 @@ public class DBLocationSink implements LocationSink {
 	    }
 	}
 
+	public void insertEvent(int engineStatus, int sailPlan) {
+	    dbif.insertEvent(activeTripId, engineStatus, sailPlan);
+	}
+	
 	public void setLocationAvailable(boolean isAvailable) {
 	}
 

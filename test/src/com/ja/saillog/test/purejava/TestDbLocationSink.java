@@ -21,7 +21,10 @@ public class TestDbLocationSink extends TestCase {
 		}
 
 		@Override
-		public void insertEvent(int tripId, int engine, int sailplan) {	    
+		public void insertEvent(int tripId, int engineStatus, int sailPlan) {	   
+		    mTripIdEv = tripId;
+		    mEngineStatus = engineStatus;
+		    mSailPlan = sailPlan;
 	    }
 
 		public int mTripId = -1;
@@ -29,12 +32,20 @@ public class TestDbLocationSink extends TestCase {
 		public double mLongitude = -181;
 		public double mBearing = -1;
 		public double mSpeed = -1;
+		
+		public int mTripIdEv = -1;
+		public int mEngineStatus = -1;
+		public int mSailPlan = -1;
+	}
+
+	protected void setUp() throws Exception {
+	    super.setUp();
+	    
+	    fdi = new FakeDbIf();
+	    sink = new DBLocationSink(fdi);
 	}
 	
-	public void testDbLocationSink() {
-		FakeDbIf fdi = new FakeDbIf();
-		DBLocationSink sink = new DBLocationSink(fdi);
-		
+	public void testDbLocationSink() {		
 		sink.updateLocation(20, 60, 2, 3, 0);
 		
 		Assert.assertEquals(1, fdi.mTripId);
@@ -43,4 +54,7 @@ public class TestDbLocationSink extends TestCase {
 		Assert.assertEquals(3.0, fdi.mBearing);
 		Assert.assertEquals(2.0, fdi.mSpeed);
 	}
+	
+	private FakeDbIf fdi;
+	private DBLocationSink sink;
 }

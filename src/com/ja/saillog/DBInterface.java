@@ -8,5 +8,5 @@ public interface DBInterface {
 	public void insertPosition(int tripId, double latitude, double longitude, 
 							   double bearing, double speed);
 	
-	public void insertEvent(int tripId, int engine, int sailplan);
+	public void insertEvent(int tripId, int engineStatus, int sailPlan);
 }

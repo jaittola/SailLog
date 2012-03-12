@@ -127,7 +127,7 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
         return lastPosId;
     }
     
-    public void insertEvent(int tripId, int engine, int sailplan) {
+    public void insertEvent(int tripId, int engineStatus, int sailPlan) {
        
         SQLiteDatabase db = getWritableDatabase();
 
@@ -143,8 +143,8 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
             
             insertEventStm.bindLong(1, tripId);
             insertEventStm.bindLong(2, lastPosId);
-            insertEventStm.bindLong(3, engine);
-            insertEventStm.bindLong(4, sailplan);
+            insertEventStm.bindLong(3, engineStatus);
+            insertEventStm.bindLong(4, sailPlan);
             insertEventStm.executeInsert();
             db.setTransactionSuccessful();
         }

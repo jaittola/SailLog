@@ -18,4 +18,9 @@
     <string name="no_speed_heading_data">Speed: -, Heading: -</string>
     <string name="export_kml">Export as KML</string>
     <string name="export_kml_short">Export KML</string>
+    <string name="sail_plan">Sails</string>
+    <string name="sails_hoisted">Hoisted</string>
+    <string name="main_sail">Main</string>
+    <string name="jib">Jib</string>
+    <string name="spinnaker">Spinnaker</string>
 </resources>

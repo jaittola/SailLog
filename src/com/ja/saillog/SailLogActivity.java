@@ -28,7 +28,7 @@ public class SailLogActivity extends Activity implements LocationSink {
 
         LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
         sinks.add(this);
-        sinks.add(new DBLocationSink(db));
+        sinks.add(dbSink);
         locationTracker = new LocationTracker(this, sinks);
 
         trackingStatusChanged(false);  // We start with everything turned off.
@@ -87,14 +87,33 @@ public class SailLogActivity extends Activity implements LocationSink {
             setLocationAvailable(false);
         }
     }
+    
+    private void sailingEvents() {
+        // Accumulate statuses from all event widgets.
+        // We should actually combine several sail change events
+        // to the same one. That may have to be done on the db
+        // level, though.
+        int engineStatus = engineStatusButton.isChecked() ? 1 : 0;
+        int sailPlan = ((mainSailCheckbox.isChecked() ? 1 : 0) |
+                        (jibCheckbox.isChecked() ? 1 << 1 : 0) |
+                        (spinnakerCheckbox.isChecked() ? 1 << 2 : 0));
+        dbSink.insertEvent(engineStatus, sailPlan);
+    }
 
     private void setupWidgets() {
         trackLocationButton = (CompoundButton) findViewById(R.id.trackLocationButton);
-        // engineButton = (CompoundButton) findViewById(R.id.engineButton);
+        engineStatusButton = (CompoundButton) findViewById(R.id.engineStatusButton);
+        mainSailCheckbox = (CompoundButton) findViewById(R.id.mainSailCheckbox);
+        jibCheckbox = (CompoundButton) findViewById(R.id.jibCheckbox);
+        spinnakerCheckbox = (CompoundButton) findViewById(R.id.spinnakerCheckbox);
         speedHeadingView = (TextView) findViewById(R.id.speedHeading);
         positionView = (TextView) findViewById(R.id.position);
 
         trackLocationButton.setOnCheckedChangeListener(locationTrackStartListener);
+        engineStatusButton.setOnCheckedChangeListener(sailingEventsListener);
+        mainSailCheckbox.setOnCheckedChangeListener(sailingEventsListener);
+        jibCheckbox.setOnCheckedChangeListener(sailingEventsListener);
+        spinnakerCheckbox.setOnCheckedChangeListener(sailingEventsListener);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         showSpinner(false);
@@ -189,6 +208,7 @@ public class SailLogActivity extends Activity implements LocationSink {
 
     private void setupDbInterfaces() {
         db = new DB(this, "SLDB.db");
+        dbSink = new DBLocationSink(db);
     }
 
     private void showSpinner(boolean show) {
@@ -208,15 +228,25 @@ public class SailLogActivity extends Activity implements LocationSink {
     
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            trackingStatusChanged(isChecked);           
+          trackingStatusChanged(isChecked);           
         }
     };
-
+    
+    private OnCheckedChangeListener sailingEventsListener = new OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            sailingEvents();
+        }
+    };
+    
     private DB db;
+    private DBLocationSink dbSink;
     private LocationTracker locationTracker;
 
     private CompoundButton trackLocationButton;
-    // private CompoundButton engineButton;
+    private CompoundButton engineStatusButton;
+    private CompoundButton mainSailCheckbox;
+    private CompoundButton jibCheckbox;
+    private CompoundButton spinnakerCheckbox;
     private TextView speedHeadingView;
     private TextView positionView;
 
