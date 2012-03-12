@@ -17,15 +17,17 @@ public class TestLocationTracker extends AndroidTestCase {
 			lastLongitude = Double.NaN;
 			lastSpeed = Double.NaN;
 			lastBearing = Double.NaN;
+			lastTime = -1;
 		}
 		
 		@Override
 		public void updateLocation(double latitude, double longitude,
-								   double speed, double bearing) {
+								   double speed, double bearing, long time) {
 			lastLatitude = latitude;
 			lastLongitude = longitude;
 			lastSpeed = speed;
 			lastBearing = bearing;
+			lastTime = time;
 		}
 
 		@Override
@@ -37,6 +39,7 @@ public class TestLocationTracker extends AndroidTestCase {
 		public double lastLongitude;
 		public double lastSpeed;
 		public double lastBearing;
+		public long lastTime;
 	}
 	
 	@Override

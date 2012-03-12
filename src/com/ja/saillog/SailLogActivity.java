@@ -58,7 +58,8 @@ public class SailLogActivity extends Activity implements LocationSink {
     public void updateLocation(double latitude,
                                double longitude,
                                double speed,
-                               double bearing) {
+                               double bearing,
+                               long time) {
         speedHeadingView.setText(String.format("Speed: %.1f, Heading: %.0f¡",
                                                speed,
                                                bearing));

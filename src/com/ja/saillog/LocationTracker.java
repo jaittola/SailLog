@@ -36,7 +36,8 @@ public class LocationTracker implements LocationListener {
 			sink.updateLocation(location.getLatitude(),
 								location.getLongitude(),
 							    location.getSpeed(),
-							    location.getBearing());
+							    location.getBearing(),
+							    location.getTime());
 		}
 	}
 	

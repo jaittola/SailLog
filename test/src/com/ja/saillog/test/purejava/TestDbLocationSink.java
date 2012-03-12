@@ -31,7 +31,7 @@ public class TestDbLocationSink extends TestCase {
 		FakeDbIf fdi = new FakeDbIf();
 		DBLocationSink sink = new DBLocationSink(fdi);
 		
-		sink.updateLocation(20, 60, 2, 3);
+		sink.updateLocation(20, 60, 2, 3, 0);
 		
 		Assert.assertEquals(1, fdi.mTripId);
 		Assert.assertEquals(20.0, fdi.mLatitude);
