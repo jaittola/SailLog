@@ -83,7 +83,9 @@ public class TestExportFile extends AndroidTestCase {
                                             false);
         }
         finally {
-            f.delete();
+            if (null != f) {
+                f.delete();
+            }
         }
     }
 

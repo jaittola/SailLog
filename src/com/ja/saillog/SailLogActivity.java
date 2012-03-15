@@ -207,7 +207,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
 
     private void setupDbInterfaces() {
-        db = new DB(this, "SLDB.db");
+        db = new TrackDB(this, "SLDB.db");
         dbSink = new DBLocationSink(db);
     }
 
@@ -238,7 +238,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
     };
     
-    private DB db;
+    private TrackDB db;
     private DBLocationSink dbSink;
     private LocationTracker locationTracker;
 

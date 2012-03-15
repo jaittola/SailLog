@@ -2,7 +2,7 @@ package com.ja.saillog;
 
 public class DBLocationSink implements LocationSink {
 
-	public DBLocationSink(DBInterface db) {
+	public DBLocationSink(TrackDBInterface db) {
 		dbif = db;
 		filter = new LocationFilter();
 	}
@@ -14,18 +14,20 @@ public class DBLocationSink implements LocationSink {
 	public void updateLocation(double latitude, double longitude, double speed,
 			double bearing, long time) {
 	    if (true == filter.canUpdate(latitude, longitude, speed, bearing, time)) {
-	        dbif.insertPosition(activeTripId, latitude, longitude, bearing, speed);
+	        dbif.insertPosition(latitude, longitude, bearing, speed);
 	    }
 	}
 
 	public void insertEvent(int engineStatus, int sailPlan) {
-	    dbif.insertEvent(activeTripId, engineStatus, sailPlan);
+	    dbif.insertEvent(engineStatus, sailPlan);
 	}
 	
 	public void setLocationAvailable(boolean isAvailable) {
 	}
 
-	private DBInterface dbif;
+	private TrackDBInterface dbif;
 	private LocationFilter filter;
+	
+	// TODO, trip ids to be added.
 	private int activeTripId = 1;
 }

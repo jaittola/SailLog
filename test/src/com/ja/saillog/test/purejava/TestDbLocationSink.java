@@ -4,16 +4,15 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import com.ja.saillog.DBLocationSink;
-import com.ja.saillog.DBInterface;
+import com.ja.saillog.TrackDBInterface;
 
 public class TestDbLocationSink extends TestCase {
 	
-	public class FakeDbIf implements DBInterface {
+	public class FakeDbIf implements TrackDBInterface {
 
 		@Override
-		public void insertPosition(int tripId, double latitude,
+		public void insertPosition(double latitude,
 				double longitude, double bearing, double speed) {
-			mTripId = tripId;
 			mLatitude = latitude;
 			mLongitude = longitude;
 			mBearing = bearing;
@@ -21,19 +20,16 @@ public class TestDbLocationSink extends TestCase {
 		}
 
 		@Override
-		public void insertEvent(int tripId, int engineStatus, int sailPlan) {	   
-		    mTripIdEv = tripId;
+		public void insertEvent(int engineStatus, int sailPlan) {	   
 		    mEngineStatus = engineStatus;
 		    mSailPlan = sailPlan;
 	    }
 
-		public int mTripId = -1;
 		public double mLatitude = -91;
 		public double mLongitude = -181;
 		public double mBearing = -1;
 		public double mSpeed = -1;
 		
-		public int mTripIdEv = -1;
 		public int mEngineStatus = -1;
 		public int mSailPlan = -1;
 	}
@@ -48,7 +44,6 @@ public class TestDbLocationSink extends TestCase {
 	public void testDbLocationSink() {		
 		sink.updateLocation(20, 60, 2, 3, 0);
 		
-		Assert.assertEquals(1, fdi.mTripId);
 		Assert.assertEquals(20.0, fdi.mLatitude);
 		Assert.assertEquals(60.0, fdi.mLongitude);
 		Assert.assertEquals(3.0, fdi.mBearing);

@@ -14,9 +14,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
-public class DB extends SQLiteOpenHelper implements DBInterface {
+public class TrackDB extends SQLiteOpenHelper implements TrackDBInterface {
 	
-    public DB(Context context, String databaseName) {
+    public TrackDB(Context context, String databaseName) {
         super(context, databaseName, null, dbVersion);
         sqlBundle = ResourceBundle.getBundle("com.ja.saillog.sql");
     }
@@ -39,8 +39,6 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     	// in the sql.properties file.
     	String[] statements = {
     			"set_vacuum",
-    			"drop_trip",
-    			"create_trip",
     			"drop_pos",
     			"create_pos",
     			"drop_event",
@@ -55,7 +53,9 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
-    
+ 
+    /* This goes to the other database */
+/*
     public void insertTrip(String tripName) {
     	SQLiteDatabase db = getWritableDatabase();
     	
@@ -88,22 +88,22 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
     	  	
     	return id;
     }
+*/
     
-    public void insertPosition(int tripId, double latitude, double longitude, double bearing, double speed) {
+    public void insertPosition(double latitude, double longitude, double bearing, double speed) {
     	SQLiteDatabase db = getWritableDatabase();
     	
     	if (null == insertPosStm) {
-    		insertPosStm = db.compileStatement("INSERT INTO position (trip_id, latitude, longitude, speed, bearing) " +
-			  		   						   "VALUES (?, ?, ?, ?, ?)");
+    		insertPosStm = db.compileStatement("INSERT INTO position (latitude, longitude, speed, bearing) " +
+			  		   						   "VALUES (?, ?, ?, ?)");
     	}
     	
     	try {
     		db.beginTransaction();
-    		insertPosStm.bindLong(1, (long) tripId);
-    		insertPosStm.bindDouble(2, latitude);
-    		insertPosStm.bindDouble(3, longitude);
-    		insertPosStm.bindDouble(4, speed);
-    		insertPosStm.bindDouble(5, bearing);
+    		insertPosStm.bindDouble(1, latitude);
+    		insertPosStm.bindDouble(2, longitude);
+    		insertPosStm.bindDouble(3, speed);
+    		insertPosStm.bindDouble(4, bearing);
     		insertPosStm.executeInsert();
     		db.setTransactionSuccessful();
     	} finally {
@@ -127,13 +127,13 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
         return lastPosId;
     }
     
-    public void insertEvent(int tripId, int engineStatus, int sailPlan) {
+    public void insertEvent(int engineStatus, int sailPlan) {
        
         SQLiteDatabase db = getWritableDatabase();
 
         if (null == insertEventStm) {
-            insertEventStm = db.compileStatement("INSERT INTO event (trip_id, position_id, engine, sailplan) " +
-            		"VALUES (?, ?, ?, ?)");
+            insertEventStm = db.compileStatement("INSERT INTO event (position_id, engine, sailplan) " +
+            		"VALUES (?, ?, ?)");
         }
         
         try {
@@ -141,10 +141,9 @@ public class DB extends SQLiteOpenHelper implements DBInterface {
 
             long lastPosId = fetchLastPositionId(db);
             
-            insertEventStm.bindLong(1, tripId);
-            insertEventStm.bindLong(2, lastPosId);
-            insertEventStm.bindLong(3, engineStatus);
-            insertEventStm.bindLong(4, sailPlan);
+            insertEventStm.bindLong(1, lastPosId);
+            insertEventStm.bindLong(2, engineStatus);
+            insertEventStm.bindLong(3, sailPlan);
             insertEventStm.executeInsert();
             db.setTransactionSuccessful();
         }
