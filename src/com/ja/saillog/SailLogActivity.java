@@ -173,7 +173,8 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
         
         protected void doExport() throws IOException {
-            db.exportDbAsSQLite(exportFile);
+            // TODO, should go elsewhere.
+            dbFactory.realTrackDB().exportDbAsSQLite(exportFile);
         }
     }
     
@@ -184,7 +185,8 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
   
         protected void doExport() throws IOException {
-            db.exportDbAsKML(exportFile);
+            // TODO, should go elsewhere
+            dbFactory.realTrackDB().exportDbAsKML(exportFile);
         }
     }
 
@@ -207,8 +209,8 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
 
     private void setupDbInterfaces() {
-        db = new TrackDB(this, "SLDB.db");
-        dbSink = new DBLocationSink(db);
+        dbFactory = new DBFactory(this);
+        dbSink = new DBLocationSink(dbFactory);
     }
 
     private void showSpinner(boolean show) {
@@ -238,7 +240,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
     };
     
-    private TrackDB db;
+    private DBFactory dbFactory;
     private DBLocationSink dbSink;
     private LocationTracker locationTracker;
 

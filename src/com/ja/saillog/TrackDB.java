@@ -6,19 +6,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
-import java.util.ResourceBundle;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
-public class TrackDB extends SQLiteOpenHelper implements TrackDBInterface {
+public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 	
     public TrackDB(Context context, String databaseName) {
-        super(context, databaseName, null, dbVersion);
-        sqlBundle = ResourceBundle.getBundle("com.ja.saillog.sql");
+        super(context, databaseName);
+        
+        createDbStatements = new String[] {
+                "set_vacuum",
+                "drop_pos",
+                "create_pos",
+                "drop_event",
+                "create_event",
+        };
     }
     
     @Override
@@ -26,69 +31,16 @@ public class TrackDB extends SQLiteOpenHelper implements TrackDBInterface {
     	if (null != insertPosStm) {
     		insertPosStm.close();
     	}
-    	if (null != insertTripStm) {
-    		insertTripStm.close();
+    	if (null != fetchLastPositionStm) {
+    	    fetchLastPositionStm.close();
     	}
-    	
+    	if (null != insertEventStm) {
+    	    insertEventStm.close();
+    	}
+	
     	super.finalize();
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-    	// The strings in this array refer to SQL clauses
-    	// in the sql.properties file.
-    	String[] statements = {
-    			"set_vacuum",
-    			"drop_pos",
-    			"create_pos",
-    			"drop_event",
-    			"create_event",
-    	};
- 
-       for (String s: statements) {
-        	db.execSQL(sqlBundle.getString(s));
-        }
-    }
-    
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    }
- 
-    /* This goes to the other database */
-/*
-    public void insertTrip(String tripName) {
-    	SQLiteDatabase db = getWritableDatabase();
-    	
-    	if (null == insertTripStm) {
-    		insertTripStm = db.compileStatement("INSERT INTO trip (trip_name) VALUES (?)");
-    	}
-    	
-    	try {
-    		db.beginTransaction();
-    		insertTripStm.bindString(1, tripName);
-    		insertTripStm.executeInsert();
-    		db.setTransactionSuccessful();
-    	} finally {
-    		db.endTransaction();
-    	}
-    }
-    
-    public int fetchTripId(String tripName) {
-    	int id = -1;
-    	
-    	SQLiteDatabase db = getReadableDatabase();
-    	String [] selectionArgs = { tripName };
-    	Cursor c = db.rawQuery("SELECT MAX(trip_id) FROM trip WHERE trip_name = ?", selectionArgs);
-    	if (true == c.moveToNext()) {
-    		if (!c.isNull(0)) {
-    			id = c.getInt(0);
-    		}
-    	}
-    	c.close();
-    	  	
-    	return id;
-    }
-*/
     
     public void insertPosition(double latitude, double longitude, double bearing, double speed) {
     	SQLiteDatabase db = getWritableDatabase();
@@ -218,12 +170,7 @@ public class TrackDB extends SQLiteOpenHelper implements TrackDBInterface {
         }
     }
 
-    private static final int dbVersion = 1;
-
-    private ResourceBundle sqlBundle;
-    
     private SQLiteStatement insertPosStm;
-    private SQLiteStatement insertTripStm;
     private SQLiteStatement fetchLastPositionStm;
     private SQLiteStatement insertEventStm;
 }

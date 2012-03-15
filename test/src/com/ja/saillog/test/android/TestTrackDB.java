@@ -6,13 +6,11 @@ import java.io.IOException;
 import junit.framework.Assert;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
-import android.test.AndroidTestCase;
 
 import com.ja.saillog.TrackDB;
 import com.ja.saillog.ExportFile;
 
-public class TestTrackDB extends AndroidTestCase {
+public class TestTrackDB extends TestDbBase {
 
     private class PositionContainer {
         public PositionContainer(double latitude, double longitude, double bearing, double speed) {
@@ -40,28 +38,13 @@ public class TestTrackDB extends AndroidTestCase {
     
     protected void setUp() throws Exception {
         super.setUp();
-
-        dbif = new TrackDB(mContext, "SLDB-test.db");    
-    }
-
-    protected void tearDown() throws Exception {
-        SQLiteDatabase db = dbif.getWritableDatabase();
-        String dbPath = db.getPath();
-        db.close();
-
-        new File(dbPath).delete();
-
-        super.tearDown();
-    }
-
-    public void testDbSetUp() {
-        SQLiteDatabase db = dbif.getWritableDatabase();
-
-        String[] expectedTables = { 
+        
+        expectedTables = new String[] { 
                 "position",
                 "event",
         };
-        checkTablesExist(db, expectedTables);
+
+        dbif = new TrackDB(mContext, "SLDB-Track-test.db");    
     }
 
     /*
@@ -192,15 +175,6 @@ public class TestTrackDB extends AndroidTestCase {
         }
     }
 
-    private void checkTablesExist(SQLiteDatabase db, String[] requiredTables) {
-        for (String table: requiredTables) {
-            SQLiteStatement stm = db.compileStatement(String.format("select count(*) from sqlite_master " + 
-                    "where type = 'table' and name = '%s'", table));
-            int tablesFound = (int) stm.simpleQueryForLong();
-            Assert.assertEquals(String.format("Table %s not found; ", table), 1, tablesFound);
-        }
-    }
-    
     private void insertPositionsAndEvents() {
         for (int i = 0; i < posS.length; ++i) {
             dbif.insertPosition(posS[i].myLat, 
@@ -212,12 +186,10 @@ public class TestTrackDB extends AndroidTestCase {
         }
     }
     
-    private void checkColumnsNotNull(Cursor c) {
-        for (int col = 0; col < c.getColumnCount(); ++col) {
-            Assert.assertFalse(c.isNull(col));
-        }
+    protected SQLiteDatabase getWritableDatabase() {
+        return dbif.getWritableDatabase();
     }
-
+    
     private TrackDB dbif;
 
     // Note, it is assumed in this class that the posS and eventS arrays 
