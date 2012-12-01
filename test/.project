@@ -3,7 +3,7 @@
 	<name>SailLogTest</name>
 	<comment></comment>
 	<projects>
-		<project>SailLog</project>
+		<project>SailLogActivity</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
