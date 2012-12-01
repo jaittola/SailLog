@@ -73,7 +73,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     public void setLocationAvailable(boolean isAvailable) {
         if (false == isAvailable) {
             speedHeadingView.setText(getResources().getText(R.string.no_speed_heading_data));
-            positionView.setText(getResources().getText(R.string.no_speed_heading_data));
+            positionView.setText(getResources().getText(R.string.no_position_data));
         }
         
         // TODO, make a GPS status widget.
