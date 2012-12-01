@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.ja.saillog.TripDB;
+import com.ja.saillog.TripDB.TripDbInfo;
 
 public class TestTripDB extends TestDbBase {
 
@@ -12,23 +13,28 @@ public class TestTripDB extends TestDbBase {
         
         expectedTables = new String[] { 
                 "trip",
-                "trip_leg",
         };
 
         dbif = new TripDB(mContext, "SLDB-Trip-test.db");    
     }
 
     public void testTempTripInsertAndFetch() {
-        dbif.insertTrip("Test trip");
-        int id = dbif.fetchTripId("Test trip");
+    	String tripName = "Test trip";
+    	
+    	dbif.insertTrip(tripName);
+        TripDbInfo tdi = dbif.fetchTripId(tripName);
 
-        Assert.assertTrue("Expecting trip id greater than zero, got " + id, id > 0);
-    }
+        Assert.assertTrue("Expecting trip id greater than zero, got " + tdi.tripId,
+        			      tdi.tripId > 0);
+        Assert.assertEquals(tripName, tdi.tripName);
+        Assert.assertNotNull(tdi.dbFileName);
+    }   		
+        		
 
     public void testNonExistentTrip() {
-        int id = dbif.fetchTripId("Does not exist");
+        TripDbInfo tdi = dbif.fetchTripId("Does not exist");
 
-        Assert.assertTrue("Expecting trip id smaller than zero, got" + id, id < 0);
+        Assert.assertNull(tdi);
     }
   
     @Override
