@@ -12,8 +12,11 @@ import android.os.Bundle;
 
 public class LocationTracker implements LocationListener {
 	
-	public LocationTracker(Activity act, List<LocationSink> sinks) {
+	public LocationTracker(Activity act) {
 		activity = act;
+	}
+	
+	public void setSinks(List<LocationSink> sinks) {
 		locationSinks = sinks;
 	}
 	
@@ -32,6 +35,10 @@ public class LocationTracker implements LocationListener {
 	}
 	
 	public void onLocationChanged(Location location) {
+	    if (locationSinks == null) {
+	        return;
+	    }
+	    
 		for (LocationSink sink: locationSinks) {
 			sink.updateLocation(location.getLatitude(),
 								location.getLongitude(),
@@ -44,6 +51,10 @@ public class LocationTracker implements LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO, This isn't correct
 		boolean locationAvailable = (LocationProvider.OUT_OF_SERVICE != status);	
+		
+		if (locationSinks == null) {
+		    return;
+		}
 		
 		for (LocationSink sink: locationSinks) {
 			sink.setLocationAvailable(locationAvailable);

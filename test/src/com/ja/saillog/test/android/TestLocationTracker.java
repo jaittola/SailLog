@@ -46,7 +46,8 @@ public class TestLocationTracker extends AndroidTestCase {
 		sinks.add(new FakeSink());
 		sinks.add(new FakeSink());
 		
-		lt = new LocationTracker(null, sinks);
+		lt = new LocationTracker(null);
+		lt.setSinks(sinks);
 		
 		location = new Location("FakeGPS");
 		location.setLatitude(1);

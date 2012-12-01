@@ -26,11 +26,8 @@ public class SailLogActivity extends Activity implements LocationSink {
         setupDbInterfaces();
         setupWidgets();
 
-        LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
-        sinks.add(this);
-        sinks.add(dbSink);
-        locationTracker = new LocationTracker(this, sinks);
-
+        locationTracker = new LocationTracker(this);
+       
         trackingStatusChanged(false);  // We start with everything turned off.
                                        // This may need changing.
     }
@@ -85,6 +82,13 @@ public class SailLogActivity extends Activity implements LocationSink {
 
         if (false == isEnabled) {
             setLocationAvailable(false);
+            locationTracker.setSinks(null);
+        }
+        else {
+            LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
+            sinks.add(this);
+            sinks.add(dbSink);
+            locationTracker.setSinks(sinks);
         }
     }
     
