@@ -9,9 +9,17 @@ import java.util.Random;
 
 public class TripDB extends SailLogDBBase {
 
+    public TripDB(Context context) {
+        super(context, "TripDB.db");
+        setup();
+    }
+    
     public TripDB(Context context, String databaseName) {
         super(context, databaseName);
-        
+        setup();
+    }
+    
+    void setup() {
         createDbStatements = new String[] {
                 "set_vacuum",
                 "drop_trip",
@@ -24,19 +32,21 @@ public class TripDB extends SailLogDBBase {
 
     @Override
     protected void finalize() throws Throwable {
-        if (null != insertTripStm) {
-            insertTripStm.close();
-        }
+        closeStatement(insertTripStm); insertTripStm = null;
+        closeStatement(unselectTripStm); unselectTripStm = null;
+        closeStatement(selectTripStm); selectTripStm = null;
     
         super.finalize();
     }
-    
+     
     public void insertTrip(String tripName) {
          SQLiteDatabase db = getWritableDatabase();
          
-         // This needs fixing. Should use the row sequential row number.
-         // But it's now easier this way. TODO.
-         String tripDbFile = "sldb_trip_" + rand.nextInt();
+         // TODO: This needs fixing. Should use the row sequential row number.
+         // But it's now easier like this.
+         String tripDbFile = String.format("SLDB_%s_%d.db",
+                 tripName.replace(' ', '_'),
+                 rand.nextInt());
          
          if (null == insertTripStm) {
              insertTripStm = db.compileStatement("INSERT INTO trip (trip_name, trip_db_filename) " + 
@@ -54,36 +64,118 @@ public class TripDB extends SailLogDBBase {
          }
      }
      
-    public class TripDbInfo extends Object {
+    public class TripInfo extends Object {
     	public int tripId;
     	public String tripName;	
     	public String dbFileName;
     }
     
-     public TripDbInfo fetchTripId(String tripName) {
-    	 TripDbInfo tdi = null;
+     public TripInfo getTrip(String tripName) {
+         String [] selectionArgs = { tripName };
+
+         return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename FROM trip WHERE " +
+                 "trip_id = (SELECT MAX(trip_id) FROM trip WHERE trip_name = ?)",
+                 selectionArgs);
+     }
+         
+     private TripInfo queryTripInfo(String queryString, String[] selectionArgs) {   
+    	 TripInfo tdi = null;
     	 
          SQLiteDatabase db = getReadableDatabase();
-         String [] selectionArgs = { tripName };
-         Cursor c = db.rawQuery("SELECT trip_id, trip_db_filename FROM trip WHERE " +
-         		"trip_id = (SELECT MAX(trip_id) FROM trip WHERE trip_name = ?)", selectionArgs);
+         Cursor c = db.rawQuery(queryString, selectionArgs);
+
          if (true == c.moveToNext()) {
-             tdi = new TripDbInfo();
+             tdi = new TripInfo();
              
-             if (!c.isNull(0)) {
-                 tdi.tripId = c.getInt(0);
+             int colIdx = c.getColumnIndex("trip_id");
+             if (!c.isNull(colIdx)) {
+                 tdi.tripId = c.getInt(colIdx);
              }
-             if (!c.isNull(1)) {
-                 tdi.dbFileName = c.getString(1);
+             
+             colIdx = c.getColumnIndex("trip_db_filename");
+             if (!c.isNull(colIdx)) {
+                 tdi.dbFileName = c.getString(colIdx);
              }
-             tdi.tripName = tripName;
+             
+             colIdx = c.getColumnIndex("trip_name");
+             if (!c.isNull(colIdx)) {
+                 tdi.tripName = c.getString(colIdx);
+             }
          }
-         
          c.close();
              
          return tdi;
      }
      
+     public Cursor listTrips() {
+         SQLiteDatabase db = getReadableDatabase();
+         String [] selectionArgs = {};
+         Cursor c = db.rawQuery("SELECT trip_id as _id, trip_name, selected from TRIP " +
+                 "ORDER BY last_activated desc", selectionArgs);
+         return c;
+     }
+     
+     public void selectTrip(long tripId) {
+         SQLiteDatabase db = getWritableDatabase();
+         
+         if (null == selectTripStm) {
+             selectTripStm = db.compileStatement("UPDATE trip SET selected = 1, " +
+                     "last_activated = CURRENT_TIMESTAMP WHERE trip_id = ?");
+         }
+         
+         ensureUnselectStatement(db);
+         
+         try {
+             db.beginTransaction();
+
+             unselectTripStm.executeInsert();
+
+             selectTripStm.bindLong(1, tripId);
+             selectTripStm.executeInsert();
+
+             db.setTransactionSuccessful();
+         } finally {
+             db.endTransaction();
+         }
+     }
+     
+     public void unselectTrips() {
+         SQLiteDatabase db = getWritableDatabase();
+         
+         ensureUnselectStatement(db);
+         try {
+             db.beginTransaction();
+             unselectTripStm.executeInsert();
+             db.setTransactionSuccessful();
+         } finally {
+             db.endTransaction();
+         }
+     }
+     
+     public TripInfo getSelectedTrip() {
+         String [] selectionArgs = {};
+
+         return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename FROM trip WHERE " +
+                 "trip_id = (SELECT MAX(trip_id) FROM trip WHERE selected = 1)",
+                 selectionArgs);
+     }
+
+     private void ensureUnselectStatement(SQLiteDatabase db) {
+         if (null == unselectTripStm) {
+             unselectTripStm = db.compileStatement("UPDATE trip SET selected = 0 " +
+                    "WHERE selected = 1");
+         }
+     }
+     
+     private void closeStatement(SQLiteStatement stm) {
+         if (null != stm) {
+             stm.close();
+         }
+     }
+     
      private SQLiteStatement insertTripStm;
+     private SQLiteStatement unselectTripStm;
+     private SQLiteStatement selectTripStm;
+     
      Random rand;
 }

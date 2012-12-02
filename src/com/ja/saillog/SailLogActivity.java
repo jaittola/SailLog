@@ -3,13 +3,17 @@ package com.ja.saillog;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import com.ja.saillog.TripDB.TripInfo;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ProgressBar;
@@ -23,15 +27,14 @@ public class SailLogActivity extends Activity implements LocationSink {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        setupDbInterfaces();
         setupWidgets();
 
         locationTracker = new LocationTracker(this);
-       
+        setupTripInfo();        
         trackingStatusChanged(false);  // We start with everything turned off.
                                        // This may need changing.
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -82,14 +85,7 @@ public class SailLogActivity extends Activity implements LocationSink {
 
         if (false == isEnabled) {
             setLocationAvailable(false);
-            locationTracker.setSinks(null);
-        }
-        else {
-            LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
-            sinks.add(this);
-            sinks.add(dbSink);
-            locationTracker.setSinks(sinks);
-        }
+        }        
     }
     
     private void sailingEvents() {
@@ -112,13 +108,15 @@ public class SailLogActivity extends Activity implements LocationSink {
         spinnakerCheckbox = (CompoundButton) findViewById(R.id.spinnakerCheckbox);
         speedHeadingView = (TextView) findViewById(R.id.speedHeading);
         positionView = (TextView) findViewById(R.id.position);
+        tripNameView = (TextView) findViewById(R.id.tripNameText);
 
         trackLocationButton.setOnCheckedChangeListener(locationTrackStartListener);
         engineStatusButton.setOnCheckedChangeListener(sailingEventsListener);
         mainSailCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         jibCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         spinnakerCheckbox.setOnCheckedChangeListener(sailingEventsListener);
-
+        tripNameView.setOnClickListener(tripSelectClickListener);
+        
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         showSpinner(false);
     }
@@ -211,11 +209,67 @@ public class SailLogActivity extends Activity implements LocationSink {
             trackLocationButton.setEnabled(true);
         }
     }
+   
+    private void showTripSelector() {
+        startActivityForResult(new Intent("com.ja.saillog.tripSelector"), 
+                tripSelectionRequestCode);
+    }
+    
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (tripSelectionRequestCode == requestCode &&
+                RESULT_OK == resultCode) {
+            setupTripInfo();
+        }
+    }
 
-    private void setupDbInterfaces() {
-        // TODO, hard-coded filename now.
-        trackDB = new TrackDB(this, "SLDB.db");
-        dbSink = new DBLocationSink(trackDB);
+    private void setupTripInfo() {
+        TripDB tripDB = new TripDB(this);
+        TripInfo ti = tripDB.getSelectedTrip();
+        
+        // Set db sink to NULL to prevent any further updates.
+        if (null != dbSink) {
+            dbSink.setDb(null);
+            dbSink = null;
+        }
+        if (null != trackDB) {
+            trackDB.close();
+            trackDB = null;
+        }
+        
+        if (null == ti) {
+            tripNameView.setText("");
+            enableControls(false);
+            
+            locationTracker.setSinks(null);
+        }
+        else {
+            trackDB = new TrackDB(this, ti.dbFileName);
+            dbSink = new DBLocationSink(trackDB);
+            
+            tripNameView.setText(ti.tripName);
+            enableControls(true);
+
+            LinkedList<LocationSink> sinks = new LinkedList<LocationSink>();
+            sinks.add(this);
+            sinks.add(dbSink);
+            locationTracker.setSinks(sinks);
+        }
+        
+        tripDB.close();
+    }
+
+    private void enableControls(boolean enabled) {
+        trackLocationButton.setChecked(false);
+        engineStatusButton.setChecked(false);
+        mainSailCheckbox.setChecked(false);
+        jibCheckbox.setChecked(false);
+        spinnakerCheckbox.setChecked(false);
+                
+        trackLocationButton.setEnabled(enabled);
+        engineStatusButton.setEnabled(enabled);
+        mainSailCheckbox.setEnabled(enabled);
+        jibCheckbox.setEnabled(enabled);
+        spinnakerCheckbox.setEnabled(enabled);
     }
 
     private void showSpinner(boolean show) {
@@ -245,6 +299,12 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
     };
     
+    private OnClickListener tripSelectClickListener = new OnClickListener() {
+        public void onClick(View v) {
+            showTripSelector();
+        }
+    };
+    
     private DBLocationSink dbSink;
     private TrackDB trackDB;
     private LocationTracker locationTracker;
@@ -256,8 +316,11 @@ public class SailLogActivity extends Activity implements LocationSink {
     private CompoundButton spinnakerCheckbox;
     private TextView speedHeadingView;
     private TextView positionView;
+    private TextView tripNameView;
 
     private ProgressBar progressBar;
+    
+    final private static int tripSelectionRequestCode = 1;
 }
 
 

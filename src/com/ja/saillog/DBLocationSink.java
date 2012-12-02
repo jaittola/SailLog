@@ -8,15 +8,22 @@ public class DBLocationSink implements LocationSink {
 		filter = new LocationFilter();
 	}
 	
+	void setDb(TrackDBInterface db) {
+	    this.db = db;
+	}
+	
 	public void updateLocation(double latitude, double longitude, double speed,
 			double bearing, long time) {    
-	    if (true == filter.canUpdate(latitude, longitude, speed, bearing, time)) {
+	    if (true == filter.canUpdate(latitude, longitude, speed, bearing, time) &&
+	        null != db) {
 	        db.insertPosition(latitude, longitude, bearing, speed);
 	    }
 	}
 
 	public void insertEvent(int engineStatus, int sailPlan) {
-	    db.insertEvent(engineStatus, sailPlan);
+	    if (null != db) {
+	        db.insertEvent(engineStatus, sailPlan);            
+        }
 	}
 	
 	public void setLocationAvailable(boolean isAvailable) {

@@ -15,6 +15,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="TripSelectorActivity" 
+            android:excludeFromRecents="true" 
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.ja.saillog.tripSelector" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+        </activity>
 
     </application>
 </manifest>
