@@ -30,11 +30,11 @@ public class SailLogActivity extends Activity implements LocationSink {
         setupWidgets();
 
         locationTracker = new LocationTracker(this);
-        setupTripInfo();        
+        setupTripInfo();
         trackingStatusChanged(false);  // We start with everything turned off.
                                        // This may need changing.
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -60,40 +60,47 @@ public class SailLogActivity extends Activity implements LocationSink {
                                double speed,
                                double bearing,
                                long time) {
-        speedHeadingView.setText(String.format("Speed: %.1f, Heading: %.0f¡",
-                                               speed,
-                                               bearing));
-        positionView.setText(String.format("Position: %s %s", 
-                                           LocationFormatter.formatLatitude(latitude),
-                                           LocationFormatter.formatLongitude(longitude)));
+        // TODO, remove hard-coded speed unit.
+        String speedUnit = "kn";
+        double speedUnitConversion = 1.8;
+        
+        speedView.setText(String.format("%.1f %s",
+                          speedUnitConversion * speed,
+                          speedUnit));
+        headingView.setText(String.format("%.0f¡",
+                                          bearing));
+        latView.setText(LocationFormatter.formatLatitude(latitude));
+        lonView.setText(LocationFormatter.formatLongitude(longitude));
         setLocationAvailable(true);   // THis also is wrong. But the fake location data seems
         // to have the location availability status with random content.
     }
 
     public void setLocationAvailable(boolean isAvailable) {
         if (false == isAvailable) {
-            speedHeadingView.setText(getResources().getText(R.string.no_speed_heading_data));
-            positionView.setText(getResources().getText(R.string.no_position_data));
+            speedView.setText("");
+            headingView.setText("");
+            latView.setText("");
+            lonView.setText("");
         }
-        
+
         // TODO, make a GPS status widget.
     }
 
     private void trackingStatusChanged(boolean isEnabled) {
-        // engineButton.setEnabled(isEnabled);	
+        // engineButton.setEnabled(isEnabled);
         locationTracker.setEnabled(isEnabled);
 
         if (false == isEnabled) {
             setLocationAvailable(false);
-        }        
+        }
     }
-    
+
     private void sailingEvents() {
         // Accumulate statuses from all event widgets.
         // We should actually combine several sail change events
         // to the same one. That may have to be done on the db
         // level, though.
-        int engineStatus = engineStatusButton.isChecked() ? 1 : 0;
+        int engineStatus = engineStatusCheckbox.isChecked() ? 1 : 0;
         int sailPlan = ((mainSailCheckbox.isChecked() ? 1 : 0) |
                         (jibCheckbox.isChecked() ? 1 << 1 : 0) |
                         (spinnakerCheckbox.isChecked() ? 1 << 2 : 0));
@@ -102,21 +109,23 @@ public class SailLogActivity extends Activity implements LocationSink {
 
     private void setupWidgets() {
         trackLocationButton = (CompoundButton) findViewById(R.id.trackLocationButton);
-        engineStatusButton = (CompoundButton) findViewById(R.id.engineStatusButton);
+        engineStatusCheckbox = (CompoundButton) findViewById(R.id.engineStatusButton);
         mainSailCheckbox = (CompoundButton) findViewById(R.id.mainSailCheckbox);
         jibCheckbox = (CompoundButton) findViewById(R.id.jibCheckbox);
         spinnakerCheckbox = (CompoundButton) findViewById(R.id.spinnakerCheckbox);
-        speedHeadingView = (TextView) findViewById(R.id.speedHeading);
-        positionView = (TextView) findViewById(R.id.position);
+        speedView = (TextView) findViewById(R.id.speedText);
+        headingView = (TextView) findViewById(R.id.headingText);
+        latView = (TextView) findViewById(R.id.latText);
+        lonView = (TextView) findViewById(R.id.lonText);
         tripNameView = (TextView) findViewById(R.id.tripNameText);
 
         trackLocationButton.setOnCheckedChangeListener(locationTrackStartListener);
-        engineStatusButton.setOnCheckedChangeListener(sailingEventsListener);
+        engineStatusCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         mainSailCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         jibCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         spinnakerCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         tripNameView.setOnClickListener(tripSelectClickListener);
-        
+
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         showSpinner(false);
     }
@@ -128,7 +137,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
 
         @Override
-        protected void onPreExecute() {
+            protected void onPreExecute() {
             if (false == exportFile.isExportDirAvailable()) {
                 preExecError = "Exporting failed: MMC file system not available";
                 return;
@@ -139,7 +148,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
 
         @Override
-        protected String doInBackground(Void... ignore) {
+            protected String doInBackground(Void... ignore) {
             if (null != preExecError) {
                 return preExecError;
             }
@@ -147,8 +156,8 @@ public class SailLogActivity extends Activity implements LocationSink {
             try {
                 doExport();
             } catch (IOException ex) {
-                return String.format("Exporting to %s failed: %s", 
-                                     exportFile.fileName(), 
+                return String.format("Exporting to %s failed: %s",
+                                     exportFile.fileName(),
                                      ex.getLocalizedMessage());
             }
 
@@ -156,36 +165,36 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
 
         @Override
-        protected void onPostExecute(String result) {
+            protected void onPostExecute(String result) {
             showSpinner(false);
             allowLocationTracking(true);
             toast(result);
         }
-        
+
         protected abstract void doExport() throws IOException;
 
         protected ExportFile exportFile;
         private String preExecError;
     }
-    
+
     private class ExportDbAsSQLiteTask extends ExportDbTask {
         public ExportDbAsSQLiteTask() {
             super();
             exportFile = new ExportFile("db");
         }
-        
+
         protected void doExport() throws IOException {
             // TODO, should go elsewhere.
             trackDB.exportDbAsSQLite(exportFile);
         }
     }
-    
+
     private class ExportDbAsKMLTask extends ExportDbTask {
         public ExportDbAsKMLTask() {
             super();
             exportFile = new ExportFile("kml");
         }
-  
+
         protected void doExport() throws IOException {
             // TODO, should go elsewhere
             trackDB.exportDbAsKML(exportFile);
@@ -195,7 +204,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void exportData() {
         new ExportDbAsSQLiteTask().execute();
     }
-    
+
     private void exportDataAsKML() {
         new ExportDbAsKMLTask().execute();
     }
@@ -209,15 +218,15 @@ public class SailLogActivity extends Activity implements LocationSink {
             trackLocationButton.setEnabled(true);
         }
     }
-   
+
     private void showTripSelector() {
-        startActivityForResult(new Intent("com.ja.saillog.tripSelector"), 
-                tripSelectionRequestCode);
+        startActivityForResult(new Intent("com.ja.saillog.tripSelector"),
+                               tripSelectionRequestCode);
     }
-    
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (tripSelectionRequestCode == requestCode &&
-                RESULT_OK == resultCode) {
+            RESULT_OK == resultCode) {
             setupTripInfo();
         }
     }
@@ -225,7 +234,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void setupTripInfo() {
         TripDB tripDB = new TripDB(this);
         TripInfo ti = tripDB.getSelectedTrip();
-        
+
         // Set db sink to NULL to prevent any further updates.
         if (null != dbSink) {
             dbSink.setDb(null);
@@ -235,17 +244,17 @@ public class SailLogActivity extends Activity implements LocationSink {
             trackDB.close();
             trackDB = null;
         }
-        
+
         if (null == ti) {
             tripNameView.setText("");
             enableControls(false);
-            
+
             locationTracker.setSinks(null);
         }
         else {
             trackDB = new TrackDB(this, ti.dbFileName);
             dbSink = new DBLocationSink(trackDB);
-            
+
             tripNameView.setText(ti.tripName);
             enableControls(true);
 
@@ -254,19 +263,19 @@ public class SailLogActivity extends Activity implements LocationSink {
             sinks.add(dbSink);
             locationTracker.setSinks(sinks);
         }
-        
+
         tripDB.close();
     }
 
     private void enableControls(boolean enabled) {
         trackLocationButton.setChecked(false);
-        engineStatusButton.setChecked(false);
+        engineStatusCheckbox.setChecked(false);
         mainSailCheckbox.setChecked(false);
         jibCheckbox.setChecked(false);
         spinnakerCheckbox.setChecked(false);
-                
+
         trackLocationButton.setEnabled(enabled);
-        engineStatusButton.setEnabled(enabled);
+        engineStatusCheckbox.setEnabled(enabled);
         mainSailCheckbox.setEnabled(enabled);
         jibCheckbox.setEnabled(enabled);
         spinnakerCheckbox.setEnabled(enabled);
@@ -286,42 +295,41 @@ public class SailLogActivity extends Activity implements LocationSink {
     private void toast(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
-    
+
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-          trackingStatusChanged(isChecked);           
-        }
-    };
-    
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                trackingStatusChanged(isChecked);
+            }
+        };
+
     private OnCheckedChangeListener sailingEventsListener = new OnCheckedChangeListener() {
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            sailingEvents();
-        }
-    };
-    
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                sailingEvents();
+            }
+        };
+
     private OnClickListener tripSelectClickListener = new OnClickListener() {
-        public void onClick(View v) {
-            showTripSelector();
-        }
-    };
-    
+            public void onClick(View v) {
+                showTripSelector();
+            }
+        };
+
     private DBLocationSink dbSink;
     private TrackDB trackDB;
     private LocationTracker locationTracker;
 
     private CompoundButton trackLocationButton;
-    private CompoundButton engineStatusButton;
+    private CompoundButton engineStatusCheckbox;
     private CompoundButton mainSailCheckbox;
     private CompoundButton jibCheckbox;
     private CompoundButton spinnakerCheckbox;
-    private TextView speedHeadingView;
-    private TextView positionView;
+    private TextView speedView;
+    private TextView headingView;
+    private TextView latView;
+    private TextView lonView;
     private TextView tripNameView;
 
     private ProgressBar progressBar;
-    
+
     final private static int tripSelectionRequestCode = 1;
 }
-
-
- 

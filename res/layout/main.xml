@@ -1,164 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:weightSum="1">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
 
-   	<LinearLayout
+  <LinearLayout android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:weightSum="1">
+
+    <EditText
+        android:id="@+id/tripNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:hint="@string/no_trip_selected"
+        android:inputType="none"
+        android:linksClickable="false" >
+      <requestFocus />
+    </EditText>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/trackLocationButton"
+        android:text="@string/track_location"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/engineStatusButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/engine"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/mainSailCheckbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_sail"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/jibCheckbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/jib"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/spinnakerCheckbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/spinnaker"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <TextView
-            android:id="@+id/tripNameLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/trip_name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/tripNameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:hint="@string/no_trip_selected"
-            android:inputType="none"
-            android:linksClickable="false" >
-
-            <requestFocus />
-        </EditText>
-
-    </LinearLayout>
-
-    <LinearLayout 
-        android:id="@+id/linearLayout1" 
-        android:layout_height="wrap_content" 
-        android:layout_width="match_parent">
-        
-        <TextView 
-            android:textAppearance="?android:attr/textAppearanceMedium" 
-            android:layout_height="wrap_content" 
-            android:id="@+id/textView4" 
-            android:layout_width="0dip" 
-            android:layout_weight="2" 
-            android:text="@string/track_location"/>
-        
-        <ToggleButton 
-            android:layout_width="wrap_content" 
-            android:text="ToggleButton" 
-            android:layout_height="wrap_content" 
-            android:id="@+id/trackLocationButton"/>
-    </LinearLayout>
-    
-    <TextView 
-        android:layout_height="wrap_content" 
-        android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:layout_width="match_parent" 
-        android:id="@+id/speedHeading" 
-        android:text="@string/no_speed_heading_data"/>
-    
-    <TextView 
-        android:layout_height="wrap_content" 
-        android:textAppearance="?android:attr/textAppearanceMedium" 
-        android:layout_width="match_parent" 
-        android:id="@+id/position" 
-        android:text="@string/no_position_data"/>
-    
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+      <TableRow
+          android:id="@+id/tableRow1"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/textView1"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="2" 
-            android:text="@string/engine"
+            android:layout_weight="1"
+            android:text="@string/speed"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <ToggleButton
-            android:id="@+id/engineStatusButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ToggleButton" />
+        <EditText
+            android:id="@+id/speedText"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:focusable="false"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </LinearLayout>
+      </TableRow>
 
-    <TableLayout
-        android:id="@+id/tableLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+      <TableRow
+          android:id="@+id/tableRow2"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" >
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_weight="1"
+            android:text="@string/heading"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
-        	    android:id="@+id/textView2"
-            	android:layout_width="wrap_content"
-            	android:layout_height="wrap_content"
-           	    android:layout_weight="2"
-           		android:text="@string/sail_plan"
-            	android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/headingText"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:focusable="false"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        	<CheckBox
-        	    android:id="@+id/mainSailCheckbox"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:text="@string/main_sail" />
-            
-        </TableRow> 
+      </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+      <TableRow
+          android:id="@+id/tableRow3"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" >
 
-            <TextView
-        	    android:id="@+id/textView3"
-            	android:layout_width="wrap_content"
-            	android:layout_height="wrap_content"
-           	    android:layout_weight="2"
-           		android:text=""
-            	android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_weight="1"
+            android:text="@string/position"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        	<CheckBox
-        	    android:id="@+id/jibCheckbox"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:text="@string/jib" />
-            
-        </TableRow> 
-        
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/latText"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:focusable="false"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <TextView
-        	    android:id="@+id/textView5"
-            	android:layout_width="wrap_content"
-            	android:layout_height="wrap_content"
-           	    android:layout_weight="2"
-           		android:text=""
-            	android:textAppearance="?android:attr/textAppearanceMedium" />
+      </TableRow>
 
-        	<CheckBox
-        	    android:id="@+id/spinnakerCheckbox"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:text="@string/spinnaker" />
-            
-        </TableRow> 
+      <TableRow
+          android:id="@+id/tableRow3"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_weight="1"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/lonText"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:focusable="false"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+      </TableRow>
+
     </TableLayout>
-    
-    <ProgressBar 
-        android:layout_height="wrap_content" 
-        android:layout_width="wrap_content" 
+
+    <ProgressBar
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         android:id="@+id/progressBar1"/>
-    
-    
- </LinearLayout>
+
+  </LinearLayout>
+
+</ScrollView>
