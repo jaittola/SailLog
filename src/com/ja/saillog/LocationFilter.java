@@ -59,11 +59,21 @@ public class LocationFilter {
     
     /**
      * Speed is different if it is more than 5% different from the previous one.
+     * With very small speeds, a larger change is needed.
      */
     private boolean speedIsDifferent(double speed, double prevSpeed) {
-        double speedDiff = Math.abs((speed - prevSpeed) / speed);
+        double speedDiff = Math.abs(speed - prevSpeed);
         
-        if (speedDiff > 0.05) {
+        // With small speeds, do not calculate the fraction
+        // to avoid division by small numbers (or by 0).
+        if (prevSpeed < 0.5) {
+            if (speedDiff < 0.2) {
+                return false;
+            }
+            return true;
+        }
+        
+        if ((speedDiff / prevSpeed) > 0.05) {
             return true;
         }
         

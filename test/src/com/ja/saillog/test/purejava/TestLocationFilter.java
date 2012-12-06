@@ -108,4 +108,17 @@ public class TestLocationFilter extends TestCase {
         assertFalse(filter.canUpdate(firstLatitude, firstLongitude, speed4, 
                                     firstBearing, firstLocationTime + timeAlmostSame));
     }
+    
+    public void testSmallSpeeds() {
+        assertTrue(filter.canUpdate(firstLatitude, firstLongitude, 0, 
+                                    firstBearing, firstLocationTime));
+        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, 0.1, 
+                                    firstBearing, firstLocationTime));
+        assertTrue(filter.canUpdate(firstLatitude, firstLongitude, 0.31, 
+                                    firstBearing, firstLocationTime));
+        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, 0.50, 
+                                     firstBearing, firstLocationTime));
+        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, 0.31, 
+                                     firstBearing, firstLocationTime));
+    }
 }
