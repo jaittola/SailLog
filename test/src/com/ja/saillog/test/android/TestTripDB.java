@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import com.ja.saillog.TripDB;
-import com.ja.saillog.TripDB.TripInfo;
+import com.ja.saillog.TripDBInterface.TripInfo;
 
 public class TestTripDB extends TestDbBase {
 
@@ -56,6 +56,8 @@ public class TestTripDB extends TestDbBase {
             String expectedTripName = tripNameBase + i;
             Assert.assertEquals(c.getString(c.getColumnIndex("trip_name")), expectedTripName);
         }
+        
+        c.close();
     }
     
     public void testTripSelection() {

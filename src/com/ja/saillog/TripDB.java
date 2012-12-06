@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteStatement;
 
 import java.util.Random;
 
-public class TripDB extends SailLogDBBase {
+public class TripDB extends SailLogDBBase implements TripDBInterface {
 
     public TripDB(Context context) {
         super(context, "TripDB.db");
@@ -63,14 +63,11 @@ public class TripDB extends SailLogDBBase {
              db.endTransaction();
          }
      }
-     
-    public class TripInfo extends Object {
-    	public int tripId;
-    	public String tripName;	
-    	public String dbFileName;
-    }
-    
-     public TripInfo getTrip(String tripName) {
+         
+     /* (non-Javadoc)
+     * @see com.ja.saillog.TripDBInterface#getTrip(java.lang.String)
+     */
+    public TripInfo getTrip(String tripName) {
          String [] selectionArgs = { tripName };
 
          return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename FROM trip WHERE " +
@@ -85,22 +82,9 @@ public class TripDB extends SailLogDBBase {
          Cursor c = db.rawQuery(queryString, selectionArgs);
 
          if (true == c.moveToNext()) {
-             tdi = new TripInfo();
-             
-             int colIdx = c.getColumnIndex("trip_id");
-             if (!c.isNull(colIdx)) {
-                 tdi.tripId = c.getInt(colIdx);
-             }
-             
-             colIdx = c.getColumnIndex("trip_db_filename");
-             if (!c.isNull(colIdx)) {
-                 tdi.dbFileName = c.getString(colIdx);
-             }
-             
-             colIdx = c.getColumnIndex("trip_name");
-             if (!c.isNull(colIdx)) {
-                 tdi.tripName = c.getString(colIdx);
-             }
+             tdi = new TripInfo(c.getInt(c.getColumnIndex("trip_id")),
+                                         c.getString(c.getColumnIndex("trip_name")),
+                                         c.getString(c.getColumnIndex("trip_db_filename")));
          }
          c.close();
              
@@ -152,7 +136,10 @@ public class TripDB extends SailLogDBBase {
          }
      }
      
-     public TripInfo getSelectedTrip() {
+     /* (non-Javadoc)
+     * @see com.ja.saillog.TripDBInterface#getSelectedTrip()
+     */
+    public TripInfo getSelectedTrip() {
          String [] selectionArgs = {};
 
          return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename FROM trip WHERE " +

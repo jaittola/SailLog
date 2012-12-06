@@ -3,7 +3,7 @@ package com.ja.saillog;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.ja.saillog.TripDB.TripInfo;
+import com.ja.saillog.TripDBInterface.TripInfo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -62,7 +62,7 @@ public class SailLogActivity extends Activity implements LocationSink {
                                long time) {
         // TODO, remove hard-coded speed unit.
         String speedUnit = "kn";
-        double speedUnitConversion = 1.8;
+        double speedUnitConversion = 1.943844;
         
         speedView.setText(String.format("%.1f %s",
                           speedUnitConversion * speed,
@@ -86,8 +86,8 @@ public class SailLogActivity extends Activity implements LocationSink {
         // TODO, make a GPS status widget.
     }
 
-    private void trackingStatusChanged(boolean isEnabled) {
-        // engineButton.setEnabled(isEnabled);
+    public void trackingStatusChanged(boolean isEnabled) {
+        // This method is public for testing only.
         locationTracker.setEnabled(isEnabled);
 
         if (false == isEnabled) {
@@ -232,7 +232,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
 
     private void setupTripInfo() {
-        TripDB tripDB = new TripDB(this);
+        TripDBInterface tripDB = DBProvider.getTripDB(this);
         TripInfo ti = tripDB.getSelectedTrip();
 
         // Set db sink to NULL to prevent any further updates.
@@ -252,7 +252,7 @@ public class SailLogActivity extends Activity implements LocationSink {
             locationTracker.setSinks(null);
         }
         else {
-            trackDB = new TrackDB(this, ti.dbFileName);
+            trackDB = DBProvider.getTrackDB(this, ti.dbFileName);
             dbSink = new DBLocationSink(trackDB);
 
             tripNameView.setText(ti.tripName);
@@ -315,8 +315,8 @@ public class SailLogActivity extends Activity implements LocationSink {
         };
 
     private DBLocationSink dbSink;
-    private TrackDB trackDB;
-    private LocationTracker locationTracker;
+    private TrackDBInterface trackDB;
+    public LocationTracker locationTracker;  // Public for tests only.
 
     private CompoundButton trackLocationButton;
     private CompoundButton engineStatusCheckbox;
