@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -118,6 +119,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         latView = (TextView) findViewById(R.id.latText);
         lonView = (TextView) findViewById(R.id.lonText);
         tripNameView = (TextView) findViewById(R.id.tripNameText);
+        selectTripButton = (ImageButton) findViewById(R.id.selectTripButton);
 
         trackLocationButton.setOnCheckedChangeListener(locationTrackStartListener);
         engineStatusCheckbox.setOnCheckedChangeListener(sailingEventsListener);
@@ -125,6 +127,7 @@ public class SailLogActivity extends Activity implements LocationSink {
         jibCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         spinnakerCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         tripNameView.setOnClickListener(tripSelectClickListener);
+        selectTripButton.setOnClickListener(tripSelectClickListener);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         showSpinner(false);
@@ -219,11 +222,6 @@ public class SailLogActivity extends Activity implements LocationSink {
         }
     }
 
-    private void showTripSelector() {
-        startActivityForResult(new Intent("com.ja.saillog.tripSelector"),
-                               tripSelectionRequestCode);
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (tripSelectionRequestCode == requestCode &&
             RESULT_OK == resultCode) {
@@ -310,7 +308,8 @@ public class SailLogActivity extends Activity implements LocationSink {
 
     private OnClickListener tripSelectClickListener = new OnClickListener() {
             public void onClick(View v) {
-                showTripSelector();
+                startActivityForResult(new Intent(tripSelectionIntentName),
+                                                  tripSelectionRequestCode);
             }
         };
 
@@ -328,8 +327,10 @@ public class SailLogActivity extends Activity implements LocationSink {
     private TextView latView;
     private TextView lonView;
     private TextView tripNameView;
+    private ImageButton selectTripButton;
 
     private ProgressBar progressBar;
 
-    final private static int tripSelectionRequestCode = 1;
+    final public static int tripSelectionRequestCode = 1;
+    final public static String tripSelectionIntentName = "com.ja.saillog.tripSelector";
 }

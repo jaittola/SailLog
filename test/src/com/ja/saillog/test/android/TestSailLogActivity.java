@@ -19,6 +19,7 @@ import android.test.ActivityUnitTestCase;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 /*!
@@ -147,6 +148,25 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         Assert.assertTrue(latText.getText().toString().length() == 0);
         Assert.assertTrue(lonText.getText().toString().length() == 0);
     }
+    
+    public void testTripSelectionWithTextField() {
+        runSl(withoutTrip);
+        
+        tripNameText.performClick();
+        verifyTripSelectionStart();
+    }
+    
+    public void testTripSelectionWithButton() {
+        runSl(withoutTrip);
+ 
+        selectTripButton.performClick();
+        verifyTripSelectionStart();
+    }
+    
+    public void verifyTripSelectionStart() {
+        Assert.assertEquals(SailLogActivity.tripSelectionRequestCode, getStartedActivityRequest());
+        Assert.assertEquals(SailLogActivity.tripSelectionIntentName, getStartedActivityIntent().getAction());     
+    }
 
     private void runSl(boolean haveTrip) {
         if (withTrip == haveTrip) {
@@ -213,21 +233,14 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         }
    }
 
-    private boolean isClickable(int viewId) {
-        View v = sl.findViewById(viewId);
-        Assert.assertNotNull(v);
-        return v.isClickable();
-    }
-
     private void findViews() {
         tripNameText = (EditText) sl.findViewById(R.id.tripNameText);
+        selectTripButton = (ImageButton) sl.findViewById(R.id.selectTripButton);
         trackLocationButton = (CheckBox) sl.findViewById(R.id.trackLocationButton);
         speedText = (EditText) sl.findViewById(R.id.speedText);
         headingText = (EditText) sl.findViewById(R.id.headingText);
         latText = (EditText) sl.findViewById(R.id.latText);
         lonText = (EditText) sl.findViewById(R.id.lonText);
-
-
     }
 
     SailLogActivity sl;
@@ -235,6 +248,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     FakeTrackDB trackdb = new FakeTrackDB();
 
     EditText tripNameText;
+    ImageButton selectTripButton;
     CheckBox trackLocationButton;
     EditText speedText;
     EditText headingText;

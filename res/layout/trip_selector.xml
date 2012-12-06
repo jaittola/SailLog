@@ -13,7 +13,7 @@
             android:id="@+id/newTripName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="4	"
+            android:layout_weight="4"
             android:hint="@string/enter_trip_name"
             android:maxLength="150" >
 
@@ -29,17 +29,17 @@
             android:baselineAlignBottom="false"
             android:cropToPadding="false"
             android:padding="0dp"
-            android:src="@android:drawable/ic_input_add" 
+            android:src="@android:drawable/ic_input_add"
             android:contentDescription="@string/enter_trip_name"/>
     </LinearLayout>
-  
+
     <Button
         android:id="@+id/selectButton"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:clickable="false"
 	    android:hint="@string/select_a_trip" />
-        
+
     <ListView
         android:id="@+id/tripListView"
         android:layout_width="match_parent"
