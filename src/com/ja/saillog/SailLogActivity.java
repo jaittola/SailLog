@@ -22,8 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SailLogActivity extends Activity implements LocationSink {
-    /** Called when the activity is first created. */
-    @Override
+   @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);

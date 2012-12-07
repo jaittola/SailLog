@@ -9,7 +9,6 @@
     <string name="export_kml">Export as KML</string>
     <string name="export_kml_short">Export KML</string>
     <string name="heading">Heading</string>
-    <string name="hello">Hello World, SailLogActivity!</string>
     <string name="jib">Jib</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
@@ -20,13 +19,19 @@
     <string name="no_trip_selected">Click to select a trip</string>
     <string name="onoff">On/Off</string>
     <string name="position">Position</string>
-    <string name="select">Select</string>
+    <string name="save">Save</string>
+    <string name="select_this_trip">Select</string>
     <string name="select_a_trip">Pick a trip</string>
     <string name="short_export_db">Export db</string>
     <string name="speed">Speed</string>
     <string name="spinnaker">Spinnaker</string>
-    <string name="start_location">Start location</string>
+    <string name="time_span">First and last entry of trip</string>
+    <string name="total_distance">Distance</string>
+    <string name="total_sailing_time">Time sailing</string>
+    <string name="total_engine_time">Time on engine</string>
     <string name="track_location">Location Tracking</string>
+    <string name="trip_from">Start location</string>
     <string name="trip_name">Trip name</string>
+    <string name="trip_to">End location</string>
     <string name="trip_to_select">Select: %s</string>
 </resources>

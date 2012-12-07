@@ -91,6 +91,14 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
          return tdi;
      }
      
+     public TripInfo getTripById(long id) {
+         String [] selectionArgs = { Long.toString(id) };
+         
+         return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename FROM trip WHERE "+
+                              "trip_id = ?",
+                              selectionArgs);
+     }
+     
      public Cursor listTrips() {
          SQLiteDatabase db = getReadableDatabase();
          String [] selectionArgs = {};

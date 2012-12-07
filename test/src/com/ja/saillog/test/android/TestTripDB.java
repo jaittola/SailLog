@@ -25,11 +25,15 @@ public class TestTripDB extends TestDbBase {
     	
     	dbif.insertTrip(tripName);
         TripInfo tdi = dbif.getTrip(tripName);
+        TripInfo tdi2 = dbif.getTripById(tdi.tripId);
 
         Assert.assertTrue("Expecting trip id greater than zero, got " + tdi.tripId,
         			      tdi.tripId > 0);
         Assert.assertEquals(tripName, tdi.tripName);
         Assert.assertNotNull(tdi.dbFileName);
+        
+        Assert.assertEquals(tdi.tripName, tdi2.tripName);
+        Assert.assertEquals(tdi.tripId, tdi2.tripId);
     }   		
         		
     public void testTripList() {

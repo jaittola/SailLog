@@ -11,6 +11,7 @@ import com.ja.saillog.SailLogActivity;
 import com.ja.saillog.TrackDBInterface;
 import com.ja.saillog.TripDBInterface;
 import com.ja.saillog.test.purejava.FakeTrackDB;
+import com.ja.saillog.test.purejava.FakeTripDB;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,33 +33,6 @@ import android.widget.TextView;
  * to the db using a fake sink.
  */
 public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
-
-    private class FakeTripDB implements TripDBInterface {
-
-        public FakeTripDB() {
-        }
-
-        @Override
-        public TripInfo getTrip(String tripName) {
-            return null;
-        }
-
-        @Override
-        public TripInfo getSelectedTrip() {
-            return selectedTi;
-        }
-
-        @Override
-        public void close() {
-        }
-
-        public void setupTrip() {
-            selectedTi = new TripInfo(1, "MyTestingTrip",
-                                      "aFileNameForTesting.db");
-        }
-
-        public TripInfo selectedTi;
-    }
 
     public TestSailLogActivity() {
         super(SailLogActivity.class);
