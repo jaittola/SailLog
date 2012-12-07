@@ -3,6 +3,9 @@ package com.ja.saillog;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -15,6 +18,8 @@ public class TripEditActivity extends Activity {
         setContentView(R.layout.trip_edit);
 
         getWidgets();
+        
+        selectButton.setOnClickListener(tripSelectClickListener);
     }
 
     @Override
@@ -72,8 +77,17 @@ public class TripEditActivity extends Activity {
         totalDistanceText = (EditText) findViewById(R.id.totalDistanceText);
         totalEngineTimeText = (EditText) findViewById(R.id.totalEngineTimeText);
         totalSailingTimeText = (EditText) findViewById(R.id.totalSailingTimeText);
+        selectButton = (Button) findViewById(R.id.selectThisButton);
     }
 
+    private OnClickListener tripSelectClickListener = new OnClickListener() {
+        public void onClick(View v) {
+            // TODO, does not work if there is no id.
+            tripDB.selectTrip(tripId);
+        }
+    };
+
+    
     private TextView tripDisplayName;
     private EditText tripNameText;
     private EditText fromText;
@@ -83,6 +97,7 @@ public class TripEditActivity extends Activity {
     private EditText totalDistanceText;
     private EditText totalEngineTimeText;
     private EditText totalSailingTimeText;
+    private Button selectButton;
 
     private TripDBInterface tripDB;
     private Long tripId;

@@ -1,7 +1,5 @@
 package com.ja.saillog;
 
-import com.ja.saillog.TripDBInterface.TripInfo;
-
 public interface TripDBInterface {
 
     public class TripInfo extends Object {
@@ -25,5 +23,7 @@ public interface TripDBInterface {
     public abstract void close();
 
     public abstract TripInfo getTripById(long tripId);
+
+    void selectTrip(long tripId);
 
 }

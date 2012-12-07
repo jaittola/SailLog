@@ -144,7 +144,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
 
     private void runSl(boolean haveTrip) {
         if (withTrip == haveTrip) {
-            tripdb.setupTrip();
+            tripdb.setupTrips();
         }
         sl = startActivity(new Intent(), null, null);
 

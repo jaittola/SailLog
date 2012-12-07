@@ -64,9 +64,6 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
          }
      }
          
-     /* (non-Javadoc)
-     * @see com.ja.saillog.TripDBInterface#getTrip(java.lang.String)
-     */
     public TripInfo getTrip(String tripName) {
          String [] selectionArgs = { tripName };
 

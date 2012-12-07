@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import android.content.Context;
 import android.content.Intent;
 import android.test.ActivityUnitTestCase;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -47,16 +48,24 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
      }
      
      public void testSetupWithId() {
-         tripdb.setupTrip();
-
-         runTea(tripdb.selectedTi.tripId);
+         tripdb.setupTrips();
+         runTea(tripdb.aTrip.tripId);
          
-         Assert.assertEquals(tripdb.selectedTi.tripName,
+         Assert.assertEquals(tripdb.aTrip.tripName,
                              tripDisplayName.getText().toString());
-         Assert.assertEquals(tripdb.selectedTi.tripName,
+         Assert.assertEquals(tripdb.aTrip.tripName,
                              tripNameText.getText().toString());
          // TODO, should check the content of the rest of the fields.
      }  
+     
+     public void testSelectExistingTrip() {
+         tripdb.setupTrips();
+         runTea(tripdb.aTrip.tripId);
+         
+         selectButton.performClick();
+         
+         Assert.assertEquals(tripdb.aTrip.tripId, tripdb.selectedTrip.tripId);
+     }
      
      private void runTea(Long tripId) {
          Intent intent = new Intent();
@@ -80,6 +89,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
          totalDistanceText = (EditText) tea.findViewById(R.id.totalDistanceText);
          totalEngineTimeText = (EditText) tea.findViewById(R.id.totalEngineTimeText);
          totalSailingTimeText = (EditText) tea.findViewById(R.id.totalSailingTimeText);
+         selectButton = (Button) tea.findViewById(R.id.selectThisButton);
 
          TextView[] myAllViews = {
              tripDisplayName,
@@ -104,6 +114,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
      private EditText totalDistanceText;
      private EditText totalEngineTimeText;
      private EditText totalSailingTimeText;
+     private Button selectButton;
 
      private TextView [] allViews;
 

@@ -14,7 +14,7 @@ public class FakeTripDB implements TripDBInterface {
 
     @Override
     public TripInfo getSelectedTrip() {
-        return selectedTi;
+        return selectedTrip;
     }
 
     @Override
@@ -24,13 +24,26 @@ public class FakeTripDB implements TripDBInterface {
     @Override
     public TripInfo getTripById(long tripId) {
         // NOTE: This is broken. TODO.
-        return selectedTi;
+        return aTrip;
     }
 
-    public void setupTrip() {
-        selectedTi = new TripInfo(1, "MyTestingTrip",
-                                  "aFileNameForTesting.db");
+    public void setupTrips() {
+        aTrip = new TripInfo(1, "MyTestingTrip",
+                             "aFileNameForTesting.db");
+        selectedTrip = new TripInfo(42, "MySelectedTrip",
+                                    "theSelectedTripFile.db");
     }
 
-    public TripInfo selectedTi;
+    @Override
+    public void selectTrip(long tripId) {
+        if (tripId == aTrip.tripId) {
+            selectedTrip = aTrip;
+        }
+        else {
+            selectedTrip.tripId = tripId;
+        }
+    }
+
+    public TripInfo selectedTrip;
+    public TripInfo aTrip;
 }
