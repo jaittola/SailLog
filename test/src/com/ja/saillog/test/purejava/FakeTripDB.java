@@ -1,15 +1,32 @@
 package com.ja.saillog.test.purejava;
 
+import java.util.Random;
+
 import com.ja.saillog.TripDBInterface;
 
 public class FakeTripDB implements TripDBInterface {
 
     public FakeTripDB() {
+        rand = new Random();
     }
 
     @Override
-    public TripInfo getTrip(String tripName) {
-        return null;
+    public TripInfo insertTrip(String tripName) {
+        insertedTrip = new TripInfo();
+        insertedTrip.tripId = rand.nextLong();
+        insertedTrip.tripName = tripName;
+
+        return insertedTrip;
+    }
+
+    @Override
+    public void updateTrip(TripInfo ti) {
+        updatedTrip = ti;
+    }
+
+    @Override
+    public void deleteTrip(long tripId) {
+        deletedTripId = tripId;
     }
 
     @Override
@@ -23,7 +40,6 @@ public class FakeTripDB implements TripDBInterface {
 
     @Override
     public TripInfo getTripById(long tripId) {
-        // NOTE: This is broken. TODO.
         return aTrip;
     }
 
@@ -44,6 +60,11 @@ public class FakeTripDB implements TripDBInterface {
         }
     }
 
-    public TripInfo selectedTrip;
     public TripInfo aTrip;
-}
+    public TripInfo selectedTrip;
+    public TripInfo updatedTrip;
+    public TripInfo insertedTrip;
+    public Long deletedTripId;
+
+    private Random rand;
+ }

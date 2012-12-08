@@ -1,18 +1,6 @@
 package com.ja.saillog.test.android;
 
-import java.io.IOException;
-
 import junit.framework.Assert;
-
-import com.ja.saillog.DBProvider;
-import com.ja.saillog.ExportFile;
-import com.ja.saillog.R;
-import com.ja.saillog.SailLogActivity;
-import com.ja.saillog.TrackDBInterface;
-import com.ja.saillog.TripDBInterface;
-import com.ja.saillog.test.purejava.FakeTrackDB;
-import com.ja.saillog.test.purejava.FakeTripDB;
-
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -21,7 +9,14 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
+
+import com.ja.saillog.DBProvider;
+import com.ja.saillog.R;
+import com.ja.saillog.SailLogActivity;
+import com.ja.saillog.TrackDBInterface;
+import com.ja.saillog.TripDBInterface;
+import com.ja.saillog.test.purejava.FakeTrackDB;
+import com.ja.saillog.test.purejava.FakeTripDB;
 
 /*!
  * This class contains some tests for the SailLogActivity class.

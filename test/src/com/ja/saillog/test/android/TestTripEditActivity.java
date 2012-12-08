@@ -52,8 +52,6 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
          runTea(tripdb.aTrip.tripId);
          
          Assert.assertEquals(tripdb.aTrip.tripName,
-                             tripDisplayName.getText().toString());
-         Assert.assertEquals(tripdb.aTrip.tripName,
                              tripNameText.getText().toString());
          // TODO, should check the content of the rest of the fields.
      }  
@@ -65,6 +63,85 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
          selectButton.performClick();
          
          Assert.assertEquals(tripdb.aTrip.tripId, tripdb.selectedTrip.tripId);
+         
+         Assert.assertTrue(isFinishCalled());
+     }
+     
+     
+     public void testSaveExistingTrip() {
+         tripdb.setupTrips();
+         runTea(tripdb.aTrip.tripId);
+         
+         saveButton.performClick();
+         
+         Assert.assertEquals(tripdb.aTrip.tripId, tripdb.updatedTrip.tripId);
+
+         Assert.assertFalse(isFinishCalled());
+     }
+
+     public void testSaveNewTrip() {
+         String tripName = "My new trip";
+         
+         tripdb.setupTrips();
+         runTea(null);
+         
+         tripNameText.setText(tripName);
+         saveButton.performClick();
+         
+         Assert.assertEquals(tripdb.insertedTrip.tripName, tripName);
+
+         Assert.assertFalse(isFinishCalled());
+     }
+
+     public void testSaveNewTripWithEmptyDetails() {        
+         tripdb.setupTrips();
+         runTea(null);
+
+         saveButton.performClick();
+         
+         // TODO, how to verify the showing of the toast.
+         
+         Assert.assertNull(tripdb.insertedTrip);
+         Assert.assertNull(tripdb.updatedTrip);
+
+         Assert.assertFalse(isFinishCalled());
+     }
+     
+     public void testSelectNewTrip() {
+         String tripName = "My trip for select";
+         
+         tripdb.setupTrips();
+         runTea(null);
+         
+         tripNameText.setText(tripName);
+         selectButton.performClick();
+         
+         Assert.assertEquals(tripName, tripdb.insertedTrip.tripName);
+         Assert.assertEquals(tripdb.insertedTrip.tripId, tripdb.selectedTrip.tripId);
+
+         Assert.assertTrue(isFinishCalled());
+     }
+     
+     public void testDeleteTrip() {
+         tripdb.setupTrips();
+         runTea(tripdb.aTrip.tripId);
+         
+         tea.alreadyConfirmed = true;
+         deleteButton.performClick();
+         
+         Assert.assertEquals(tripdb.aTrip.tripId, tripdb.deletedTripId.longValue());
+         
+         Assert.assertTrue(isFinishCalled());
+     }
+
+     public void testDeleteWhenEmpty() {
+         tripdb.setupTrips();
+         runTea(null);
+
+         deleteButton.performClick();
+
+         Assert.assertNull(tripdb.deletedTripId);
+         Assert.assertTrue(isFinishCalled());
      }
      
      private void runTea(Long tripId) {
@@ -79,7 +156,6 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
      }
 
      private void findViews() {
-         tripDisplayName = (TextView) tea.findViewById(R.id.tripDisplayName);
          tripNameText = (EditText) tea.findViewById(R.id.tripNameText);
          fromText = (EditText) tea.findViewById(R.id.fromText);
          toText = (EditText) tea.findViewById(R.id.toText);
@@ -90,9 +166,11 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
          totalEngineTimeText = (EditText) tea.findViewById(R.id.totalEngineTimeText);
          totalSailingTimeText = (EditText) tea.findViewById(R.id.totalSailingTimeText);
          selectButton = (Button) tea.findViewById(R.id.selectThisButton);
+         saveButton = (Button) tea.findViewById(R.id.saveTripButton);
+         deleteButton = (Button) tea.findViewById(R.id.deleteThisButton);
+  
 
          TextView[] myAllViews = {
-             tripDisplayName,
              tripNameText,
              fromText,
              toText,
@@ -105,7 +183,6 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
          allViews = myAllViews;
      }
 
-     private TextView tripDisplayName;
      private EditText tripNameText;
      private EditText fromText;
      private EditText toText;
@@ -115,6 +192,8 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
      private EditText totalEngineTimeText;
      private EditText totalSailingTimeText;
      private Button selectButton;
+     private Button saveButton;
+     private Button deleteButton;
 
      private TextView [] allViews;
 

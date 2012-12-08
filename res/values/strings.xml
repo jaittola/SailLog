@@ -2,14 +2,17 @@
 <resources>
     <string name="app_name">SailLog</string>
     <string name="cancel_button">Cancel</string>
+    <string name="delete_this_trip">Delete</string>
     <string name="destination">Destination</string>
     <string name="engine">Engine</string>
     <string name="enter_trip_name">Enter name for a new trip</string>
     <string name="export_db">Export as database</string>
     <string name="export_kml">Export as KML</string>
     <string name="export_kml_short">Export KML</string>
+    <string name="first_entry">First entry</string>
     <string name="heading">Heading</string>
     <string name="jib">Jib</string>
+    <string name="last_entry">Last entry</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="main_sail">Main sail</string>
@@ -30,6 +33,7 @@
     <string name="total_sailing_time">Time sailing</string>
     <string name="total_engine_time">Time on engine</string>
     <string name="track_location">Location Tracking</string>
+    <string name="trip_all_fields_cannot_be_empty">You must enter a name, a start location, or an end location</string>
     <string name="trip_from">Start location</string>
     <string name="trip_name">Trip name</string>
     <string name="trip_to">End location</string>

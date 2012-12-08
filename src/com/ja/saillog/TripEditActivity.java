@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ja.saillog.TripDBInterface.TripInfo;
 
@@ -18,8 +19,10 @@ public class TripEditActivity extends Activity {
         setContentView(R.layout.trip_edit);
 
         getWidgets();
-        
+
         selectButton.setOnClickListener(tripSelectClickListener);
+        saveButton.setOnClickListener(tripSaveClickListener);
+        deleteButton.setOnClickListener(tripDeleteClickListener);
     }
 
     @Override
@@ -30,6 +33,7 @@ public class TripEditActivity extends Activity {
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        Long tripId = null;
         if (null != extras) {
             tripId = extras.getLong("tripId");
         }
@@ -38,16 +42,15 @@ public class TripEditActivity extends Activity {
             // Existing trip: load from database.
             ti = tripDB.getTripById(tripId);
 
-            if (ti == null) {
-                // Well the trip should exist.
-                // Clear up the tripId so that the trip gets
-                // inserted as a new one (if the user wishes to save).
-                tripId = null;
+            if (ti != null) {
+                tripNameText.setText(ti.tripName);
             }
             else {
-                tripNameText.setText(ti.tripName);
-
-                setDisplayName(ti.tripName);
+                // Well, the trip should exist.
+                // Make a new TripInfo structure with this
+                // trip id so that the trip gets
+                // inserted as a new one (if the user wishes to save).
+                ti = new TripInfo(tripId, "", null);
             }
         }
     }
@@ -59,15 +62,20 @@ public class TripEditActivity extends Activity {
         tripDB.close();
         tripDB = null;
 
-        tripId = null;
-    }
+        ti = null;
 
-    private void setDisplayName(String displayName) {
-        tripDisplayName.setText(displayName);
+        tripNameText.setText("");
+        fromText.setText("");
+        toText.setText("");
+        tripNameText.setText("");
+        startTime.setText("");
+        endTime.setText("");
+        totalDistanceText.setText("");
+        totalEngineTimeText.setText("");
+        totalSailingTimeText.setText("");
     }
 
     private void getWidgets() {
-        tripDisplayName = (TextView) findViewById(R.id.tripDisplayName);
         tripNameText = (EditText) findViewById(R.id.tripNameText);
         fromText = (EditText) findViewById(R.id.fromText);
         toText = (EditText) findViewById(R.id.toText);
@@ -78,17 +86,69 @@ public class TripEditActivity extends Activity {
         totalEngineTimeText = (EditText) findViewById(R.id.totalEngineTimeText);
         totalSailingTimeText = (EditText) findViewById(R.id.totalSailingTimeText);
         selectButton = (Button) findViewById(R.id.selectThisButton);
+        saveButton = (Button) findViewById(R.id.saveTripButton);
+        deleteButton = (Button) findViewById(R.id.deleteThisButton);
     }
 
     private OnClickListener tripSelectClickListener = new OnClickListener() {
         public void onClick(View v) {
-            // TODO, does not work if there is no id.
-            tripDB.selectTrip(tripId);
+            if (false == performSave()) {
+                return;
+            }
+            tripDB.selectTrip(ti.tripId);
+            finish();
         }
     };
 
-    
-    private TextView tripDisplayName;
+    private OnClickListener tripSaveClickListener = new OnClickListener() {
+        public void onClick(View v) {
+            performSave();
+        }
+    };
+
+    private OnClickListener tripDeleteClickListener = new OnClickListener() {
+        public void onClick(View v) {
+            if (null != ti) {
+                if (false == alreadyConfirmed) {
+                    // TODO, display confirmation.
+                }
+                
+                tripDB.deleteTrip(ti.tripId);
+            }
+            
+            finish();
+        }
+    };
+
+    private boolean performSave() {
+        // The trip name (or start and end locations) cannot be empty.
+        if (0 == tripNameText.getText().length() &&
+            0 == fromText.getText().length() &&
+            0 == toText.getText().length()) {
+            toast(getString(R.string.trip_all_fields_cannot_be_empty));
+            return false;
+        }
+
+        if (null == ti) {
+            // Insert new.
+            ti = tripDB.insertTrip(tripNameText.getText().toString());
+        }
+        else {
+            ti.tripName = tripNameText.getText().toString();
+            tripDB.updateTrip(ti);
+        }
+
+        return true;
+    }
+
+    private void toast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+    }
+
+    // A hack for testing. Should be removed if there is a way to confirm
+    // a confirmation dialog.
+    public boolean alreadyConfirmed = false;
+
     private EditText tripNameText;
     private EditText fromText;
     private EditText toText;
@@ -98,8 +158,12 @@ public class TripEditActivity extends Activity {
     private EditText totalEngineTimeText;
     private EditText totalSailingTimeText;
     private Button selectButton;
+    private Button saveButton;
+    private Button deleteButton;
 
     private TripDBInterface tripDB;
-    private Long tripId;
     private TripInfo ti;
+
+    final public static int myIntentRequestCode = 2;
+    final public static String myIntentName = "com.ja.saillog.tripEdit";
 }
