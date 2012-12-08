@@ -15,6 +15,7 @@ import com.ja.saillog.R;
 import com.ja.saillog.SailLogActivity;
 import com.ja.saillog.TrackDBInterface;
 import com.ja.saillog.TripDBInterface;
+import com.ja.saillog.TripSelectorActivity;
 import com.ja.saillog.test.purejava.FakeTrackDB;
 import com.ja.saillog.test.purejava.FakeTripDB;
 
@@ -133,8 +134,8 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     }
     
     public void verifyTripSelectionStart() {
-        Assert.assertEquals(SailLogActivity.tripSelectionRequestCode, getStartedActivityRequest());
-        Assert.assertEquals(SailLogActivity.tripSelectionIntentName, getStartedActivityIntent().getAction());     
+        Assert.assertEquals(TripSelectorActivity.myIntentRequestCode, getStartedActivityRequest());
+        Assert.assertEquals(TripSelectorActivity.myIntentName, getStartedActivityIntent().getAction());     
     }
 
     private void runSl(boolean haveTrip) {

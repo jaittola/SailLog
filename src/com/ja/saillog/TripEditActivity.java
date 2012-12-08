@@ -7,12 +7,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ja.saillog.TripDBInterface.TripInfo;
 
-public class TripEditActivity extends Activity {
+public class TripEditActivity extends SailLogActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,10 +138,6 @@ public class TripEditActivity extends Activity {
         }
 
         return true;
-    }
-
-    private void toast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     // A hack for testing. Should be removed if there is a way to confirm

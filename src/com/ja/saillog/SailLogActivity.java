@@ -21,7 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SailLogActivity extends Activity implements LocationSink {
+public class SailLogActivity extends SailLogActivityBase implements LocationSink {
    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -222,7 +222,7 @@ public class SailLogActivity extends Activity implements LocationSink {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (tripSelectionRequestCode == requestCode &&
+        if (TripSelectorActivity.myIntentRequestCode == requestCode &&
             RESULT_OK == resultCode) {
             setupTripInfo();
         }
@@ -289,10 +289,6 @@ public class SailLogActivity extends Activity implements LocationSink {
         progressBar.setVisibility(visibility);
     }
 
-    private void toast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-    }
-
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 trackingStatusChanged(isChecked);
@@ -307,8 +303,8 @@ public class SailLogActivity extends Activity implements LocationSink {
 
     private OnClickListener tripSelectClickListener = new OnClickListener() {
             public void onClick(View v) {
-                startActivityForResult(new Intent(tripSelectionIntentName),
-                                                  tripSelectionRequestCode);
+                startActivityForResult(new Intent(TripSelectorActivity.myIntentName),
+                                                  TripSelectorActivity.myIntentRequestCode);
             }
         };
 
@@ -329,7 +325,4 @@ public class SailLogActivity extends Activity implements LocationSink {
     private ImageButton selectTripButton;
 
     private ProgressBar progressBar;
-
-    final public static int tripSelectionRequestCode = 1;
-    final public static String tripSelectionIntentName = "com.ja.saillog.tripSelector";
 }
