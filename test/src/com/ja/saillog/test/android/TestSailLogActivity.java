@@ -125,14 +125,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         tripNameText.performClick();
         verifyTripSelectionStart();
     }
-    
-    public void testTripSelectionWithButton() {
-        runSl(withoutTrip);
- 
-        selectTripButton.performClick();
-        verifyTripSelectionStart();
-    }
-    
+        
     public void verifyTripSelectionStart() {
         Assert.assertEquals(TripSelectorActivity.myIntentRequestCode, getStartedActivityRequest());
         Assert.assertEquals(TripSelectorActivity.myIntentName, getStartedActivityIntent().getAction());     
@@ -205,7 +198,6 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
 
     private void findViews() {
         tripNameText = (EditText) sl.findViewById(R.id.tripNameText);
-        selectTripButton = (ImageButton) sl.findViewById(R.id.selectTripButton);
         trackLocationButton = (CheckBox) sl.findViewById(R.id.trackLocationButton);
         speedText = (EditText) sl.findViewById(R.id.speedText);
         headingText = (EditText) sl.findViewById(R.id.headingText);

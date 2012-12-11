@@ -4,48 +4,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <EditText
-            android:id="@+id/newTripName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:hint="@string/enter_trip_name"
-            android:maxLength="150" >
-
-            <requestFocus />
-        </EditText>
-
-        <ImageButton
-            android:id="@+id/addNewTripButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="false"
-            android:baselineAlignBottom="false"
-            android:cropToPadding="false"
-            android:padding="0dp"
-            android:src="@android:drawable/ic_input_add"
-            android:contentDescription="@string/enter_trip_name"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/selectButton"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:clickable="false"
-	    android:hint="@string/select_a_trip" />
+  <ImageButton
+      android:id="@+id/addNewTripButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:src="@android:drawable/ic_input_add"
+      android:contentDescription="@string/enter_trip_name"/>
 
     <ListView
         android:id="@+id/tripListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:choiceMode="singleChoice"
-        android:dividerHeight="2dp" />
-
+        android:choiceMode="singleChoice" />
 
 </LinearLayout>
+
+<!--
+      android:adjustViewBounds="false"
+      android:baselineAlignBottom="false"
+      android:cropToPadding="false"
+      android:padding="0dp"
+  -->

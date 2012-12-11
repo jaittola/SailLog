@@ -63,7 +63,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         // TODO, remove hard-coded speed unit.
         String speedUnit = "kn";
         double speedUnitConversion = 1.943844;
-        
+
         speedView.setText(String.format("%.1f %s",
                           speedUnitConversion * speed,
                           speedUnit));
@@ -118,7 +118,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         latView = (TextView) findViewById(R.id.latText);
         lonView = (TextView) findViewById(R.id.lonText);
         tripNameView = (TextView) findViewById(R.id.tripNameText);
-        selectTripButton = (ImageButton) findViewById(R.id.selectTripButton);
 
         trackLocationButton.setOnCheckedChangeListener(locationTrackStartListener);
         engineStatusCheckbox.setOnCheckedChangeListener(sailingEventsListener);
@@ -126,7 +125,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         jibCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         spinnakerCheckbox.setOnCheckedChangeListener(sailingEventsListener);
         tripNameView.setOnClickListener(tripSelectClickListener);
-        selectTripButton.setOnClickListener(tripSelectClickListener);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         showSpinner(false);
@@ -222,8 +220,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (TripSelectorActivity.myIntentRequestCode == requestCode &&
-            RESULT_OK == resultCode) {
+        if (TripSelectorActivity.myIntentRequestCode == requestCode) {
             setupTripInfo();
         }
     }
@@ -322,7 +319,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     private TextView latView;
     private TextView lonView;
     private TextView tripNameView;
-    private ImageButton selectTripButton;
-
+    
     private ProgressBar progressBar;
 }

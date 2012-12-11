@@ -196,7 +196,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     private FakeTrackDB trackdb = new FakeTrackDB();
 
     private TripEditActivity tea;
-    
+
     private static final boolean withTripId = true;
     private static final boolean withoutTripId = false;
 }

@@ -127,7 +127,7 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
     public Cursor listTrips() {
         SQLiteDatabase db = getReadableDatabase();
         String [] selectionArgs = {};
-        Cursor c = db.rawQuery("SELECT trip_id as _id, trip_name, selected " +
+        Cursor c = db.rawQuery("SELECT trip_id as _id, trip_id, trip_name, selected " +
                                "FROM trip " +
                                "ORDER BY last_activated desc",
                                selectionArgs);

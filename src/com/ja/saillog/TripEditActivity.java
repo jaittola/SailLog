@@ -34,7 +34,7 @@ public class TripEditActivity extends SailLogActivityBase {
         Bundle extras = intent.getExtras();
         Long tripId = null;
         if (null != extras) {
-            tripId = extras.getLong("tripId");
+            tripId = extras.getLong(tripIdInIntent);
         }
 
         if (null != tripId) {
@@ -95,6 +95,7 @@ public class TripEditActivity extends SailLogActivityBase {
                 return;
             }
             tripDB.selectTrip(ti.tripId);
+            setResult(selectedResult);
             finish();
         }
     };
@@ -111,10 +112,11 @@ public class TripEditActivity extends SailLogActivityBase {
                 if (false == alreadyConfirmed) {
                     // TODO, display confirmation.
                 }
-                
+
                 tripDB.deleteTrip(ti.tripId);
             }
-            
+
+            setResult(RESULT_OK);
             finish();
         }
     };
@@ -161,4 +163,6 @@ public class TripEditActivity extends SailLogActivityBase {
 
     final public static int myIntentRequestCode = 2;
     final public static String myIntentName = "com.ja.saillog.tripEdit";
+    final public static String tripIdInIntent = "tripId";
+    final public static int selectedResult = RESULT_FIRST_USER + 1;
 }

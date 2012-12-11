@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -27,8 +25,6 @@ public class TripSelectorActivity extends SailLogActivityBase {
         tripDB = new TripDB(this);
         tla = new TripListAdapter(this, tripDB.listTrips(), false);
         tripListView.setAdapter(tla);
-
-        resetSelections();
     }
 
     public void onStop() {
@@ -41,91 +37,52 @@ public class TripSelectorActivity extends SailLogActivityBase {
         tripDB = null;
 
         super.onStop();
-
-        newTripEntry.setText("");
     }
 
     private void createActions() {
         newTripButton = (ImageButton) findViewById(R.id.addNewTripButton);
-        newTripEntry = (EditText) findViewById(R.id.newTripName);
-        selectButton = (Button) findViewById(R.id.selectButton);
         tripListView = (ListView) findViewById(R.id.tripListView);
 
         newTripButton.setOnClickListener(newTripListener);
-        selectButton.setOnClickListener(selectButtonListener);
-
         tripListView.setOnItemClickListener(tripClickedListener);
     }
 
-    private void addNewTrip() {
-        String newTripName = newTripEntry.getText().toString().trim();
-        if (0 == newTripName.length()) {
-            toast(getString(R.string.enter_trip_name));
-        }
-
-        tripDB.insertTrip(newTripName);
-
-        tla.requery();
-        newTripEntry.setText("");
-        resetSelections();
-    }
-
-    private void resetSelections() {
-        nextSelectionId = -1;
-
-        selectButton.setClickable(false);
-        selectButton.setText("");
-    }
-
-    private void tripSelected() {
-        if (-1 == nextSelectionId) {
-            // Should not happen really. Just ignore for now.
-            return;
-        }
-
-        tripDB.selectTrip(nextSelectionId);
-        setResult(RESULT_OK);
-        finish();
-    }
-
-
     private OnClickListener newTripListener = new OnClickListener() {
         public void onClick(View v) {
-            addNewTrip();
-        }
-    };
-
-    private OnClickListener selectButtonListener = new OnClickListener() {
-        public void onClick(View v) {
-            tripSelected();
+            startActivityForResult(new Intent(TripEditActivity.myIntentName),
+                                    TripEditActivity.myIntentRequestCode);
         }
     };
 
     private OnItemClickListener tripClickedListener = new OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, 
-                                View view, 
+        public void onItemClick(AdapterView<?> parent,
+                                View view,
                                 int position,
                                 long id) {
-            
-            nextSelectionId = id;
-
             SQLiteCursor c = (SQLiteCursor) parent.getItemAtPosition(position);
             c.moveToPosition(position);
-            selectButton.setText(String.format(getString(R.string.trip_to_select),
-                                               c.getString(c.getColumnIndex("trip_name"))));
-            selectButton.setClickable(true);
+
+            Intent intent = new Intent(TripEditActivity.myIntentName);
+            intent.putExtra(TripEditActivity.tripIdInIntent,
+                            c.getLong(c.getColumnIndex("trip_id")));
+
+            startActivityForResult(intent, TripEditActivity.myIntentRequestCode);
         }
     };
+    
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (TripEditActivity.myIntentRequestCode == requestCode &&
+            TripEditActivity.selectedResult == resultCode) {
+            finish();
+        }
+    }
+
 
     private TripDB tripDB;
     private TripListAdapter tla;
 
     private ImageButton newTripButton;
-    private EditText newTripEntry;
-    private Button selectButton;
     private ListView tripListView;
-
-    private long nextSelectionId = -1;
 
     final public static int myIntentRequestCode = 1;
     final public static String myIntentName = "com.ja.saillog.tripSelector";
