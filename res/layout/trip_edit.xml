@@ -8,205 +8,205 @@
       android:layout_height="wrap_content"
       android:orientation="vertical">
 
-  <TableLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" >
-
-    <TableRow
-        android:id="@+id/tableRow1"
+    <TableLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-      <TextView
-          android:id="@+id/fromLabel"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/trip_from"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow1"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/fromText"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:lines="1" >
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <TextView
+            android:id="@+id/fromLabel"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/trip_from"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/fromText"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:lines="1" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/toLabel"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/trip_to"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow2"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/toText"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:lines="1" >
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <TextView
+            android:id="@+id/toLabel"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/trip_to"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/toText"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:lines="1" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/legNameLabel"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/trip_name"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow3"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/legNameText"
-          android:layout_height="wrap_content"
-          android:layout_weight="1"
-          android:lines="1" >
+        <TextView
+            android:id="@+id/legNameLabel"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/trip_name"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <EditText
+            android:id="@+id/legNameText"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lines="1" >
 
-    <TableRow
-        android:id="@+id/tableRow4"
-        android:layout_height="wrap_content" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/startTimeLabel"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/start_time"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow4"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/startTime"
-          android:layout_height="wrap_content"
-          android:layout_weight="0.5"
-          android:clickable="false"
-          android:focusable="false"
-          android:focusableInTouchMode="false"
-          android:linksClickable="false"
-          android:longClickable="false"
-          android:lines="1" >
+        <TextView
+            android:id="@+id/startTimeLabel"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/start_time"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <EditText
+            android:id="@+id/startTime"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:lines="1" >
 
-    <TableRow
-        android:id="@+id/tableRow4b"
-        android:layout_height="wrap_content" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/endTimeLabel"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/end_time"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow4b"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/endTime"
-          android:layout_height="wrap_content"
-          android:layout_weight="0.5"
-          android:clickable="false"
-          android:focusable="false"
-          android:focusableInTouchMode="false"
-          android:linksClickable="false"
-          android:longClickable="false"
-          android:lines="1" >
+        <TextView
+            android:id="@+id/endTimeLabel"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/end_time"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <EditText
+            android:id="@+id/endTime"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:lines="1" >
 
-    <TableRow
-        android:id="@+id/tableRow5"
-        android:layout_height="wrap_content" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/totalDistanceLabel"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/total_distance"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow5"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/totalDistanceText"
-          android:layout_height="wrap_content"
-          android:layout_weight="1"
-          android:clickable="false"
-          android:focusable="false"
-          android:focusableInTouchMode="false"
-          android:linksClickable="false"
-          android:longClickable="false"
-          android:lines="1" >
+        <TextView
+            android:id="@+id/totalDistanceLabel"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/total_distance"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <EditText
+            android:id="@+id/totalDistanceText"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:lines="1" >
 
-    <TableRow
-        android:id="@+id/tableRow6"
-        android:layout_height="wrap_content" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/totalSailingTime"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/total_sailing_time"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow6"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/totalSailingTimeText"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:clickable="false"
-          android:focusable="false"
-          android:focusableInTouchMode="false"
-          android:linksClickable="false"
-          android:longClickable="false"
-          android:lines="1" >
-        <requestFocus />
-      </EditText>
-    </TableRow>
+        <TextView
+            android:id="@+id/totalSailingTime"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/total_sailing_time"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TableRow
-        android:id="@+id/tableRow7"
-        android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/totalSailingTimeText"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:lines="1" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
 
-      <TextView
-          android:id="@+id/totalEngineTime"
-          android:layout_height="wrap_content"
-          android:lines="1"
-          android:text="@string/total_engine_time"
-          android:textAppearance="?android:attr/textAppearanceMedium" />
+      <TableRow
+          android:id="@+id/tableRow7"
+          android:layout_height="wrap_content" >
 
-      <EditText
-          android:id="@+id/totalEngineTimeText"
-          android:layout_weight="1"
-          android:layout_height="wrap_content"
-          android:clickable="false"
-          android:focusable="false"
-          android:focusableInTouchMode="false"
-          android:linksClickable="false"
-          android:longClickable="false"
-          android:lines="1" >
-        <requestFocus />
-      </EditText>
-    </TableRow>
-  </TableLayout>
+        <TextView
+            android:id="@+id/totalEngineTime"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:text="@string/total_engine_time"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-  <LinearLayout
-      android:id="@+id/buttonsAtBottom"
-      android:layout_height="wrap_content"
-      android:layout_width="match_parent"
-      android:orientation="horizontal">
+        <EditText
+            android:id="@+id/totalEngineTimeText"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:lines="1" >
+          <requestFocus />
+        </EditText>
+      </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonsAtBottom"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
 
       <Button
           android:id="@+id/saveTripButton"
@@ -228,6 +228,6 @@
           android:layout_width="wrap_content"
           android:layout_weight="0.3"
           android:text="@string/select_this_trip" />
-  </LinearLayout>
+    </LinearLayout>
   </LinearLayout>
 </ScrollView>
