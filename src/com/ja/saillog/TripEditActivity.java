@@ -1,13 +1,13 @@
 package com.ja.saillog;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.ja.saillog.TripDBInterface.TripInfo;
 
@@ -90,36 +90,64 @@ public class TripEditActivity extends SailLogActivityBase {
     }
 
     private OnClickListener tripSelectClickListener = new OnClickListener() {
-        public void onClick(View v) {
-            if (false == performSave()) {
-                return;
+            public void onClick(View v) {
+                if (false == performSave()) {
+                    return;
+                }
+                tripDB.selectTrip(ti.tripId);
+                done(selectedResult);
             }
-            tripDB.selectTrip(ti.tripId);
-            setResult(selectedResult);
-            finish();
-        }
-    };
+        };
 
     private OnClickListener tripSaveClickListener = new OnClickListener() {
-        public void onClick(View v) {
-            performSave();
-        }
-    };
+            public void onClick(View v) {
+                performSave();
+            }
+        };
 
     private OnClickListener tripDeleteClickListener = new OnClickListener() {
-        public void onClick(View v) {
-            if (null != ti) {
-                if (false == alreadyConfirmed) {
-                    // TODO, display confirmation.
+            public void onClick(View v) {
+                if (null == ti) {
+                    setResult(RESULT_OK);
+                    finish();
+                } else {
+                    if (true == alreadyConfirmed) {
+                        doDelete();
+                    }
+                    else {
+                        showDeleteConfirmationDialog();
+                    }
                 }
-
-                tripDB.deleteTrip(ti.tripId);
             }
+        };
 
-            setResult(RESULT_OK);
-            finish();
-        }
-    };
+    private void doDelete() {
+        tripDB.deleteTrip(ti.tripId);
+        done(RESULT_OK);
+    }
+    
+    private void done(int result) {
+        setResult(result);
+        finish();
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.delete_confirmation))
+            .setPositiveButton(getString(R.string.yes), 
+                 new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        doDelete();
+                    }
+                })
+            .setNegativeButton(getString(R.string.no), 
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Not confirmed -> do nothing.
+                    }
+                })
+            .create().show();
+    }
 
     private boolean performSave() {
         // The trip name (or start and end locations) cannot be empty.

@@ -74,6 +74,21 @@
       </TableRow>
 
       <TableRow
+          android:id="@+id/statSeparateRow2"
+          android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/separatorLabel"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="@string/trip_stats"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+      </TableRow>
+
+      <TableRow
           android:id="@+id/tableRow4"
           android:layout_height="wrap_content" >
 

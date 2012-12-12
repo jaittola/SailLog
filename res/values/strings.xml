@@ -4,6 +4,7 @@
     <string name="app_name">SailLog</string>
     <string name="cancel_button">Cancel</string>
     <string name="delete_this_trip">Delete</string>
+    <string name="delete_confirmation">Are you sure you want to delete this trip?</string>
     <string name="destination">Destination</string>
     <string name="end_time">End time</string>
     <string name="engine">Engine</string>
@@ -19,6 +20,7 @@
     <string name="longitude">Longitude</string>
     <string name="main_sail">Main sail</string>
     <string name="new_trip">Name of new trip or leg</string>
+    <string name="no">No</string>
     <string name="no_position_data">Position: -</string>
     <string name="no_speed_heading_data">Speed: -, Heading: -</string>
     <string name="no_trip_selected">Click to select a trip</string>
@@ -39,6 +41,8 @@
     <string name="trip_all_fields_cannot_be_empty">You must enter a name, a start location, or an end location</string>
     <string name="trip_from">Start location</string>
     <string name="trip_name">Trip name</string>
+    <string name="trip_stats">Trip statistics</string>
     <string name="trip_to">End location</string>
     <string name="trip_to_select">Select: %s</string>
+    <string name="yes">Yes</string>
 </resources>
