@@ -41,7 +41,9 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         super.finalize();
     }
 
-    public TripInfo insertTrip(String tripName) {
+    public TripInfo insertTrip(String tripName, 
+                               String startLocation, 
+                               String endLocation) {
         TripInfo ti = null;
 
         SQLiteDatabase db = getWritableDatabase();
@@ -68,7 +70,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
             // This is SQLite-specific behaviour: the row id that is
             // returned from the insert is the same as the trip id,
             // because our trip ID is an 'integer primary key'.
-            ti = new TripInfo(rowid, tripName, tripDbFile);
+            ti = new TripInfo(rowid, tripName, 
+                              startLocation, endLocation, tripDbFile);
         } finally {
             db.endTransaction();
         }
@@ -129,7 +132,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         String [] selectionArgs = {};
         Cursor c = db.rawQuery("SELECT trip_id as _id, trip_id, trip_name, selected " +
                                "FROM trip " +
-                               "ORDER BY last_activated desc",
+                               "ORDER BY selected DESC, " +
+                               "last_activated DESC",
                                selectionArgs);
         return c;
     }
@@ -193,6 +197,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         if (true == c.moveToNext()) {
             tdi = new TripInfo(c.getInt(c.getColumnIndex("trip_id")),
                                c.getString(c.getColumnIndex("trip_name")),
+                               "",
+                               "",
                                c.getString(c.getColumnIndex("trip_db_filename")));
         }
         c.close();

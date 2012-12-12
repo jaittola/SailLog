@@ -11,10 +11,14 @@ public class FakeTripDB implements TripDBInterface {
     }
 
     @Override
-    public TripInfo insertTrip(String tripName) {
+    public TripInfo insertTrip(String tripName, 
+                               String startLocation, 
+                               String endLocation) {
         insertedTrip = new TripInfo();
         insertedTrip.tripId = rand.nextLong();
         insertedTrip.tripName = tripName;
+        insertedTrip.startLocation = startLocation;
+        insertedTrip.endLocation = endLocation;
 
         return insertedTrip;
     }
@@ -45,8 +49,12 @@ public class FakeTripDB implements TripDBInterface {
 
     public void setupTrips() {
         aTrip = new TripInfo(1, "MyTestingTrip",
+                             "FromLocationTesting", 
+                             "ToLocationTesting",
                              "aFileNameForTesting.db");
         selectedTrip = new TripInfo(42, "MySelectedTrip",
+                                    "FromSelected", 
+                                    "ToSelected",
                                     "theSelectedTripFile.db");
     }
 

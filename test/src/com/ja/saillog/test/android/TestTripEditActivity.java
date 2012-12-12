@@ -52,7 +52,10 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
 
         Assert.assertEquals(tripdb.aTrip.tripName,
                             tripNameText.getText().toString());
-        // TODO, should check the content of the rest of the fields.
+        Assert.assertEquals(tripdb.aTrip.startLocation,
+                            fromText.getText().toString());
+        Assert.assertEquals(tripdb.aTrip.endLocation,
+                            toText.getText().toString());
     }
 
     public void testSelectExistingTrip() {
@@ -69,24 +72,43 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     public void testSaveExistingTrip() {
         tripdb.setupTrips();
         runTea(withTripId);
+ 
+        String tripName = "My updated trip";
+        String startLocation = "Särkän satama";
+        String endLocation = "Granlandetin saaritukikohta";
+
+        tripNameText.setText(tripName);
+        fromText.setText(startLocation);
+        toText.setText(endLocation);
 
         saveButton.performClick();
 
         Assert.assertEquals(tripdb.aTrip.tripId, tripdb.updatedTrip.tripId);
 
+        Assert.assertEquals(tripName, tripdb.updatedTrip.tripName);
+        Assert.assertEquals(startLocation, tripdb.updatedTrip.startLocation);
+        Assert.assertEquals(endLocation, tripdb.updatedTrip.endLocation);
+        
         Assert.assertFalse(isFinishCalled());
     }
 
     public void testSaveNewTrip() {
         String tripName = "My new trip";
+        String startLocation = "Särkkä";
+        String endLocation = "Granlandet";
 
         runTea(withoutTripId);
 
         tripNameText.setText(tripName);
+        fromText.setText(startLocation);
+        toText.setText(endLocation);
+
         saveButton.performClick();
 
         Assert.assertEquals(tripdb.insertedTrip.tripName, tripName);
-
+        Assert.assertEquals(tripdb.insertedTrip.startLocation, startLocation);
+        Assert.assertEquals(tripdb.insertedTrip.endLocation, endLocation);
+        
         Assert.assertFalse(isFinishCalled());
     }
 
@@ -95,7 +117,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
 
         saveButton.performClick();
 
-        // TODO, how to verify the showing of the toast.
+        // TODO, how to verify the showing of the confirmation dialog.
 
         Assert.assertNull(tripdb.insertedTrip);
         Assert.assertNull(tripdb.updatedTrip);

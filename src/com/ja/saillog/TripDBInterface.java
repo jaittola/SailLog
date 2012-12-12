@@ -7,18 +7,28 @@ public interface TripDBInterface {
             tripId = -1;
         }
 
-        public TripInfo(long tripId, String tripName, String dbFileName) {
+        public TripInfo(long tripId,
+                        String tripName,
+                        String startLocation,
+                        String endLocation,
+                        String dbFileName) {
             this.tripId = tripId;
             this.tripName = tripName;
+            this.startLocation = startLocation;
+            this.endLocation = endLocation;
             this.dbFileName = dbFileName;
         }
 
         public long tripId;
         public String tripName;
+        public String startLocation;
+        public String endLocation;
         public String dbFileName;
     }
 
-    public TripInfo insertTrip(String tripName);
+    public TripInfo insertTrip(String tripName,
+                               String startLocation,
+                               String endLocation);
 
     public void updateTrip(TripInfo ti);
 

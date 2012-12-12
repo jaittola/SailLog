@@ -22,8 +22,10 @@ public class TestTripDB extends TestDbBase {
 
     public void testTempTripInsertAndFetch() {
     	String tripName = "Test trip";
+    	String startLocation = "StartL";
+    	String endLocation = "EndL";
 
-    	TripInfo tdi = dbif.insertTrip(tripName);
+    	TripInfo tdi = dbif.insertTrip(tripName, startLocation, endLocation);
         TripInfo tdi2 = dbif.getTripById(tdi.tripId);
 
         Assert.assertTrue("Expecting trip id greater than zero, got " + tdi.tripId,
@@ -36,31 +38,58 @@ public class TestTripDB extends TestDbBase {
     }
 
     public void testTripList() {
+        int tripCount = 6;
+        int selectedTripIdx = 2;
         String tripNameBase = "Test trip ";
+        TripInfo trips[] = new TripInfo[tripCount];
 
-        for (int i = 0; i < 3; ++i) {
+        // Insert trips (apart from the last one).
+        int i;
+        for (i = 0; i < tripCount - 1; ++i) {
             String tripName = tripNameBase + i;
-            dbif.insertTrip(tripName);
-            try {
-            	Thread.sleep(1001);  // Bad but we need different timestamps.
-            }
-            catch (Exception ex) {
-            	Assert.fail("Caught exception while sleeping");
-            }
-        }
+            trips[i] = dbif.insertTrip(tripName, "", "");
+            doSleep(1001);   // Bad but we need different timestamps.
+       }
 
+        dbif.selectTrip(trips[selectedTripIdx].tripId);
+        
+        // Now insert one more trip.
+        doSleep(1001);  // Bad again.
+        trips[i] = dbif.insertTrip("Inserted afterwards as " + i, "", "");
+        
         Cursor c = dbif.listTrips();
 
         // Verify that we get the trips back in the reverse order (they should
-        // be sorted by the activate time in reverse).
-        for (int i = 2; i >= 0; --i) {
+        // be sorted by the activate time in reverse) but the selected
+        // one should come first.
+        Assert.assertTrue(c.moveToNext());
+        Assert.assertEquals(trips[selectedTripIdx].tripId, 
+                c.getLong(c.getColumnIndex("trip_id")));
+       
+        for (i = tripCount - 1; i >= 0; --i) {
+           
+            // Skip the selected row which should have been the first
+            // that came from the database.
+            if (selectedTripIdx == i) {
+                --i;
+            }
+            
             Assert.assertTrue(c.moveToNext());
 
-            String expectedTripName = tripNameBase + i;
-            Assert.assertEquals(c.getString(c.getColumnIndex("trip_name")), expectedTripName);
+            Assert.assertEquals(trips[i].tripId, 
+                    c.getLong(c.getColumnIndex("trip_id")));
         }
 
         c.close();
+    }
+    
+    private void doSleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        }
+        catch (Exception ex) {
+            Assert.fail("Caught exception while sleeping");
+        }
     }
 
     public void testTripSelection() {
@@ -70,7 +99,7 @@ public class TestTripDB extends TestDbBase {
 
         for (int i = 0; i < tripNames.length; ++i) {
         	tripNames[i] = tripNameBase + i;
-        	trips[i] = dbif.insertTrip(tripNames[i]);
+        	trips[i] = dbif.insertTrip(tripNames[i], "", "");
         }
 
         selectTripAndVerify(trips[1]);
@@ -96,7 +125,7 @@ public class TestTripDB extends TestDbBase {
 
     public void testTripUnselection() {
     	String tripName = "TripUnSelectionName";
-    	TripInfo tdi = dbif.insertTrip(tripName);
+    	TripInfo tdi = dbif.insertTrip(tripName, "", "");
 
         dbif.selectTrip(tdi.tripId);
     	dbif.unselectTrips();
@@ -112,7 +141,7 @@ public class TestTripDB extends TestDbBase {
     }
 
     public void testDeleteTrip() {
-        TripInfo ti = dbif.insertTrip("MyTestTrip");
+        TripInfo ti = dbif.insertTrip("MyTestTrip", "", "");
 
         dbif.deleteTrip(ti.tripId);
 
@@ -122,7 +151,7 @@ public class TestTripDB extends TestDbBase {
 
     public void testDeleteSelectedTrip() {
         // Deleting the selected trip is not permitted.
-        TripInfo ti = dbif.insertTrip("MyTestTripDeleteNotSelected");
+        TripInfo ti = dbif.insertTrip("MyTestTripDeleteNotSelected", "", "");
 
         dbif.selectTrip(ti.tripId);
 
@@ -133,9 +162,9 @@ public class TestTripDB extends TestDbBase {
     }
 
     public void testUpdateTrip() {
-        TripInfo ti = dbif.insertTrip("MyTestUpdateTrip");
+        TripInfo ti = dbif.insertTrip("MyTestUpdateTrip", "", "");
 
-        TripInfo ti2 = new TripInfo(ti.tripId, "New Name", "");
+        TripInfo ti2 = new TripInfo(ti.tripId, "New Name", "", "", "");
         dbif.updateTrip(ti2);
 
         TripInfo ti3 = dbif.getTripById(ti.tripId);

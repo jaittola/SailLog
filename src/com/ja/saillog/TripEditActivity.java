@@ -43,13 +43,15 @@ public class TripEditActivity extends SailLogActivityBase {
 
             if (ti != null) {
                 tripNameText.setText(ti.tripName);
+                fromText.setText(ti.startLocation);
+                toText.setText(ti.endLocation);
             }
             else {
                 // Well, the trip should exist.
                 // Make a new TripInfo structure with this
                 // trip id so that the trip gets
                 // inserted as a new one (if the user wishes to save).
-                ti = new TripInfo(tripId, "", null);
+                ti = new TripInfo(tripId, "", "", "", null);
             }
         }
     }
@@ -160,10 +162,15 @@ public class TripEditActivity extends SailLogActivityBase {
 
         if (null == ti) {
             // Insert new.
-            ti = tripDB.insertTrip(tripNameText.getText().toString());
+           ti = tripDB.insertTrip(tripNameText.getText().toString(), 
+                                   fromText.getText().toString(),
+                                   toText.getText().toString());
         }
         else {
+            // Update.
             ti.tripName = tripNameText.getText().toString();
+            ti.startLocation = fromText.getText().toString();
+            ti.endLocation = toText.getText().toString();
             tripDB.updateTrip(ti);
         }
 
