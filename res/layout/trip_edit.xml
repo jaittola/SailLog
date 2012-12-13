@@ -48,7 +48,6 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:lines="1" >
-          <requestFocus />
         </EditText>
       </TableRow>
 
@@ -68,8 +67,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:lines="1" >
-
-          <requestFocus />
         </EditText>
       </TableRow>
 
