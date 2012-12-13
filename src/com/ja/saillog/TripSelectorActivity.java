@@ -16,7 +16,11 @@ public class TripSelectorActivity extends SailLogActivityBase {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trip_selector);
 
-        createActions();
+        newTripButton = (ImageButton) findViewById(R.id.addNewTripButton);
+        tripListView = (ListView) findViewById(R.id.tripListView);
+
+        newTripButton.setOnClickListener(newTripListener);
+        tripListView.setOnItemClickListener(tripClickedListener);
     }
 
     public void onStart() {
@@ -39,44 +43,35 @@ public class TripSelectorActivity extends SailLogActivityBase {
         super.onStop();
     }
 
-    private void createActions() {
-        newTripButton = (ImageButton) findViewById(R.id.addNewTripButton);
-        tripListView = (ListView) findViewById(R.id.tripListView);
-
-        newTripButton.setOnClickListener(newTripListener);
-        tripListView.setOnItemClickListener(tripClickedListener);
-    }
-
     private OnClickListener newTripListener = new OnClickListener() {
-        public void onClick(View v) {
-            startActivityForResult(new Intent(TripEditActivity.myIntentName),
-                                    TripEditActivity.myIntentRequestCode);
-        }
-    };
+            public void onClick(View v) {
+                startActivityForResult(new Intent(TripEditActivity.myIntentName),
+                                       TripEditActivity.myIntentRequestCode);
+            }
+        };
 
     private OnItemClickListener tripClickedListener = new OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent,
-                                View view,
-                                int position,
-                                long id) {
-            SQLiteCursor c = (SQLiteCursor) parent.getItemAtPosition(position);
-            c.moveToPosition(position);
+            public void onItemClick(AdapterView<?> parent,
+                                    View view,
+                                    int position,
+                                    long id) {
+                SQLiteCursor c = (SQLiteCursor) parent.getItemAtPosition(position);
+                c.moveToPosition(position);
 
-            Intent intent = new Intent(TripEditActivity.myIntentName);
-            intent.putExtra(TripEditActivity.tripIdInIntent,
-                            c.getLong(c.getColumnIndex("trip_id")));
+                Intent intent = new Intent(TripEditActivity.myIntentName);
+                intent.putExtra(TripEditActivity.tripIdInIntent,
+                                c.getLong(c.getColumnIndex("trip_id")));
 
-            startActivityForResult(intent, TripEditActivity.myIntentRequestCode);
-        }
-    };
-    
+                startActivityForResult(intent, TripEditActivity.myIntentRequestCode);
+            }
+        };
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (TripEditActivity.myIntentRequestCode == requestCode &&
             TripEditActivity.selectedResult == resultCode) {
             finish();
         }
     }
-
 
     private TripDB tripDB;
     private TripListAdapter tla;
