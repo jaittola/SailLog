@@ -41,8 +41,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         super.finalize();
     }
 
-    public TripInfo insertTrip(String tripName, 
-                               String startLocation, 
+    public TripInfo insertTrip(String tripName,
+                               String startLocation,
                                String endLocation) {
         TripInfo ti = null;
 
@@ -56,21 +56,26 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
 
         if (null == insertTripStm) {
             insertTripStm = db.compileStatement("INSERT INTO trip " +
-                                                "(trip_name, trip_db_filename) "
-                                                + "VALUES (?, ?)");
+                                                "(trip_name, trip_start_place, " +
+                                                "trip_end_place, trip_db_filename) "
+                                                + "VALUES (?, ?, ?, ?)");
         }
 
         try {
+            int col = 0;
+
             db.beginTransaction();
-            insertTripStm.bindString(1, tripName);
-            insertTripStm.bindString(2, tripDbFile);
+            insertTripStm.bindString(++col, tripName);
+            insertTripStm.bindString(++col, startLocation);
+            insertTripStm.bindString(++col, endLocation);
+            insertTripStm.bindString(++col, tripDbFile);
             long rowid = insertTripStm.executeInsert();
             db.setTransactionSuccessful();
 
             // This is SQLite-specific behaviour: the row id that is
             // returned from the insert is the same as the trip id,
             // because our trip ID is an 'integer primary key'.
-            ti = new TripInfo(rowid, tripName, 
+            ti = new TripInfo(rowid, tripName,
                               startLocation, endLocation, tripDbFile);
         } finally {
             db.endTransaction();
@@ -84,15 +89,20 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         SQLiteDatabase db = getWritableDatabase();
 
         if (null == updateTripStm) {
-            updateTripStm = db.compileStatement("UPDATE trip " +
-                                                "SET trip_name = ? " +
+            updateTripStm = db.compileStatement("UPDATE trip SET " +
+                                                "trip_name = ?, " +
+                                                "trip_start_place = ?, " +
+                                                "trip_end_place = ? " +
                                                 "WHERE trip_id = ?");
         }
 
         try {
             db.beginTransaction();
             updateTripStm.bindString(1, ti.tripName);
-            updateTripStm.bindLong(2, ti.tripId);
+            updateTripStm.bindString(2, ti.startLocation);
+            updateTripStm.bindString(3, ti.endLocation);
+            updateTripStm.bindLong(4, ti.tripId);
+
             updateTripStm.executeInsert();
             db.setTransactionSuccessful();
         } finally {
@@ -122,7 +132,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
     public TripInfo getTripById(long id) {
         String [] selectionArgs = { Long.toString(id) };
 
-        return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename " +
+        return queryTripInfo("SELECT " +
+                             tripSelectColumns +
                              "FROM trip WHERE trip_id = ?",
                              selectionArgs);
     }
@@ -130,7 +141,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
     public Cursor listTrips() {
         SQLiteDatabase db = getReadableDatabase();
         String [] selectionArgs = {};
-        Cursor c = db.rawQuery("SELECT trip_id as _id, trip_id, trip_name, selected " +
+        Cursor c = db.rawQuery("SELECT " +
+                               tripSelectColumns +
                                "FROM trip " +
                                "ORDER BY selected DESC, " +
                                "last_activated DESC",
@@ -180,7 +192,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
     public TripInfo getSelectedTrip() {
         String [] selectionArgs = {};
 
-        return queryTripInfo("SELECT trip_id, trip_name, trip_db_filename " +
+        return queryTripInfo("SELECT " +
+                             tripSelectColumns +
                              "FROM trip WHERE " +
                              "trip_id = " +
                              "(SELECT MAX(trip_id) FROM trip " +
@@ -195,11 +208,11 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         Cursor c = db.rawQuery(queryString, selectionArgs);
 
         if (true == c.moveToNext()) {
-            tdi = new TripInfo(c.getInt(c.getColumnIndex("trip_id")),
-                               c.getString(c.getColumnIndex("trip_name")),
-                               "",
-                               "",
-                               c.getString(c.getColumnIndex("trip_db_filename")));
+            tdi = new TripInfo(c.getInt(c.getColumnIndex(tripIdColumn)),
+                               c.getString(c.getColumnIndex(tripNameColumn)),
+                               c.getString(c.getColumnIndex(startLocationColumn)),
+                               c.getString(c.getColumnIndex(endLocationColumn)),
+                               c.getString(c.getColumnIndex(tripFileNameColumn)));
         }
         c.close();
 
@@ -226,5 +239,18 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
     private SQLiteStatement updateTripStm;
     private SQLiteStatement deleteTripStm;
 
-    Random rand;
+    private Random rand;
+
+    public static final String tripIdColumn = "trip_id";
+    public static final String tripNameColumn = "trip_name";
+    public static final String tripFileNameColumn = "trip_db_filename";
+    public static final String startLocationColumn = "trip_start_place";
+    public static final String endLocationColumn = "trip_end_place";
+    public static final String selectedColumn = "selected";
+
+    private static final String tripSelectColumns =
+        tripIdColumn + " AS _id, " + "selected, " +
+        tripIdColumn + ", " + tripNameColumn + ", " +
+        tripFileNameColumn + ", " + startLocationColumn + ", " +
+        endLocationColumn + " ";
 }

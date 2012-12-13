@@ -28,12 +28,17 @@ public class TestTripDB extends TestDbBase {
     	TripInfo tdi = dbif.insertTrip(tripName, startLocation, endLocation);
         TripInfo tdi2 = dbif.getTripById(tdi.tripId);
 
-        Assert.assertTrue("Expecting trip id greater than zero, got " + tdi.tripId,
+        Assert.assertTrue("Expecting trip id greater than zero, got " +
+                          tdi.tripId,
                           tdi.tripId > 0);
         Assert.assertEquals(tripName, tdi.tripName);
+        Assert.assertEquals(startLocation, tdi.startLocation);
+        Assert.assertEquals(endLocation, tdi.endLocation);
         Assert.assertNotNull(tdi.dbFileName);
 
         Assert.assertEquals(tdi.tripName, tdi2.tripName);
+        Assert.assertEquals(tdi.startLocation, tdi2.startLocation);
+        Assert.assertEquals(tdi.endLocation, tdi2.endLocation);
         Assert.assertEquals(tdi.tripId, tdi2.tripId);
     }
 
@@ -41,48 +46,62 @@ public class TestTripDB extends TestDbBase {
         int tripCount = 6;
         int selectedTripIdx = 2;
         String tripNameBase = "Test trip ";
+        String tripStartBase = "Start ";
+        String tripEndBase = "End ";
         TripInfo trips[] = new TripInfo[tripCount];
 
         // Insert trips (apart from the last one).
         int i;
         for (i = 0; i < tripCount - 1; ++i) {
-            String tripName = tripNameBase + i;
-            trips[i] = dbif.insertTrip(tripName, "", "");
-            doSleep(1001);   // Bad but we need different timestamps.
+            trips[i] = dbif.insertTrip(tripNameBase + i,
+                                       tripStartBase + i,
+                                       tripEndBase + i);
+            doSleep(1001);   // Makes the test slow but we need
+                             // different timestamps.
        }
 
         dbif.selectTrip(trips[selectedTripIdx].tripId);
-        
+
         // Now insert one more trip.
-        doSleep(1001);  // Bad again.
-        trips[i] = dbif.insertTrip("Inserted afterwards as " + i, "", "");
-        
+        doSleep(1001);  // Sloow.
+        trips[i] = dbif.insertTrip("Inserted afterwards as " + i,
+                                   "afterwards " + tripStartBase + i,
+                                   "afterwards " + tripEndBase + i);
+
         Cursor c = dbif.listTrips();
 
         // Verify that we get the trips back in the reverse order (they should
         // be sorted by the activate time in reverse) but the selected
         // one should come first.
         Assert.assertTrue(c.moveToNext());
-        Assert.assertEquals(trips[selectedTripIdx].tripId, 
-                c.getLong(c.getColumnIndex("trip_id")));
-       
+        verifyExpectedTrip(trips[selectedTripIdx], c);
+
         for (i = tripCount - 1; i >= 0; --i) {
-           
+
             // Skip the selected row which should have been the first
             // that came from the database.
             if (selectedTripIdx == i) {
                 --i;
             }
-            
-            Assert.assertTrue(c.moveToNext());
 
-            Assert.assertEquals(trips[i].tripId, 
-                    c.getLong(c.getColumnIndex("trip_id")));
+            Assert.assertTrue(c.moveToNext());
+            verifyExpectedTrip(trips[i], c);
         }
 
         c.close();
     }
-    
+
+    private void verifyExpectedTrip(TripInfo trip, Cursor c) {
+        Assert.assertEquals(trip.tripId,
+                            c.getLong(c.getColumnIndex(TripDB.tripIdColumn)));
+        Assert.assertEquals(trip.tripName,
+                            c.getString(c.getColumnIndex(TripDB.tripNameColumn)));
+        Assert.assertEquals(trip.startLocation,
+                            c.getString(c.getColumnIndex(TripDB.startLocationColumn)));
+        Assert.assertEquals(trip.endLocation,
+                            c.getString(c.getColumnIndex(TripDB.endLocationColumn)));
+    }
+
     private void doSleep(int millis) {
         try {
             Thread.sleep(millis);
