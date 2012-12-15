@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
 
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.utilities.ExportFile;
 
 import android.content.Context;
@@ -33,7 +35,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
     public void insertPosition(double latitude, double longitude,
                                double bearing, double speed,
-                               double distanceFromPrevious, double accuracy) {
+                               Distance distanceFromPrevious, double accuracy) {
         SQLiteDatabase db = getWritableDatabase();
         SQLiteStatement insertPosStm =
             getStatement(db,
@@ -54,7 +56,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
             insertPosStm.bindDouble(5, accuracy);
             insertPosStm.executeInsert();
 
-            updateStatsStm.bindDouble(1, distanceFromPrevious);
+            updateStatsStm.bindDouble(1, QuantityFactory.meters(distanceFromPrevious).num());
             updateStatsStm.executeInsert();
 
             db.setTransactionSuccessful();
@@ -94,7 +96,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
                                "LIMIT 1", null);
         try {
             if (true == c.moveToNext()) {
-                ts = new TripStats(c.getDouble(0),
+                ts = new TripStats(QuantityFactory.meters(c.getDouble(0)),
                                    c.getDouble(1),
                                    c.getDouble(2),
                                    c.getDouble(3));

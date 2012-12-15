@@ -1,5 +1,8 @@
 package com.ja.saillog.utilities;
 
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
+
 public class LocationFilter {
     /*
      * Returns true if the location or the time of the fix is different enough
@@ -7,7 +10,7 @@ public class LocationFilter {
      */
     public boolean canUpdate(double latitude, double longitude,
                              double speed, double bearing,
-                             long time, double distanceToPrevious) {
+                             long time, Distance distanceToPrevious) {
 
         // Allow updating on several conditions:
         // * if we had no previous fix, always allow update.
@@ -57,8 +60,8 @@ public class LocationFilter {
      * A fix is considered far away if it is more than 100 meters from
      * the previous position.
      */
-    private boolean fixIsFaraway(double distance) {
-        if (distance > 100) {
+    private boolean fixIsFaraway(Distance distance) {
+        if (QuantityFactory.meters(distance).num() > 100) {
             return true;
         }
 

@@ -12,6 +12,7 @@ import com.ja.saillog.R;
 import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.database.TripDBInterface;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.test.purejava.FakeTrackDB;
 import com.ja.saillog.test.purejava.FakeTripDB;
 import com.ja.saillog.ui.TripEditActivity;
@@ -55,7 +56,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
                             fromText.getText().toString());
         Assert.assertEquals(tripdb.aTrip.endLocation,
                             toText.getText().toString());
-        Assert.assertEquals(String.format("%.1f", trackdb.mTotalDistance),
+        Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).stringValueWithUnit(),
                             totalDistanceText.getText().toString());
         Assert.assertEquals(String.format("%.1f", trackdb.mSailingTime),
                             totalSailingTimeText.getText().toString());

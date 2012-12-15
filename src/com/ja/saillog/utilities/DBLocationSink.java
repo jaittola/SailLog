@@ -1,6 +1,8 @@
 package com.ja.saillog.utilities;
 
 import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 
 import android.location.Location;
 
@@ -19,8 +21,8 @@ public class DBLocationSink implements LocationSink {
     public void updateLocation(double latitude, double longitude, double speed,
                                double bearing, double accuracy, long time) {
 
-        double distance = calculateDistance(filter.getPreviousLatitude(), filter.getPreviousLongitude(),
-                                            latitude, longitude);
+        Distance distance = calculateDistance(filter.getPreviousLatitude(), filter.getPreviousLongitude(),
+                                              latitude, longitude);
 
         if (true == filter.canUpdate(latitude, longitude, speed, bearing, time, distance) &&
             null != db) {
@@ -37,17 +39,17 @@ public class DBLocationSink implements LocationSink {
     public void setLocationAvailable(boolean isAvailable) {
     }
 
-    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    public Distance calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         if (Double.isNaN(lat1) ||
             Double.isNaN(lon1) ||
             Double.isNaN(lat2)||
             Double.isNaN(lon2)) {
-            return 0.0;
+            return QuantityFactory.meters(0.0);
         }
 
         float [] results = new float[1];
         Location.distanceBetween(lat1,  lon1, lat2, lon2, results);
-        return results[0];
+        return QuantityFactory.meters(results[0]);
     }
 
     private TrackDBInterface db;

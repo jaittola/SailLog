@@ -18,6 +18,7 @@ import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.database.TrackDBInterface.TripStats;
 import com.ja.saillog.database.TripDBInterface.TripInfo;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 
 
 public class TripEditActivity extends SailLogActivityBase {
@@ -61,7 +62,7 @@ public class TripEditActivity extends SailLogActivityBase {
                 TripStats ts = tdb.getTripStats();
                 tdb.close();
                 
-                totalDistanceText.setText(String.format("%.1f", ts.distance));
+                totalDistanceText.setText(QuantityFactory.nauticalMiles(ts.distance).stringValueWithUnit());
                 totalSailingTimeText.setText(String.format("%.1f", ts.sailingTime));
                 totalEngineTimeText.setText(String.format("%.1f", ts.engineTime));
             }

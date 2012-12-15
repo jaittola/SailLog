@@ -3,6 +3,8 @@ package com.ja.saillog.test.purejava;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.utilities.DBLocationSink;
 
 public class TestDbLocationSink extends TestCase {
@@ -22,11 +24,14 @@ public class TestDbLocationSink extends TestCase {
         Assert.assertEquals(3.0, db.mBearing);
         Assert.assertEquals(2.0, db.mSpeed);
         Assert.assertEquals(15.2, db.mAccuracy);
-        Assert.assertEquals(0.0, db.mDistanceFromPrevious);
+        Assert.assertEquals(0.0, 
+                            QuantityFactory.meters(db.mDistanceFromPrevious).num());
 
         sink.updateLocation(61, 20, 2, 3, 15.2, 0);
         Assert.assertEquals(61.0, db.mLatitude);
-        Assert.assertEquals(111420.0, db.mDistanceFromPrevious, 1.0);
+        Assert.assertEquals(111420.0, 
+                            QuantityFactory.meters(db.mDistanceFromPrevious).num(), 
+                            1.0);
     }
 
     private class DistanceData extends Object {
@@ -58,9 +63,10 @@ public class TestDbLocationSink extends TestCase {
         };
 
         for (int i = 0; i < testData.length; ++i) {
-            double dist = sink.calculateDistance(testData[i].lat1, testData[i].lon1,
-                                                 testData[i].lat2, testData[i].lon2);
-            Assert.assertEquals("Row " + i, testData[i].expectedDistance, dist, 1.0);
+            Distance dist = sink.calculateDistance(testData[i].lat1, testData[i].lon1,
+                                                   testData[i].lat2, testData[i].lon2);
+            Assert.assertEquals("Row " + i, testData[i].expectedDistance, 
+                                QuantityFactory.meters(dist).num(), 1.0);
         }
     }
 

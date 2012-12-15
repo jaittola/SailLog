@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.ja.saillog.database.TrackDB;
 import com.ja.saillog.database.TrackDBInterface.TripStats;
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.utilities.ExportFile;
 
 
@@ -16,7 +18,7 @@ public class TestTrackDB extends TestDbBase {
 
     private class PositionContainer {
         public PositionContainer(double latitude, double longitude, double bearing,
-                                 double speed, double accuracy, double distanceFromPrev) {
+                                 double speed, double accuracy, Distance distanceFromPrev) {
             myLat = latitude;
             myLong = longitude;
             myBearing = bearing;
@@ -30,7 +32,7 @@ public class TestTrackDB extends TestDbBase {
         public double myBearing;
         public double mySpeed;
         public double myAccuracy;
-        public double myDistanceFromPrev;
+        public Distance myDistanceFromPrev;
     }
 
     private class EventContainer {
@@ -151,10 +153,11 @@ public class TestTrackDB extends TestDbBase {
                                 pos.myDistanceFromPrev,
                                 pos.myAccuracy);
 
-            totalDistance += pos.myDistanceFromPrev;
+            totalDistance += pos.myDistanceFromPrev.num();
 
             TripStats ts = dbif.getTripStats();
-            Assert.assertEquals(totalDistance, ts.distance, 1.0);
+            Assert.assertEquals(totalDistance, 
+                                ts.distance.num(), 1.0);
         }
     }
 
@@ -227,9 +230,9 @@ public class TestTrackDB extends TestDbBase {
     // Note, it is assumed in this class that the posS and eventS arrays
     // are of the same length.
     private PositionContainer[] posS = {
-        new PositionContainer(60.1, 24.9, 350, 4, 10.0, 0.0),
-        new PositionContainer(60.6, 25.1, 25.0, 4.2, 15.0, 1000),
-        new PositionContainer(60.0, 25.0, 180, 5.2, 30.0, 3000),
+        new PositionContainer(60.1, 24.9, 350, 4, 10.0, QuantityFactory.meters(0.0)),
+        new PositionContainer(60.6, 25.1, 25.0, 4.2, 15.0, QuantityFactory.meters(1000)),
+        new PositionContainer(60.0, 25.0, 180, 5.2, 30.0, QuantityFactory.meters(3000)),
     };
 
     private EventContainer[] eventS = {

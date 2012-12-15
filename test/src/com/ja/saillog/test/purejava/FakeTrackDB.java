@@ -3,6 +3,8 @@ package com.ja.saillog.test.purejava;
 import java.io.IOException;
 
 import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.utilities.ExportFile;
 
 
@@ -11,7 +13,7 @@ public class FakeTrackDB implements TrackDBInterface{
     @Override
     public void insertPosition(double latitude, double longitude,
                                double bearing, double speed,
-                               double distanceFromPrevious, double accuracy) {
+                               Distance distanceFromPrevious, double accuracy) {
         mLatitude = latitude;
         mLongitude = longitude;
         mBearing = bearing;
@@ -28,7 +30,8 @@ public class FakeTrackDB implements TrackDBInterface{
 
     @Override
     public TripStats getTripStats() {
-        return new TripStats(mTotalDistance, mEngineTime, mSailingTime, 
+        return new TripStats(mTotalDistance,
+                             mEngineTime, mSailingTime, 
                              mAverageSpeed);
     }
 
@@ -49,13 +52,13 @@ public class FakeTrackDB implements TrackDBInterface{
     public double mLongitude = -181;
     public double mBearing = -1;
     public double mSpeed = -1;
-    public double mDistanceFromPrevious = -1;
+    public Distance mDistanceFromPrevious = null;
     public double mAccuracy = -1;
 
     public int mEngineStatus = -1;
     public int mSailPlan = -1;
 
-    public double mTotalDistance = 24;
+    public Distance mTotalDistance = QuantityFactory.meters(24);
     public double mEngineTime = 0.5;
     public double mSailingTime = 3.7;
     public double mAverageSpeed = 5.1;

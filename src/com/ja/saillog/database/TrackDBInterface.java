@@ -2,6 +2,7 @@ package com.ja.saillog.database;
 
 import java.io.IOException;
 
+import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.utilities.ExportFile;
 
 /**
@@ -13,7 +14,7 @@ public interface TrackDBInterface {
         public TripStats() {
         }
 
-        public TripStats(double distance,
+        public TripStats(Distance distance,
                          double engineTime,
                          double sailingTime,
                          double estimatedAvgSpeed) {
@@ -23,7 +24,7 @@ public interface TrackDBInterface {
             this.estimatedAvgSpeed = estimatedAvgSpeed;
         }
 
-        public double distance = -1;
+        public Distance distance = null;
         public double engineTime = -1;
         public double sailingTime = -1;
         public double estimatedAvgSpeed = -1;
@@ -31,7 +32,7 @@ public interface TrackDBInterface {
 
     public void insertPosition(double latitude, double longitude,
                                double bearing, double speed,
-                               double distanceFromPrevious, double accuracy);
+                               Distance distanceFromPrevious, double accuracy);
 
     public void insertEvent(int engineStatus, int sailPlan);
 
