@@ -42,20 +42,24 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     public void testSetupFromEmpty() {
         runTea(withoutTripId);
 
-        for (TextView v: allViews) {
-            Assert.assertEquals(v.getText().toString().length(), 0);
-        }
+        verifyFieldsEmpty();
     }
 
     public void testSetupWithId() {
         runTea(withTripId);
-
+        
         Assert.assertEquals(tripdb.aTrip.tripName,
                             tripNameText.getText().toString());
         Assert.assertEquals(tripdb.aTrip.startLocation,
                             fromText.getText().toString());
         Assert.assertEquals(tripdb.aTrip.endLocation,
                             toText.getText().toString());
+        Assert.assertEquals(String.format("%.1f", trackdb.mTotalDistance),
+                            totalDistanceText.getText().toString());
+        Assert.assertEquals(String.format("%.1f", trackdb.mSailingTime),
+                            totalSailingTimeText.getText().toString());
+        Assert.assertEquals(String.format("%.1f", trackdb.mEngineTime),
+                            totalEngineTimeText.getText().toString());
     }
 
     public void testSelectExistingTrip() {
@@ -129,7 +133,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         String tripName = "My trip for select";
 
         runTea(withoutTripId);
-
+        
         tripNameText.setText(tripName);
         selectButton.performClick();
 
@@ -198,6 +202,12 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
             totalSailingTimeText,
         };
         allViews = myAllViews;
+    }
+    
+    private void verifyFieldsEmpty() {
+        for (TextView v: allViews) {
+            Assert.assertEquals(v.getText().toString().length(), 0);
+        }
     }
 
     private EditText tripNameText;

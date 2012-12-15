@@ -59,6 +59,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
                                double longitude,
                                double speed,
                                double bearing,
+                               double accuracy,
                                long time) {
         // TODO, remove hard-coded speed unit.
         String speedUnit = "kn";

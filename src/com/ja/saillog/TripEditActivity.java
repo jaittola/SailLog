@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.ja.saillog.TrackDBInterface.TripStats;
 import com.ja.saillog.TripDBInterface.TripInfo;
 
 public class TripEditActivity extends SailLogActivityBase {
@@ -45,6 +46,15 @@ public class TripEditActivity extends SailLogActivityBase {
                 tripNameText.setText(ti.tripName);
                 fromText.setText(ti.startLocation);
                 toText.setText(ti.endLocation);
+
+                // TODO, this should update live.
+                TrackDBInterface tdb = DBProvider.getTrackDB(this, 
+                        ti.dbFileName);
+
+                TripStats ts = tdb.getTripStats();
+                totalDistanceText.setText(String.format("%.1f", ts.distance));
+                totalSailingTimeText.setText(String.format("%.1f", ts.sailingTime));
+                totalEngineTimeText.setText(String.format("%.1f", ts.engineTime));
             }
             else {
                 // Well, the trip should exist.

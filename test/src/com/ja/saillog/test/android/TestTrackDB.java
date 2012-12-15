@@ -9,136 +9,154 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.ja.saillog.TrackDB;
 import com.ja.saillog.ExportFile;
+import com.ja.saillog.TrackDBInterface.TripStats;
 
 public class TestTrackDB extends TestDbBase {
 
     private class PositionContainer {
-        public PositionContainer(double latitude, double longitude, double bearing, double speed) {
+        public PositionContainer(double latitude, double longitude, double bearing,
+                                 double speed, double accuracy, double distanceFromPrev) {
             myLat = latitude;
             myLong = longitude;
             myBearing = bearing;
             mySpeed = speed;
+            myAccuracy = accuracy;
+            myDistanceFromPrev = distanceFromPrev;
         }
-        
+
         public double myLat;
         public double myLong;
         public double myBearing;
         public double mySpeed;
+        public double myAccuracy;
+        public double myDistanceFromPrev;
     }
-    
+
     private class EventContainer {
         public EventContainer(int engine, int sailplan) {
             myEngine = engine;
             mySailplan = sailplan;
         }
-        
+
         public int myEngine;
         public int mySailplan;
     }
-    
+
     protected void setUp() throws Exception {
         super.setUp();
-        
-        expectedTables = new String[] { 
-                "position",
-                "event",
+
+        expectedTables = new String[] {
+            "position",
+            "event",
+            "trip_stats",
         };
 
-        dbif = new TrackDB(mContext, "SLDB-Track-test.db");    
+        dbif = new TrackDB(mContext, "SLDB-Track-test.db");
     }
 
-    /*
-     * To be moved to the other database.
-    public void testTempTripInsertAndFetch() {
-        dbif.insertTrip("Test trip");
-        int id = dbif.fetchTripId("Test trip");
-
-        Assert.assertTrue("Expecting trip id greater than zero, got " + id, id > 0);
-    }
-
-    public void testNonExistentTrip() {
-        int id = dbif.fetchTripId("Does not exist");
-
-        Assert.assertTrue("Expecting trip id smaller than zero, got" + id, id < 0);
-    }
-    */
-    
     public void testPositionInsert() {
         insertPositionsAndEvents();
 
         SQLiteDatabase db = dbif.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT position_id, pos_time, latitude, " + 
-                "longitude, speed, bearing FROM position " + 
-                "ORDER BY position_id",
-                null);
+        Cursor c = db.rawQuery("SELECT position_id, pos_time, latitude, " +
+                               "longitude, speed, bearing, accuracy FROM position " +
+                               "ORDER BY position_id",
+                               null);
         Assert.assertTrue(c.moveToFirst());
-        
-        long lastPositionId = 0;
-        
+
         Assert.assertEquals(c.getCount(), posS.length);
-        
-        int row = 0;
-        do {
-            checkColumnsNotNull(c);
 
-            int col = 0;
-            lastPositionId = c.getInt(col++);
-            // We skip the timestamp because it is generated
-            // automatically by the database.
-            col++;
-            Assert.assertEquals(posS[row].myLat, c.getDouble(col++));
-            Assert.assertEquals(posS[row].myLong, c.getDouble(col++));
-            Assert.assertEquals(posS[row].mySpeed, c.getDouble(col++), 0.01);
-            Assert.assertEquals(posS[row].myBearing, c.getDouble(col++), 0.01);
-            
-            row++;
-        } while(c.moveToNext());
-               
-        c.close();
-        
-        // Test the query for the largest position id.
-        Assert.assertEquals(lastPositionId, dbif.fetchLastPositionId(null));
+        try {
+            int row = 0;
+            do {
+                checkColumnsNotNull(c);
+
+                // We skip over the two first columns, which contain the 
+                // position id and the timestamp.
+                int col = 2;
+                Assert.assertEquals(posS[row].myLat, c.getDouble(col++));
+                Assert.assertEquals(posS[row].myLong, c.getDouble(col++));
+                Assert.assertEquals(posS[row].mySpeed, c.getDouble(col++), 0.01);
+                Assert.assertEquals(posS[row].myBearing, c.getDouble(col++), 0.01);
+                Assert.assertEquals(posS[row].myAccuracy, c.getDouble(col++), 0.01);
+
+                row++;
+            } while(c.moveToNext());
+        }
+        finally {
+            c.close();
+        }
+
     }
 
-    public void testLastPositionWithEmptyDb() {
-        long lastPositionId = dbif.fetchLastPositionId(null);
-        
-        Assert.assertEquals(lastPositionId, 0);
-    }
-    
-    public void testInsertEvent() {
+    public void testInsertEventsWithPositions() {
         insertPositionsAndEvents();
-        
+
         SQLiteDatabase db = dbif.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT position_id, event_time, engine, sailplan " +
-                "FROM event " + 
-                "ORDER BY event_id", 
-                null);
-        Assert.assertTrue(c.moveToFirst());
-        
-        Assert.assertEquals(c.getCount(), eventS.length);
-        
-        int row = 0;
-        do {
-            checkColumnsNotNull(c);
-            
-            // Checking skipped for 
-            //  - event id: it is the autogenerated primary key
-            //  - position id: would require comparing against the position table,
-            //    but we get the position id as the last value of the position
-            //    table.
-            //  - event_time: autogenerated timestamp.
-            int col = 2;
-            Assert.assertEquals(eventS[row].myEngine, c.getLong(col++));
-            Assert.assertEquals(eventS[row].mySailplan, c.getLong(col++));
-            
-            row++;
-        } while (c.moveToNext());
-        
-        c.close();
+                               "FROM event " +
+                               "ORDER BY event_id",
+                               null);
+
+        try {
+            Assert.assertTrue(c.moveToFirst());
+            Assert.assertEquals(c.getCount(), eventS.length);
+
+            for (EventContainer ev: eventS) {
+                checkColumnsNotNull(c);
+
+                // Checking skipped for
+                //  - event id: it is the autogenerated primary key
+                //  - position id: would require comparing against the position table,
+                //    but we get the position id as the last value of the position
+                //    table.
+                //  - event_time: autogenerated timestamp.
+                int col = 2;
+                Assert.assertEquals(ev.myEngine, c.getLong(col++));
+                Assert.assertEquals(ev.mySailplan, c.getLong(col++));
+                c.moveToNext();
+            }
+        }
+        finally {
+            c.close();
+        }
     }
     
-    
+    public void testInsertEventsNoPositions() {
+        insertEvents();
+        
+        SQLiteDatabase db = dbif.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT DISTINCT(position_id), COUNT(*) FROM event", null);
+        try {
+            Assert.assertTrue(c.moveToFirst());
+            Assert.assertEquals(1, c.getCount());
+            
+            Assert.assertEquals(0, c.getLong(0));
+            Assert.assertEquals(eventS.length, c.getLong(1));
+        }
+        finally {
+            c.close();
+        }
+    }
+
+    public void testStatsUpdates() {
+        double totalDistance = 0;
+
+        for (PositionContainer pos: posS) {
+            dbif.insertPosition(pos.myLat,
+                                pos.myLong,
+                                pos.myBearing,
+                                pos.mySpeed,
+                                pos.myDistanceFromPrev,
+                                pos.myAccuracy);
+
+            totalDistance += pos.myDistanceFromPrev;
+
+            TripStats ts = dbif.getTripStats();
+            Assert.assertEquals(totalDistance, ts.distance, 1.0);
+        }
+    }
+
     public void testDbExport() {
         File dbCopy = null;
 
@@ -158,9 +176,10 @@ public class TestTrackDB extends TestDbBase {
             File origDb = new File(dbif.getReadableDatabase().getPath());
 
             // Just compare sizes.
-            Assert.assertEquals(String.format("The sizes of the original (%s) and db copy (%s) differ. ", 
-                                              origDb.getAbsolutePath(), ef.fileName()), 
-                                              origDb.length(), dbCopy.length());	    
+            Assert.assertEquals(String.format("The sizes of the original (%s) and " +
+                                              "db copy (%s) differ. ",
+                                              origDb.getAbsolutePath(), ef.fileName()),
+                                origDb.length(), dbCopy.length());
             Assert.assertTrue("The database copy is empty", dbCopy.length() > 0);
         }
         catch (Exception ex) {
@@ -176,31 +195,44 @@ public class TestTrackDB extends TestDbBase {
     }
 
     private void insertPositionsAndEvents() {
-        for (int i = 0; i < posS.length; ++i) {
-            dbif.insertPosition(posS[i].myLat, 
-                                posS[i].myLong, 
-                                posS[i].myBearing, 
-                                posS[i].mySpeed);
-            dbif.insertEvent(eventS[i].myEngine,
-                             eventS[i].mySailplan);
-        }
+        insertPositions();
+        insertEvents();
     }
     
+    private void insertPositions() {
+        for (PositionContainer pos: posS) {
+            dbif.insertPosition(pos.myLat,
+                                pos.myLong,
+                                pos.myBearing,
+                                pos.mySpeed,
+                                pos.myDistanceFromPrev,
+                                pos.myAccuracy);
+        }
+    }
+
+    private void insertEvents() {
+        for (EventContainer ev: eventS) {
+            dbif.insertEvent(ev.myEngine,
+                             ev.mySailplan);
+        }
+    }
+
     protected SQLiteDatabase getWritableDatabase() {
         return dbif.getWritableDatabase();
     }
-    
+
     private TrackDB dbif;
 
-    // Note, it is assumed in this class that the posS and eventS arrays 
+    // Note, it is assumed in this class that the posS and eventS arrays
     // are of the same length.
     private PositionContainer[] posS = {
-        new PositionContainer(60.1, 24.9, 350, 4),
-        new PositionContainer(60.6, 25.0, 25.0, 4.2),
+        new PositionContainer(60.1, 24.9, 350, 4, 10.0, 0.0),
+        new PositionContainer(60.6, 25.1, 25.0, 4.2, 15.0, 1000),
+        new PositionContainer(60.0, 25.0, 180, 5.2, 30.0, 3000),
     };
-    
+
     private EventContainer[] eventS = {
-            new EventContainer(1, 0),
-            new EventContainer(0, 2),
+        new EventContainer(1, 0),
+        new EventContainer(0, 2),
     };
 }

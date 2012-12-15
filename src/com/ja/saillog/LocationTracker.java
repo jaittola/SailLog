@@ -44,6 +44,7 @@ public class LocationTracker implements LocationListener {
 								location.getLongitude(),
 							    location.getSpeed(),
 							    location.getBearing(),
+							    location.getAccuracy(),
 							    location.getTime());
 		}
 	}

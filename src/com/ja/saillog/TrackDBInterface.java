@@ -7,10 +7,33 @@ import java.io.IOException;
  * position and event database interface.
  */
 public interface TrackDBInterface {
-	public void insertPosition(double latitude, double longitude, 
-							   double bearing, double speed);
-	
-	public void insertEvent(int engineStatus, int sailPlan);
+    public class TripStats extends Object {
+        public TripStats() {
+        }
+
+        public TripStats(double distance,
+                         double engineTime,
+                         double sailingTime,
+                         double estimatedAvgSpeed) {
+            this.distance = distance;
+            this.engineTime = engineTime;
+            this.sailingTime = sailingTime;
+            this.estimatedAvgSpeed = estimatedAvgSpeed;
+        }
+
+        public double distance = -1;
+        public double engineTime = -1;
+        public double sailingTime = -1;
+        public double estimatedAvgSpeed = -1;
+    }
+
+    public void insertPosition(double latitude, double longitude,
+                               double bearing, double speed,
+                               double distanceFromPrevious, double accuracy);
+
+    public void insertEvent(int engineStatus, int sailPlan);
+
+    public TripStats getTripStats();
 
     public void exportDbAsKML(ExportFile exportFile) throws IOException;
 

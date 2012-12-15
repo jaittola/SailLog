@@ -17,15 +17,18 @@ public class TestLocationTracker extends AndroidTestCase {
 			lastLongitude = Double.NaN;
 			lastSpeed = Double.NaN;
 			lastBearing = Double.NaN;
+			lastAccuracy = Double.NaN;
 		}
 		
 		@Override
 		public void updateLocation(double latitude, double longitude,
-								   double speed, double bearing, long time) {
+								   double speed, double bearing, 
+								   double accuracy, long time) {
 			lastLatitude = latitude;
 			lastLongitude = longitude;
 			lastSpeed = speed;
 			lastBearing = bearing;
+			lastAccuracy = accuracy;
 		}
 
 		@Override
@@ -37,6 +40,7 @@ public class TestLocationTracker extends AndroidTestCase {
 		public double lastLongitude;
 		public double lastSpeed;
 		public double lastBearing;
+		public double lastAccuracy;
 	}
 	
 	@Override
@@ -54,6 +58,7 @@ public class TestLocationTracker extends AndroidTestCase {
 		location.setLongitude(2);
 		location.setBearing(3);
 		location.setSpeed(4);
+		location.setAccuracy(42);
 	}
 	
 	public void testLocationData() {
@@ -65,6 +70,7 @@ public class TestLocationTracker extends AndroidTestCase {
 			Assert.assertEquals(location.getLongitude(), sink.lastLongitude);
 			Assert.assertEquals(location.getBearing(), sink.lastBearing, 0.1);
 			Assert.assertEquals(location.getSpeed(), sink.lastSpeed, 0.1);
+			Assert.assertEquals(location.getAccuracy(), sink.lastAccuracy, 0.1);
 		}
 	}
 	
