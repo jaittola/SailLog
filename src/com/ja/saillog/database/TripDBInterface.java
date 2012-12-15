@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.database;
 
 public interface TripDBInterface {
 

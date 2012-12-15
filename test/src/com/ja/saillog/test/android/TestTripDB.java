@@ -1,12 +1,13 @@
 package com.ja.saillog.test.android;
 
+import com.ja.saillog.database.TripDB;
+import com.ja.saillog.database.TripDBInterface.TripInfo;
+
 import junit.framework.Assert;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.ja.saillog.TripDB;
-import com.ja.saillog.TripDBInterface.TripInfo;
 
 public class TestTripDB extends TestDbBase {
 

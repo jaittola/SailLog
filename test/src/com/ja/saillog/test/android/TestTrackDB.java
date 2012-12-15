@@ -7,9 +7,10 @@ import junit.framework.Assert;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.ja.saillog.TrackDB;
-import com.ja.saillog.ExportFile;
-import com.ja.saillog.TrackDBInterface.TripStats;
+import com.ja.saillog.database.TrackDB;
+import com.ja.saillog.database.TrackDBInterface.TripStats;
+import com.ja.saillog.utilities.ExportFile;
+
 
 public class TestTrackDB extends TestDbBase {
 

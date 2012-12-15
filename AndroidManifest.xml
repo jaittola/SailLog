@@ -11,26 +11,26 @@
                android:label="@string/app_name"
                android:debuggable="true"
                android:theme="@android:style/Theme.Light">
-    <activity android:name=".SailLogActivity"
+    <activity android:name="com.ja.saillog.ui.SailLogActivity"
               android:label="@string/app_name">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name="TripSelectorActivity"
+    <activity android:name="com.ja.saillog.ui.TripSelectorActivity"
               android:excludeFromRecents="true"
               android:exported="false">
       <intent-filter>
-        <action android:name="com.ja.saillog.tripSelector" />
+        <action android:name="com.ja.saillog.ui.tripSelector" />
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
-    <activity android:name="TripEditActivity"
+    <activity android:name="com.ja.saillog.ui.TripEditActivity"
               android:excludeFromRecents="true"
               android:exported="false">
       <intent-filter>
-        <action android:name="com.ja.saillog.tripEdit" />
+        <action android:name="com.ja.saillog.ui.tripEdit" />
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>

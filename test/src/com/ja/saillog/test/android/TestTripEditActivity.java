@@ -8,13 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.ja.saillog.DBProvider;
 import com.ja.saillog.R;
-import com.ja.saillog.TrackDBInterface;
-import com.ja.saillog.TripDBInterface;
-import com.ja.saillog.TripEditActivity;
+import com.ja.saillog.database.DBProvider;
+import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.test.purejava.FakeTrackDB;
 import com.ja.saillog.test.purejava.FakeTripDB;
+import com.ja.saillog.ui.TripEditActivity;
+
 
 public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity> {
 

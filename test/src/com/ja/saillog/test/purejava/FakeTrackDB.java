@@ -2,8 +2,9 @@ package com.ja.saillog.test.purejava;
 
 import java.io.IOException;
 
-import com.ja.saillog.ExportFile;
-import com.ja.saillog.TrackDBInterface;
+import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.utilities.ExportFile;
+
 
 public class FakeTrackDB implements TrackDBInterface{
 

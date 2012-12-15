@@ -1,4 +1,6 @@
-package com.ja.saillog;
+package com.ja.saillog.utilities;
+
+import com.ja.saillog.database.TrackDBInterface;
 
 import android.location.Location;
 
@@ -10,7 +12,7 @@ public class DBLocationSink implements LocationSink {
         filter = new LocationFilter();
     }
 
-    void setDb(TrackDBInterface db) {
+    public void setDb(TrackDBInterface db) {
         this.db = db;
     }
 

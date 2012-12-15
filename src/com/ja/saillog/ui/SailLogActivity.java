@@ -1,9 +1,22 @@
-package com.ja.saillog;
+package com.ja.saillog.ui;
 
 import java.io.IOException;
 import java.util.LinkedList;
 
-import com.ja.saillog.TripDBInterface.TripInfo;
+import com.ja.saillog.R;
+import com.ja.saillog.R.id;
+import com.ja.saillog.R.layout;
+import com.ja.saillog.R.menu;
+import com.ja.saillog.database.DBProvider;
+import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.database.TripDBInterface;
+import com.ja.saillog.database.TripDBInterface.TripInfo;
+import com.ja.saillog.utilities.DBLocationSink;
+import com.ja.saillog.utilities.ExportFile;
+import com.ja.saillog.utilities.LocationFormatter;
+import com.ja.saillog.utilities.LocationSink;
+import com.ja.saillog.utilities.LocationTracker;
+
 
 import android.app.Activity;
 import android.content.Intent;

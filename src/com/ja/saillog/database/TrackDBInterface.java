@@ -1,6 +1,8 @@
-package com.ja.saillog;
+package com.ja.saillog.database;
 
 import java.io.IOException;
+
+import com.ja.saillog.utilities.ExportFile;
 
 /**
  * An Interface for implementing mocks of the actual

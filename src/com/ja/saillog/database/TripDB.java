@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.database;
 
 import android.content.Context;
 import android.database.Cursor;

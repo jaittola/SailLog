@@ -1,4 +1,6 @@
-package com.ja.saillog;
+package com.ja.saillog.ui;
+
+import com.ja.saillog.database.TripDB;
 
 import android.content.Context;
 import android.database.Cursor;

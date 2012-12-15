@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.database;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public abstract class SailLogDBBase extends SQLiteOpenHelper {
     public SailLogDBBase(Context context, String databaseName) {
         super(context, databaseName, null, dbVersion);
 
-        sqlBundle = ResourceBundle.getBundle("com.ja.saillog.sql");
+        sqlBundle = ResourceBundle.getBundle("com.ja.saillog.database.sql");
         cachedStatements = new HashMap<Pair<String, SQLiteDatabase>,
             SQLiteStatement>();
     }
@@ -26,6 +26,7 @@ public abstract class SailLogDBBase extends SQLiteOpenHelper {
                  cachedStatements.entrySet()) {
             entry.getValue().close();
         }
+        cachedStatements.clear();
 
         super.finalize();
     }

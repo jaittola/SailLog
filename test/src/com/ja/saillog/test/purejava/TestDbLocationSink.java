@@ -3,7 +3,7 @@ package com.ja.saillog.test.purejava;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import com.ja.saillog.DBLocationSink;
+import com.ja.saillog.utilities.DBLocationSink;
 
 public class TestDbLocationSink extends TestCase {
 

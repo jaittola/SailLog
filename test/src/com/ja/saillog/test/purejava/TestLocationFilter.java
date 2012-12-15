@@ -2,7 +2,7 @@ package com.ja.saillog.test.purejava;
 
 import junit.framework.TestCase;
 
-import com.ja.saillog.LocationFilter;
+import com.ja.saillog.utilities.LocationFilter;
 
 public class TestLocationFilter extends TestCase {
 

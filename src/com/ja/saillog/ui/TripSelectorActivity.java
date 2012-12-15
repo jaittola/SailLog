@@ -1,4 +1,10 @@
-package com.ja.saillog;
+package com.ja.saillog.ui;
+
+import com.ja.saillog.R;
+import com.ja.saillog.R.id;
+import com.ja.saillog.R.layout;
+import com.ja.saillog.database.TripDB;
+
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteCursor;
@@ -80,5 +86,5 @@ public class TripSelectorActivity extends SailLogActivityBase {
     private ListView tripListView;
 
     final public static int myIntentRequestCode = 1;
-    final public static String myIntentName = "com.ja.saillog.tripSelector";
+    final public static String myIntentName = "com.ja.saillog.ui.tripSelector";
 }

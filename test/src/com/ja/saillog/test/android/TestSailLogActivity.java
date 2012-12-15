@@ -10,14 +10,15 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.ja.saillog.DBProvider;
 import com.ja.saillog.R;
-import com.ja.saillog.SailLogActivity;
-import com.ja.saillog.TrackDBInterface;
-import com.ja.saillog.TripDBInterface;
-import com.ja.saillog.TripSelectorActivity;
+import com.ja.saillog.database.DBProvider;
+import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.test.purejava.FakeTrackDB;
 import com.ja.saillog.test.purejava.FakeTripDB;
+import com.ja.saillog.ui.SailLogActivity;
+import com.ja.saillog.ui.TripSelectorActivity;
+
 
 /*!
  * This class contains some tests for the SailLogActivity class.

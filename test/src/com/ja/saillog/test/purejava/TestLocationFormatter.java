@@ -3,7 +3,7 @@ package com.ja.saillog.test.purejava;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import com.ja.saillog.LocationFormatter;
+import com.ja.saillog.utilities.LocationFormatter;
 
 public class TestLocationFormatter extends TestCase {
 	public void testLatitudeFormatting() {

@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.utilities;
 
 public class LocationFormatter {
 	public static String formatLatitude(double latitude) {	

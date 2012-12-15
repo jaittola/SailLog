@@ -14,7 +14,7 @@ import junit.framework.Assert;
 import android.os.Environment;
 import android.test.AndroidTestCase;
 
-import com.ja.saillog.ExportFile;
+import com.ja.saillog.utilities.ExportFile;
 
 public class TestExportFile extends AndroidTestCase {
     @Override

@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.utilities;
 
 public interface LocationSink {
     /**

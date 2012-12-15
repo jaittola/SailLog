@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.ui;
 
 import android.app.Activity;
 import android.widget.Toast;

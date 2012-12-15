@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,8 +9,16 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.ja.saillog.TrackDBInterface.TripStats;
-import com.ja.saillog.TripDBInterface.TripInfo;
+import com.ja.saillog.R;
+import com.ja.saillog.R.id;
+import com.ja.saillog.R.layout;
+import com.ja.saillog.R.string;
+import com.ja.saillog.database.DBProvider;
+import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.database.TripDBInterface;
+import com.ja.saillog.database.TrackDBInterface.TripStats;
+import com.ja.saillog.database.TripDBInterface.TripInfo;
+
 
 public class TripEditActivity extends SailLogActivityBase {
     @Override
@@ -50,8 +58,9 @@ public class TripEditActivity extends SailLogActivityBase {
                 // TODO, this should update live.
                 TrackDBInterface tdb = DBProvider.getTrackDB(this, 
                         ti.dbFileName);
-
                 TripStats ts = tdb.getTripStats();
+                tdb.close();
+                
                 totalDistanceText.setText(String.format("%.1f", ts.distance));
                 totalSailingTimeText.setText(String.format("%.1f", ts.sailingTime));
                 totalEngineTimeText.setText(String.format("%.1f", ts.engineTime));
@@ -207,7 +216,7 @@ public class TripEditActivity extends SailLogActivityBase {
     private TripInfo ti;
 
     final public static int myIntentRequestCode = 2;
-    final public static String myIntentName = "com.ja.saillog.tripEdit";
+    final public static String myIntentName = "com.ja.saillog.ui.tripEdit";
     final public static String tripIdInIntent = "tripId";
     final public static int selectedResult = RESULT_FIRST_USER + 1;
 }

@@ -1,4 +1,4 @@
-package com.ja.saillog;
+package com.ja.saillog.database;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
+
+import com.ja.saillog.utilities.ExportFile;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -90,13 +92,17 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
         Cursor c = db.rawQuery("SELECT distance, engine_time, sailing_time, " +
                                "estimated_avg_speed FROM trip_stats " +
                                "LIMIT 1", null);
-        if (true == c.moveToNext()) {
-            ts = new TripStats(c.getDouble(0),
-                               c.getDouble(1),
-                               c.getDouble(2),
-                               c.getDouble(3));
+        try {
+            if (true == c.moveToNext()) {
+                ts = new TripStats(c.getDouble(0),
+                                   c.getDouble(1),
+                                   c.getDouble(2),
+                                   c.getDouble(3));
+            }
         }
-        c.close();
+        finally {
+            c.close();
+        }
 
         return ts;
     }

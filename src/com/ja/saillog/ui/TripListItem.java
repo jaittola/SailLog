@@ -1,4 +1,8 @@
-package com.ja.saillog;
+package com.ja.saillog.ui;
+
+import com.ja.saillog.R;
+import com.ja.saillog.R.id;
+import com.ja.saillog.R.layout;
 
 import android.content.Context;
 import android.util.AttributeSet;

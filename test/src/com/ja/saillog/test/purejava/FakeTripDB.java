@@ -2,7 +2,8 @@ package com.ja.saillog.test.purejava;
 
 import java.util.Random;
 
-import com.ja.saillog.TripDBInterface;
+import com.ja.saillog.database.TripDBInterface;
+
 
 public class FakeTripDB implements TripDBInterface {
 

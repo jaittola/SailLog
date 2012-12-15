@@ -6,8 +6,8 @@ import junit.framework.Assert;
 import android.location.Location;
 import android.test.AndroidTestCase;
 
-import com.ja.saillog.LocationSink;
-import com.ja.saillog.LocationTracker;
+import com.ja.saillog.utilities.LocationSink;
+import com.ja.saillog.utilities.LocationTracker;
 
 public class TestLocationTracker extends AndroidTestCase {
 	private class FakeSink implements LocationSink {
