@@ -2,11 +2,9 @@ package com.ja.saillog;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.TextView;
 
 public class TripListAdapter extends CursorAdapter {
 
@@ -21,9 +19,8 @@ public class TripListAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View tv = inflater.inflate(R.layout.trip_list_item, parent, false);
-        return setTripContent(tv, cursor);
+       TripListItem tli = new TripListItem(context);
+        return setTripContent(tli, cursor);
     }
 
     public void done() {
@@ -40,8 +37,11 @@ public class TripListAdapter extends CursorAdapter {
     }
 
     private View setTripContent(View view, Cursor cursor) {
-        TextView tv = (TextView) view;
-        tv.setText(cursor.getString(cursor.getColumnIndex("trip_name")));
+        TripListItem tli = (TripListItem) view;
+        tli.setTripName(cursor.getString(cursor.getColumnIndex(TripDB.tripNameColumn)));
+        tli.setPlaces(cursor.getString(cursor.getColumnIndex(TripDB.startLocationColumn)),
+                      cursor.getString(cursor.getColumnIndex(TripDB.endLocationColumn)));
+        tli.setSelected(1 == cursor.getInt(cursor.getColumnIndex(TripDB.selectedColumn)));
 
         return view;
     }

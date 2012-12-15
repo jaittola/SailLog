@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:textAppearance="?android:attr/textAppearanceMedium">
-</TextView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:clickable="false"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:longClickable="false"
+              android:orientation="horizontal" >
 
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:clickable="false"
+      android:focusable="false"
+      android:focusableInTouchMode="false"
+      android:orientation="vertical" >
 
-<!-- android:textColor="@drawable/trip_list_item_selector" -->
+    <TextView
+        android:id="@+id/tripNameView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/tripInfoView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:lines="1" />
+
+  </LinearLayout>
+
+  <CheckBox
+      android:id="@+id/tripSelectionToggle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:clickable="false"
+      android:focusable="false"
+      android:focusableInTouchMode="false"
+      android:minHeight="0dp" />
+
+</LinearLayout>
