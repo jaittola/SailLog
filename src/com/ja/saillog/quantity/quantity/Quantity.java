@@ -33,6 +33,17 @@ public abstract class Quantity {
     }
     
     /**
+     * @return true if the unit of this quantity is the same as otherUnit.
+     */
+    public boolean hasSameUnit(Unit otherUnit) {
+        if (otherUnit.getUnitId() == unit.getUnitId()) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * @return the numerical value of this quantity in the 
      * unit contained in this class.
      */

@@ -11,6 +11,8 @@ import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.database.TripDBInterface.TripInfo;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.DBLocationSink;
 import com.ja.saillog.utilities.ExportFile;
 import com.ja.saillog.utilities.LocationFormatter;
@@ -70,17 +72,15 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
 
     public void updateLocation(double latitude,
                                double longitude,
-                               double speed,
+                               double speedNum,
                                double bearing,
                                double accuracy,
                                long time) {
         // TODO, remove hard-coded speed unit.
-        String speedUnit = "kn";
-        double speedUnitConversion = 1.943844;
-
-        speedView.setText(String.format("%.1f %s",
-                          speedUnitConversion * speed,
-                          speedUnit));
+        Speed ms = QuantityFactory.metersPerSecond(speedNum);
+        Speed kn = QuantityFactory.knots(ms);
+        
+        speedView.setText(kn.stringValueWithUnit());
         headingView.setText(String.format("%.0f¡",
                                           bearing));
         latView.setText(LocationFormatter.formatLatitude(latitude));

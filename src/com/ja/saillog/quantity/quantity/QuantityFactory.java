@@ -7,28 +7,47 @@ import com.ja.saillog.quantity.unit.UnitFactory;
 public abstract class QuantityFactory {
     // Distances
     public static Distance meters(double value) {
-        return new Distance(value, UnitFactory.meters());
-    }
-    
-    public static Distance meters(Distance value) {
-        return new Distance(value, UnitFactory.meters());
-    }
-    
-    public static Distance nauticalMiles(double value) {
-        return new Distance(value, UnitFactory.nauticalMiles());
-    }
-    
-    public static Distance nauticalMiles(Distance value) {
-        return new Distance(value, UnitFactory.nauticalMiles());
-    }
-    
-    // Speeds
-    public static Speed metersPerSecond(double value) {
-        return new Speed(value, UnitFactory.metersPerSecond());
-    }
-    
-    public static Speed knots(double value) {
-        return new Speed(value, UnitFactory.knots());
+        return new Distance(value, UnitFactory.meters);
     }
 
+    public static Distance meters(Distance value) {
+        if (value.hasSameUnit(UnitFactory.meters)) {
+            return value;
+        }
+        return new Distance(value, UnitFactory.meters);
+    }
+
+    public static Distance nauticalMiles(double value) {
+        return new Distance(value, UnitFactory.nauticalMiles);
+    }
+
+    public static Distance nauticalMiles(Distance value) {
+        if (value.hasSameUnit(UnitFactory.nauticalMiles)) {
+            return value;
+        }
+        return new Distance(value, UnitFactory.nauticalMiles);
+    }
+
+    // Speeds
+    public static Speed metersPerSecond(double value) {
+        return new Speed(value, UnitFactory.metersPerSecond);
+    }
+
+    public static Speed metersPerSecond(Speed value) {
+        if (value.hasSameUnit(UnitFactory.metersPerSecond)) {
+            return value;
+        }
+        return new Speed(value, UnitFactory.metersPerSecond);
+    }
+
+    public static Speed knots(double value) {
+        return new Speed(value, UnitFactory.knots);
+    }
+
+    public static Speed knots(Speed value) {
+        if (value.hasSameUnit(UnitFactory.knots)) {
+            return value;
+        }
+        return new Speed(value, UnitFactory.knots);
+    }
 }

@@ -1,19 +1,20 @@
 package com.ja.saillog.quantity.unit;
 
 public abstract class Unit {
-    public Unit(double conversionFactorFromBaseUnit, String unitText) {
+    public Unit(double conversionFactorFromBaseUnit, String unitText, long unitId) {
         this.conversionFactorFromBaseUnit = conversionFactorFromBaseUnit;
         this.unitText = unitText;
+        this.unitId = unitId;
     }
     
     public String applyConversionWithUnit(double baseUnitValue) {
-        return String.format("%.1f %s", 
+        return String.format(floatConversion + " %s", 
                              applyConversion(baseUnitValue),
                              unitText);
     }
     
     public String applyConversionWithoutUnit(double baseUnitValue) {
-        return String.format("%.1f",
+        return String.format(floatConversion,
                              applyConversion(baseUnitValue));
     }
     
@@ -21,6 +22,12 @@ public abstract class Unit {
         return baseUnitValue * conversionFactorFromBaseUnit;
     }
     
+    public long getUnitId() {
+        return unitId;
+    }
+    
     protected double conversionFactorFromBaseUnit;
     protected String unitText;
+    protected long unitId;
+    private static final String floatConversion = "%.1f";
 }
