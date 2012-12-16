@@ -3,6 +3,7 @@ package com.ja.saillog.database;
 import java.io.IOException;
 
 import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
 
 /**
@@ -31,7 +32,7 @@ public interface TrackDBInterface {
     }
 
     public void insertPosition(double latitude, double longitude,
-                               double bearing, double speed,
+                               double bearing, Speed speed,
                                Distance distanceFromPrevious, double accuracy);
 
     public void insertEvent(int engineStatus, int sailPlan);

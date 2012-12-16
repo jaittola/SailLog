@@ -72,15 +72,13 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
 
     public void updateLocation(double latitude,
                                double longitude,
-                               double speedNum,
+                               Speed speed,
                                double bearing,
                                double accuracy,
                                long time) {
+
         // TODO, remove hard-coded speed unit.
-        Speed ms = QuantityFactory.metersPerSecond(speedNum);
-        Speed kn = QuantityFactory.knots(ms);
-        
-        speedView.setText(kn.stringValueWithUnit());
+        speedView.setText(QuantityFactory.knots(speed).stringValueWithUnit());
         headingView.setText(String.format("%.0f¡",
                                           bearing));
         latView.setText(LocationFormatter.formatLatitude(latitude));

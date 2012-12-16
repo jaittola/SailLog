@@ -22,6 +22,10 @@ public abstract class Unit {
         return baseUnitValue * conversionFactorFromBaseUnit;
     }
     
+    public double applyReverseConversion(double value) {
+        return value / conversionFactorFromBaseUnit;
+    }
+    
     public long getUnitId() {
         return unitId;
     }

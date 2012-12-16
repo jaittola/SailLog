@@ -2,6 +2,7 @@ package com.ja.saillog.utilities;
 
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 
 public class LocationFilter {
     /*
@@ -9,7 +10,7 @@ public class LocationFilter {
      * to warrant inserting it into the database.
      */
     public boolean canUpdate(double latitude, double longitude,
-                             double speed, double bearing,
+                             Speed speed, double bearing,
                              long time, Distance distanceToPrevious) {
 
         // Allow updating on several conditions:
@@ -72,19 +73,28 @@ public class LocationFilter {
      * Speed is different if it is more than 5% different from the previous one.
      * With very small speeds, a larger change is needed.
      */
-    private boolean speedIsDifferent(double speed, double prevSpeed) {
-        double speedDiff = Math.abs(speed - prevSpeed);
+    private boolean speedIsDifferent(Speed speed, Speed prevSpeed) {
+        double speedMs = QuantityFactory.metersPerSecond(speed).num();
+        
+        double prevSpeedMs = 0.0;
+        if (null != prevSpeed) {
+            prevSpeedMs = QuantityFactory.metersPerSecond(prevSpeed).num();
+        }
+        
+        double speedDiff = Math.abs(speedMs - prevSpeedMs);
 
         // With small speeds, do not calculate the fraction
         // to avoid division by small numbers (or by 0).
-        if (prevSpeed < 0.5) {
-            if (speedDiff < 0.2) {
+        double smallSpeedLimit = 0.5;
+        double smallSpeedUpdateLimit = 0.2;
+        if (prevSpeedMs < smallSpeedLimit) {
+            if (speedDiff < smallSpeedUpdateLimit) {
                 return false;
             }
             return true;
         }
 
-        if ((speedDiff / prevSpeed) > 0.05) {
+        if ((speedDiff / prevSpeedMs) > 0.05) {
             return true;
         }
 
@@ -107,7 +117,7 @@ public class LocationFilter {
     }
 
     private void keepFix(double latitude, double longitude,
-                         double speed, double bearing,
+                         Speed speed, double bearing,
                          long time) {
         pLatitude = latitude;
         pLongitude = longitude;
@@ -123,7 +133,7 @@ public class LocationFilter {
     private double pLongitude = Double.NaN;
 
     //! Previously saved speed
-    private double pSpeed = Double.NaN;
+    private Speed pSpeed = null;
 
     //! Previously saved bearing
     private double pBearing = Double.NaN;

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.LocationFilter;
 
 public class TestLocationFilter extends TestCase {
@@ -16,7 +17,7 @@ public class TestLocationFilter extends TestCase {
 
     private static final double firstLatitude = 60.0;
     private static final double firstLongitude = 25.0;
-    private static final double firstSpeed = 2.0;
+    private static final Speed firstSpeed = QuantityFactory.metersPerSecond(2.0);
     private static final double firstBearing = 30;
     private static final long firstLocationTime = 6000000;
     private static final Distance zeroDistance = QuantityFactory.meters(0.0);
@@ -33,7 +34,7 @@ public class TestLocationFilter extends TestCase {
     }
 
     public void testDifferentFix() {
-        assertTrue(filter.canUpdate(firstLatitude + 1, firstLongitude + 1, firstSpeed + 1,
+        assertTrue(filter.canUpdate(firstLatitude + 1, firstLongitude + 1, firstSpeed,
                                     firstBearing + 20, firstLocationTime + 1, zeroDistance));
     }
 
@@ -94,9 +95,9 @@ public class TestLocationFilter extends TestCase {
 
     public void testDifferentSpeeds() {
         // Successive speed changes.
-        double speed2 = 1.06 * firstSpeed;
-        double speed3 = 0.94 * speed2;
-        double speed4 = 0.98 * speed3;
+        Speed speed2 = QuantityFactory.metersPerSecond(1.06 * firstSpeed.num());
+        Speed speed3 = QuantityFactory.metersPerSecond(0.94 * speed2.num());
+        Speed speed4 = QuantityFactory.metersPerSecond(0.98 * speed3.num());
 
         assertTrue(filter.canUpdate(firstLatitude, firstLongitude, speed2,
                                     firstBearing, firstLocationTime + timeAlmostSame, 
@@ -110,15 +111,15 @@ public class TestLocationFilter extends TestCase {
     }
 
     public void testSmallSpeeds() {
-        assertTrue(filter.canUpdate(firstLatitude, firstLongitude, 0,
+        assertTrue(filter.canUpdate(firstLatitude, firstLongitude, QuantityFactory.metersPerSecond(0),
                                     firstBearing, firstLocationTime, zeroDistance));
-        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, 0.1,
+        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, QuantityFactory.metersPerSecond(0.1),
                                      firstBearing, firstLocationTime, zeroDistance));
-        assertTrue(filter.canUpdate(firstLatitude, firstLongitude, 0.31,
+        assertTrue(filter.canUpdate(firstLatitude, firstLongitude, QuantityFactory.metersPerSecond(0.31),
                                     firstBearing, firstLocationTime, zeroDistance));
-        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, 0.50,
+        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, QuantityFactory.metersPerSecond(0.50),
                                      firstBearing, firstLocationTime, zeroDistance));
-        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, 0.31,
+        assertFalse(filter.canUpdate(firstLatitude, firstLongitude, QuantityFactory.metersPerSecond(0.31),
                                      firstBearing, firstLocationTime, zeroDistance));
     }
 }

@@ -9,6 +9,7 @@ import java.nio.channels.FileChannel;
 
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
 
 import android.content.Context;
@@ -34,7 +35,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
     }
 
     public void insertPosition(double latitude, double longitude,
-                               double bearing, double speed,
+                               double bearing, Speed speed,
                                Distance distanceFromPrevious, double accuracy) {
         SQLiteDatabase db = getWritableDatabase();
         SQLiteStatement insertPosStm =
@@ -51,7 +52,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
             insertPosStm.bindDouble(1, latitude);
             insertPosStm.bindDouble(2, longitude);
-            insertPosStm.bindDouble(3, speed);
+            insertPosStm.bindDouble(3, QuantityFactory.metersPerSecond(speed).num());
             insertPosStm.bindDouble(4, bearing);
             insertPosStm.bindDouble(5, accuracy);
             insertPosStm.executeInsert();

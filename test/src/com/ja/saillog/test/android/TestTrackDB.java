@@ -11,6 +11,7 @@ import com.ja.saillog.database.TrackDB;
 import com.ja.saillog.database.TrackDBInterface.TripStats;
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
 
 
@@ -18,7 +19,7 @@ public class TestTrackDB extends TestDbBase {
 
     private class PositionContainer {
         public PositionContainer(double latitude, double longitude, double bearing,
-                                 double speed, double accuracy, Distance distanceFromPrev) {
+                                 Speed speed, double accuracy, Distance distanceFromPrev) {
             myLat = latitude;
             myLong = longitude;
             myBearing = bearing;
@@ -30,7 +31,7 @@ public class TestTrackDB extends TestDbBase {
         public double myLat;
         public double myLong;
         public double myBearing;
-        public double mySpeed;
+        public Speed mySpeed;
         public double myAccuracy;
         public Distance myDistanceFromPrev;
     }
@@ -79,7 +80,7 @@ public class TestTrackDB extends TestDbBase {
                 int col = 2;
                 Assert.assertEquals(posS[row].myLat, c.getDouble(col++));
                 Assert.assertEquals(posS[row].myLong, c.getDouble(col++));
-                Assert.assertEquals(posS[row].mySpeed, c.getDouble(col++), 0.01);
+                Assert.assertEquals(posS[row].mySpeed.num(), c.getDouble(col++), 0.01);
                 Assert.assertEquals(posS[row].myBearing, c.getDouble(col++), 0.01);
                 Assert.assertEquals(posS[row].myAccuracy, c.getDouble(col++), 0.01);
 
@@ -149,7 +150,7 @@ public class TestTrackDB extends TestDbBase {
             dbif.insertPosition(pos.myLat,
                                 pos.myLong,
                                 pos.myBearing,
-                                pos.mySpeed,
+                                QuantityFactory.metersPerSecond(pos.mySpeed),
                                 pos.myDistanceFromPrev,
                                 pos.myAccuracy);
 
@@ -230,9 +231,12 @@ public class TestTrackDB extends TestDbBase {
     // Note, it is assumed in this class that the posS and eventS arrays
     // are of the same length.
     private PositionContainer[] posS = {
-        new PositionContainer(60.1, 24.9, 350, 4, 10.0, QuantityFactory.meters(0.0)),
-        new PositionContainer(60.6, 25.1, 25.0, 4.2, 15.0, QuantityFactory.meters(1000)),
-        new PositionContainer(60.0, 25.0, 180, 5.2, 30.0, QuantityFactory.meters(3000)),
+        new PositionContainer(60.1, 24.9, 350, QuantityFactory.metersPerSecond(4), 
+                              10.0, QuantityFactory.meters(0.0)),
+        new PositionContainer(60.6, 25.1, 25.0, QuantityFactory.metersPerSecond(4.2), 
+                              15.0, QuantityFactory.meters(1000)),
+        new PositionContainer(60.0, 25.0, 180, QuantityFactory.metersPerSecond(5.2), 
+                              30.0, QuantityFactory.meters(3000)),
     };
 
     private EventContainer[] eventS = {

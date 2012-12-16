@@ -2,6 +2,8 @@ package com.ja.saillog.utilities;
 
 import java.util.List;
 
+import com.ja.saillog.quantity.quantity.QuantityFactory;
+
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
@@ -42,7 +44,7 @@ public class LocationTracker implements LocationListener {
 		for (LocationSink sink: locationSinks) {
 			sink.updateLocation(location.getLatitude(),
 								location.getLongitude(),
-							    location.getSpeed(),
+							    QuantityFactory.metersPerSecond(location.getSpeed()),
 							    location.getBearing(),
 							    location.getAccuracy(),
 							    location.getTime());

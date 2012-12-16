@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
 
 
@@ -12,7 +13,7 @@ public class FakeTrackDB implements TrackDBInterface{
 
     @Override
     public void insertPosition(double latitude, double longitude,
-                               double bearing, double speed,
+                               double bearing, Speed speed,
                                Distance distanceFromPrevious, double accuracy) {
         mLatitude = latitude;
         mLongitude = longitude;
@@ -51,7 +52,7 @@ public class FakeTrackDB implements TrackDBInterface{
     public double mLatitude = -91;
     public double mLongitude = -181;
     public double mBearing = -1;
-    public double mSpeed = -1;
+    public Speed mSpeed = null;
     public Distance mDistanceFromPrevious = null;
     public double mAccuracy = -1;
 

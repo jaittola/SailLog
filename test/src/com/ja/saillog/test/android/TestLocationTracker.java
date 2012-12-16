@@ -6,6 +6,7 @@ import junit.framework.Assert;
 import android.location.Location;
 import android.test.AndroidTestCase;
 
+import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationTracker;
 
@@ -15,14 +16,14 @@ public class TestLocationTracker extends AndroidTestCase {
 		public FakeSink() {
 			lastLatitude = Double.NaN;
 			lastLongitude = Double.NaN;
-			lastSpeed = Double.NaN;
+			lastSpeed = null;
 			lastBearing = Double.NaN;
 			lastAccuracy = Double.NaN;
 		}
 		
 		@Override
 		public void updateLocation(double latitude, double longitude,
-								   double speed, double bearing, 
+								   Speed speed, double bearing, 
 								   double accuracy, long time) {
 			lastLatitude = latitude;
 			lastLongitude = longitude;
@@ -38,7 +39,7 @@ public class TestLocationTracker extends AndroidTestCase {
 
 		public double lastLatitude;
 		public double lastLongitude;
-		public double lastSpeed;
+		public Speed lastSpeed;
 		public double lastBearing;
 		public double lastAccuracy;
 	}
@@ -69,7 +70,7 @@ public class TestLocationTracker extends AndroidTestCase {
 			Assert.assertEquals(location.getLatitude(), sink.lastLatitude);
 			Assert.assertEquals(location.getLongitude(), sink.lastLongitude);
 			Assert.assertEquals(location.getBearing(), sink.lastBearing, 0.1);
-			Assert.assertEquals(location.getSpeed(), sink.lastSpeed, 0.1);
+			Assert.assertEquals(location.getSpeed(), sink.lastSpeed.num(), 0.1);
 			Assert.assertEquals(location.getAccuracy(), sink.lastAccuracy, 0.1);
 		}
 	}

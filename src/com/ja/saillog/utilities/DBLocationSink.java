@@ -3,6 +3,7 @@ package com.ja.saillog.utilities;
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
 
 import android.location.Location;
 
@@ -18,13 +19,15 @@ public class DBLocationSink implements LocationSink {
         this.db = db;
     }
 
-    public void updateLocation(double latitude, double longitude, double speed,
+    public void updateLocation(double latitude, double longitude, Speed speed,
                                double bearing, double accuracy, long time) {
 
         Distance distance = calculateDistance(filter.getPreviousLatitude(), filter.getPreviousLongitude(),
                                               latitude, longitude);
 
-        if (true == filter.canUpdate(latitude, longitude, speed, bearing, time, distance) &&
+        if (true == filter.canUpdate(latitude, longitude, 
+                                     speed, 
+                                     bearing, time, distance) &&
             null != db) {
             db.insertPosition(latitude, longitude, bearing, speed, distance, accuracy);
         }

@@ -6,12 +6,12 @@ public abstract class Quantity {
     
     /**
      * Initialization.
-     *  @param valueInBaseUnit the numeric value
-     *  @param unit the unit in which the rawValue is in.
+     *  @param value the numeric value
+     *  @param unit the unit in which the value is in.
      */
-    protected Quantity(double valueInBaseUnit, Unit unit) {
-        this.valueInBaseUnit = valueInBaseUnit;
+    protected Quantity(double value, Unit unit) {
         this.unit = unit;
+        this.valueInBaseUnit = unit.applyReverseConversion(value);
     }
     
     /**

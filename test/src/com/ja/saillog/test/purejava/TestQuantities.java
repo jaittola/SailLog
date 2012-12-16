@@ -55,4 +55,10 @@ public class TestQuantities extends TestCase {
         Assert.assertEquals(metersValue, m_2.num());
         Assert.assertEquals(nmValue, nm.num());
     }
+    
+    public void testKnotsToMsConversion() {
+        Speed kn = QuantityFactory.knots(2);
+        Speed ms = QuantityFactory.metersPerSecond(kn);
+        Assert.assertEquals(1.02888889, ms.num(), 0.0001);
+    }
 }

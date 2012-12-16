@@ -17,17 +17,17 @@ public class TestDbLocationSink extends TestCase {
     }
 
     public void testDbLocationSink() {
-        sink.updateLocation(60, 20, 2, 3, 15.2, 0);
+        sink.updateLocation(60, 20, QuantityFactory.metersPerSecond(2), 3, 15.2, 0);
 
         Assert.assertEquals(60.0, db.mLatitude);
         Assert.assertEquals(20.0, db.mLongitude);
         Assert.assertEquals(3.0, db.mBearing);
-        Assert.assertEquals(2.0, db.mSpeed);
+        Assert.assertEquals(2.0, db.mSpeed.num());
         Assert.assertEquals(15.2, db.mAccuracy);
         Assert.assertEquals(0.0, 
                             QuantityFactory.meters(db.mDistanceFromPrevious).num());
 
-        sink.updateLocation(61, 20, 2, 3, 15.2, 0);
+        sink.updateLocation(61, 20, QuantityFactory.metersPerSecond(2), 3, 15.2, 0);
         Assert.assertEquals(61.0, db.mLatitude);
         Assert.assertEquals(111420.0, 
                             QuantityFactory.meters(db.mDistanceFromPrevious).num(), 

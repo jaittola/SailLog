@@ -1,5 +1,7 @@
 package com.ja.saillog.utilities;
 
+import com.ja.saillog.quantity.quantity.Speed;
+
 public interface LocationSink {
     /**
      * A new location update was received.
@@ -12,7 +14,7 @@ public interface LocationSink {
      */
 	public void updateLocation(double latitude,
 							   double longitude,
-							   double speed,
+							   Speed speed,
 							   double bearing,
 							   double accuracy,
 							   long time);
