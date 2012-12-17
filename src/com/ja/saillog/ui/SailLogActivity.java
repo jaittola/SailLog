@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import com.ja.saillog.R;
-import com.ja.saillog.R.id;
-import com.ja.saillog.R.layout;
-import com.ja.saillog.R.menu;
 import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.database.TripDBInterface;
@@ -19,8 +16,6 @@ import com.ja.saillog.utilities.LocationFormatter;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationTracker;
 
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,10 +26,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class SailLogActivity extends SailLogActivityBase implements LocationSink {
    @Override
@@ -222,7 +215,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     }
 
     private void allowLocationTracking(boolean allow) {
-
         if (false == allow) {
             trackLocationButton.setChecked(false);  // Enforce off
             trackLocationButton.setEnabled(false);
@@ -331,6 +323,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     private TextView latView;
     private TextView lonView;
     private TextView tripNameView;
-    
+
     private ProgressBar progressBar;
 }
