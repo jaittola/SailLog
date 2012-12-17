@@ -3,7 +3,6 @@ package com.ja.saillog.test.android;
 import junit.framework.Assert;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.test.ActivityUnitTestCase;
 import android.view.View;
 import android.widget.CheckBox;
@@ -14,6 +13,7 @@ import com.ja.saillog.R;
 import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.database.TripDBInterface;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.test.purejava.FakeTrackDB;
 import com.ja.saillog.test.purejava.FakeTripDB;
 import com.ja.saillog.ui.SailLogActivity;
@@ -93,13 +93,8 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         String expHeadingStr = String.format("%.0f¡", heading);
         String expLatStr = String.format("N %.0f¡ ", lat);
         String expLonStr = String.format("E %.0f¡ ", lon);
-
-        Location loc = new Location("xyzzy");
-        loc.setSpeed((float) speed);
-        loc.setBearing((float) heading);
-        loc.setLatitude(lat);
-        loc.setLongitude(lon);
-        sl.locationTracker.onLocationChanged(loc);
+ 
+        sl.updateLocation(lat, lon, QuantityFactory.metersPerSecond(42), heading, 21, 3);        
 
         Assert.assertEquals(expSpeedStr, speedText.getText().toString());
         Assert.assertEquals(expHeadingStr, headingText.getText().toString());

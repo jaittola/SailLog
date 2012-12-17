@@ -9,10 +9,14 @@ import android.location.Location;
 
 public class DBLocationSink implements LocationSink {
 
-    public DBLocationSink(TrackDBInterface db) {
-        this.db = db;
-
+    public DBLocationSink() {
         filter = new LocationFilter();
+    }
+
+    public DBLocationSink(TrackDBInterface db) {
+        filter = new LocationFilter();
+
+        this.db = db;
     }
 
     public void setDb(TrackDBInterface db) {
@@ -22,14 +26,16 @@ public class DBLocationSink implements LocationSink {
     public void updateLocation(double latitude, double longitude, Speed speed,
                                double bearing, double accuracy, long time) {
 
-        Distance distance = calculateDistance(filter.getPreviousLatitude(), filter.getPreviousLongitude(),
+        Distance distance = calculateDistance(filter.getPreviousLatitude(),
+                                              filter.getPreviousLongitude(),
                                               latitude, longitude);
 
-        if (true == filter.canUpdate(latitude, longitude, 
-                                     speed, 
-                                     bearing, time, distance) &&
-            null != db) {
-            db.insertPosition(latitude, longitude, bearing, speed, distance, accuracy);
+        if (null != db &&
+            true == filter.canUpdate(latitude, longitude,
+                                     speed,
+                                     bearing, time, distance)) {
+            db.insertPosition(latitude, longitude, bearing, speed,
+                              distance, accuracy);
         }
     }
 
@@ -42,7 +48,8 @@ public class DBLocationSink implements LocationSink {
     public void setLocationAvailable(boolean isAvailable) {
     }
 
-    public Distance calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    public Distance calculateDistance(double lat1, double lon1,
+                                      double lat2, double lon2) {
         if (Double.isNaN(lat1) ||
             Double.isNaN(lon1) ||
             Double.isNaN(lat2)||

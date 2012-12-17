@@ -1,11 +1,5 @@
 package com.ja.saillog.ui;
 
-import com.ja.saillog.R;
-import com.ja.saillog.R.id;
-import com.ja.saillog.R.layout;
-import com.ja.saillog.database.TripDB;
-
-
 import android.content.Intent;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
@@ -15,6 +9,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
+
+import com.ja.saillog.R;
+import com.ja.saillog.database.TripDB;
 
 public class TripSelectorActivity extends SailLogActivityBase {
 

@@ -10,13 +10,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.ja.saillog.R;
-import com.ja.saillog.R.id;
-import com.ja.saillog.R.layout;
-import com.ja.saillog.R.string;
 import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
-import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.database.TrackDBInterface.TripStats;
+import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.database.TripDBInterface.TripInfo;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 

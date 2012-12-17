@@ -1,15 +1,13 @@
 package com.ja.saillog.ui;
 
-import com.ja.saillog.R;
-import com.ja.saillog.R.id;
-import com.ja.saillog.R.layout;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.ja.saillog.R;
 
 public class TripListItem extends LinearLayout {
 
