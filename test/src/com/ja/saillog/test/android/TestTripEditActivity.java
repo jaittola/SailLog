@@ -44,7 +44,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     public void testSetupFromEmpty() {
         runTea(withoutTripId);
 
-        verifyFieldsEmpty();
+        verifyFieldsHaveDefaults();
     }
 
     public void testSetupWithId() {
@@ -121,6 +121,8 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     public void testSaveNewTripWithEmptyDetails() {
         runTea(withoutTripId);
 
+        tripNameText.setText("");
+        
         saveButton.performClick();
 
         // TODO, how to verify the showing of the confirmation dialog.
@@ -131,6 +133,24 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertFalse(isFinishCalled());
     }
 
+    public void testUpdateTripWithEmptyDetails() {
+        runTea(withTripId);
+
+        tripNameText.setText("");
+        fromText.setText("");
+        toText.setText("");
+        
+        saveButton.performClick();
+
+        // TODO, how to verify the showing of the confirmation dialog.
+
+        Assert.assertNull(tripdb.insertedTrip);
+        Assert.assertNull(tripdb.updatedTrip);
+
+        Assert.assertFalse(isFinishCalled());
+    }
+
+    
     public void testSelectNewTrip() {
         String tripName = "My trip for select";
 
@@ -193,8 +213,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         deleteButton = (Button) tea.findViewById(R.id.deleteThisButton);
 
 
-        TextView[] myAllViews = {
-            tripNameText,
+        TextView[] myEmptyViewsAtStart = {
             fromText,
             toText,
             startTime,
@@ -203,13 +222,16 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
             totalEngineTimeText,
             totalSailingTimeText,
         };
-        allViews = myAllViews;
+        allViews = myEmptyViewsAtStart;
     }
     
-    private void verifyFieldsEmpty() {
+    private void verifyFieldsHaveDefaults() {
         for (TextView v: allViews) {
             Assert.assertEquals(v.getText().toString().length(), 0);
         }
+        
+        Assert.assertEquals(tea.defaultTripName(), 
+                            tripNameText.getText().toString());
     }
 
     private EditText tripNameText;

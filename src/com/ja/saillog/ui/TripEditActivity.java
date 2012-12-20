@@ -1,9 +1,17 @@
 package com.ja.saillog.ui;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -16,6 +24,7 @@ import com.ja.saillog.database.TrackDBInterface.TripStats;
 import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.database.TripDBInterface.TripInfo;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.utilities.ExportFile;
 
 
 public class TripEditActivity extends SailLogActivityBase {
@@ -44,7 +53,11 @@ public class TripEditActivity extends SailLogActivityBase {
             tripId = extras.getLong(tripIdInIntent);
         }
 
-        if (null != tripId) {
+        if (null == tripId) {
+            // No trip. Put a default string there.
+            tripNameText.setText(defaultTripName());
+        }
+        else {
             // Existing trip: load from database.
             ti = tripDB.getTripById(tripId);
 
@@ -54,21 +67,24 @@ public class TripEditActivity extends SailLogActivityBase {
                 toText.setText(ti.endLocation);
 
                 // TODO, this should update live.
-                TrackDBInterface tdb = DBProvider.getTrackDB(this, 
-                        ti.dbFileName);
-                TripStats ts = tdb.getTripStats();
-                tdb.close();
-                
-                totalDistanceText.setText(QuantityFactory.nauticalMiles(ts.distance).stringValueWithUnit());
-                totalSailingTimeText.setText(String.format("%.1f", ts.sailingTime));
-                totalEngineTimeText.setText(String.format("%.1f", ts.engineTime));
+                trackDB = DBProvider.getTrackDB(this,
+                                                ti.dbFileName);
+                TripStats ts = trackDB.getTripStats();
+
+                totalDistanceText.setText(QuantityFactory
+                                          .nauticalMiles(ts.distance)
+                                          .stringValueWithUnit());
+                totalSailingTimeText.setText(String.format("%.1f",
+                                                           ts.sailingTime));
+                totalEngineTimeText.setText(String.format("%.1f",
+                                                          ts.engineTime));
             }
             else {
                 // Well, the trip should exist.
                 // Make a new TripInfo structure with this
                 // trip id so that the trip gets
                 // inserted as a new one (if the user wishes to save).
-                ti = new TripInfo(tripId, "", "", "", null);
+                ti = new TripInfo(tripId, defaultTripName(), "", "", null);
             }
         }
     }
@@ -79,6 +95,11 @@ public class TripEditActivity extends SailLogActivityBase {
 
         tripDB.close();
         tripDB = null;
+
+        if (null != trackDB) {
+            trackDB.close();
+        }
+        trackDB = null;
 
         ti = null;
 
@@ -94,10 +115,9 @@ public class TripEditActivity extends SailLogActivityBase {
     }
 
     private void getWidgets() {
-        tripNameText = (EditText) findViewById(R.id.tripNameText);
+        tripNameText = (EditText) findViewById(R.id.legNameText);
         fromText = (EditText) findViewById(R.id.fromText);
         toText = (EditText) findViewById(R.id.toText);
-        tripNameText = (EditText) findViewById(R.id.legNameText);
         startTime = (EditText) findViewById(R.id.startTime);
         endTime = (EditText) findViewById(R.id.endTime);
         totalDistanceText = (EditText) findViewById(R.id.totalDistanceText);
@@ -144,7 +164,7 @@ public class TripEditActivity extends SailLogActivityBase {
         tripDB.deleteTrip(ti.tripId);
         done(RESULT_OK);
     }
-    
+
     private void done(int result) {
         setResult(result);
         finish();
@@ -153,18 +173,20 @@ public class TripEditActivity extends SailLogActivityBase {
     private void showDeleteConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.delete_confirmation))
-            .setPositiveButton(getString(R.string.yes), 
-                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        doDelete();
-                    }
-                })
-            .setNegativeButton(getString(R.string.no), 
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Not confirmed -> do nothing.
-                    }
-                })
+            .setPositiveButton(getString(R.string.yes),
+                               new DialogInterface.OnClickListener() {
+                                   public void onClick(DialogInterface dialog,
+                                                       int id) {
+                                       doDelete();
+                                   }
+                               })
+            .setNegativeButton(getString(R.string.no),
+                               new DialogInterface.OnClickListener() {
+                                   public void onClick(DialogInterface dialog,
+                                                       int id) {
+                                       // Not confirmed -> do nothing.
+                                   }
+                               })
             .create().show();
     }
 
@@ -179,7 +201,7 @@ public class TripEditActivity extends SailLogActivityBase {
 
         if (null == ti) {
             // Insert new.
-           ti = tripDB.insertTrip(tripNameText.getText().toString(), 
+            ti = tripDB.insertTrip(tripNameText.getText().toString(),
                                    fromText.getText().toString(),
                                    toText.getText().toString());
         }
@@ -193,6 +215,117 @@ public class TripEditActivity extends SailLogActivityBase {
 
         return true;
     }
+
+    public String defaultTripName() {
+        return DateFormat.getDateInstance().format(new Date());
+    }
+    
+    // Menu below.
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.mainmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.export_db:
+            exportData();
+            return true;
+        case R.id.export_kml:
+            exportDataAsKML();
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private abstract class ExportDbTask extends AsyncTask<Void, Void, String> {
+
+        public ExportDbTask() {
+            super();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (true == exporting) {
+                preExecError = getString(R.string.already_exporting);
+            }
+            
+            if (false == exportFile.isExportDirAvailable()) {
+                preExecError = getString(R.string.export_no_mmc);
+                return;
+            }
+
+            if (null == trackDB) {
+                preExecError = getString(R.string.nothing_to_export);
+                return;
+            }
+            
+            exporting = true;
+        }
+
+        @Override
+        protected String doInBackground(Void... ignore) {
+            if (null != preExecError) {
+                return preExecError;
+            }
+
+            try {
+                doExport();
+            } catch (IOException ex) {
+                return String.format(getString(R.string.gen_export_failed),
+                                     ex.getLocalizedMessage());
+            }
+
+            return String.format(getString(R.string.export_ok), 
+                                 exportFile.fileName());
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            toast(result);
+            exporting = false;
+        }
+
+        protected abstract void doExport() throws IOException;
+
+        protected ExportFile exportFile;
+        private String preExecError;
+    }
+
+    private class ExportDbAsSQLiteTask extends ExportDbTask {
+        public ExportDbAsSQLiteTask() {
+            super();
+            exportFile = new ExportFile("db");
+        }
+
+        protected void doExport() throws IOException {
+            trackDB.exportDbAsSQLite(exportFile);
+        }
+    }
+
+    private class ExportDbAsKMLTask extends ExportDbTask {
+        public ExportDbAsKMLTask() {
+            super();
+            exportFile = new ExportFile("kml");
+        }
+
+        protected void doExport() throws IOException {
+            trackDB.exportDbAsKML(exportFile);
+        }
+    }
+
+    private void exportData() {
+        new ExportDbAsSQLiteTask().execute();
+    }
+
+    private void exportDataAsKML() {
+        new ExportDbAsKMLTask().execute();
+    }
+
 
     // A hack for testing. Should be removed if there is a way to confirm
     // a confirmation dialog.
@@ -210,8 +343,10 @@ public class TripEditActivity extends SailLogActivityBase {
     private Button saveButton;
     private Button deleteButton;
 
-    private TripDBInterface tripDB;
+    private TripDBInterface tripDB = null;
     private TripInfo ti;
+    private TrackDBInterface trackDB = null;
+    private boolean exporting = false;
 
     final public static int myIntentRequestCode = 2;
     final public static String myIntentName = "com.ja.saillog.ui.tripEdit";

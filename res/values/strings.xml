@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_new">Add new</string>
+    <string name="already_exporting">Please wait until the previous export finishes.</string>
     <string name="app_name">SailLog</string>
     <string name="cancel_button">Cancel</string>
     <string name="delete_this_trip">Delete</string>
@@ -12,7 +13,10 @@
     <string name="export_db">Export as database</string>
     <string name="export_kml">Export as KML</string>
     <string name="export_kml_short">Export KML</string>
+    <string name="export_ok">"Exported to %s"</string>
+    <string name="export_no_mmc">Exporting failed: MMC file system not available</string>
     <string name="first_entry">First entry</string>
+    <string name="gen_export_failed">Exporting failed: %s</string>
     <string name="heading">Heading</string>
     <string name="jib">Jib</string>
     <string name="last_entry">Last entry</string>
@@ -21,6 +25,7 @@
     <string name="main_sail">Main sail</string>
     <string name="new_trip">Name of new trip or leg</string>
     <string name="no">No</string>
+    <string name="nothing_to_export">Nothing to export</string>
     <string name="no_position_data">Position: -</string>
     <string name="no_speed_heading_data">Speed: -, Heading: -</string>
     <string name="no_trip_selected">Click to select a trip</string>

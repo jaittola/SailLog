@@ -1,13 +1,7 @@
 package com.ja.saillog.ui;
 
-import java.io.IOException;
-
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
@@ -22,14 +16,13 @@ import com.ja.saillog.database.TripDBInterface.TripInfo;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.DBLocationSink;
-import com.ja.saillog.utilities.ExportFile;
 import com.ja.saillog.utilities.LocationFormatter;
 import com.ja.saillog.utilities.LocationServiceProvider;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationSinkAdapter;
 
 public class SailLogActivity extends SailLogActivityBase implements LocationSink {
-   @Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -48,7 +41,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         if (null != trackDB) {
             trackDB.close();
         }
-        
+
         super.onDestroy();
     }
 
@@ -212,7 +205,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     private OnClickListener tripSelectClickListener = new OnClickListener() {
             public void onClick(View v) {
                 startActivityForResult(new Intent(TripSelectorActivity.myIntentName),
-                                                  TripSelectorActivity.myIntentRequestCode);
+                                       TripSelectorActivity.myIntentRequestCode);
             }
         };
 
@@ -234,102 +227,4 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     private TextView latView;
     private TextView lonView;
     private TextView tripNameView;
-
-    //
-    // THE MENU BELOW.
-    //
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.mainmenu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.export_db:
-            exportData();
-            return true;
-        case R.id.export_kml:
-            exportDataAsKML();
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private abstract class ExportDbTask extends AsyncTask<Void, Void, String> {
-
-        public ExportDbTask() {
-            super();
-        }
-
-        @Override
-            protected void onPreExecute() {
-            if (false == exportFile.isExportDirAvailable()) {
-                preExecError = "Exporting failed: MMC file system not available";
-                return;
-            }
-        }
-
-        @Override
-            protected String doInBackground(Void... ignore) {
-            if (null != preExecError) {
-                return preExecError;
-            }
-
-            try {
-                doExport();
-            } catch (IOException ex) {
-                return String.format("Exporting to %s failed: %s",
-                                     exportFile.fileName(),
-                                     ex.getLocalizedMessage());
-            }
-
-            return "Exported to " + exportFile.fileName();
-        }
-
-        @Override
-            protected void onPostExecute(String result) {
-            toast(result);
-        }
-
-        protected abstract void doExport() throws IOException;
-
-        protected ExportFile exportFile;
-        private String preExecError;
-    }
-
-    private class ExportDbAsSQLiteTask extends ExportDbTask {
-        public ExportDbAsSQLiteTask() {
-            super();
-            exportFile = new ExportFile("db");
-        }
-
-        protected void doExport() throws IOException {
-            // TODO, should go elsewhere.
-            trackDB.exportDbAsSQLite(exportFile);
-        }
-    }
-
-    private class ExportDbAsKMLTask extends ExportDbTask {
-        public ExportDbAsKMLTask() {
-            super();
-            exportFile = new ExportFile("kml");
-        }
-
-        protected void doExport() throws IOException {
-            // TODO, should go elsewhere
-            trackDB.exportDbAsKML(exportFile);
-        }
-    }
-
-    private void exportData() {
-        new ExportDbAsSQLiteTask().execute();
-    }
-
-    private void exportDataAsKML() {
-        new ExportDbAsKMLTask().execute();
-    }
-
 }
