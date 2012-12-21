@@ -1,6 +1,7 @@
 package com.ja.saillog.test.purejava;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.ja.saillog.database.TrackDBInterface;
 import com.ja.saillog.quantity.quantity.Distance;
@@ -27,6 +28,10 @@ public class FakeTrackDB implements TrackDBInterface{
     public void insertEvent(int engineStatus, int sailPlan) {
         mEngineStatus = engineStatus;
         mSailPlan = sailPlan;
+    }
+
+    @Override
+    public void setPreviousEventTimeForTesting(Date timestamp) {        
     }
 
     @Override
@@ -60,7 +65,7 @@ public class FakeTrackDB implements TrackDBInterface{
     public int mSailPlan = -1;
 
     public Distance mTotalDistance = QuantityFactory.meters(24);
-    public double mEngineTime = 0.5;
-    public double mSailingTime = 3.7;
+    public double mEngineTime = 61.0;
+    public double mSailingTime = 121.0;
     public double mAverageSpeed = 5.1;
-}
+ }

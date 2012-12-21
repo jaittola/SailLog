@@ -74,10 +74,10 @@ public class TripEditActivity extends SailLogActivityBase {
                 totalDistanceText.setText(QuantityFactory
                                           .nauticalMiles(ts.distance)
                                           .stringValueWithUnit());
-                totalSailingTimeText.setText(String.format("%.1f",
-                                                           ts.sailingTime));
-                totalEngineTimeText.setText(String.format("%.1f",
-                                                          ts.engineTime));
+                totalSailingTimeText.setText(String.format("%.1f min",
+                                                           ts.sailingTime / 60.0));
+                totalEngineTimeText.setText(String.format("%.1f min",
+                                                          ts.engineTime / 60.0));
             }
             else {
                 // Well, the trip should exist.

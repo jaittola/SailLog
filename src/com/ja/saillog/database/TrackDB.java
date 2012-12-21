@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
+import java.util.Date;
 
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
@@ -75,17 +76,49 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
                          "INSERT INTO event (position_id, engine, sailplan) " +
                          "SELECT COALESCE(MAX(position_id), 0), ?, ? " +
                          "FROM position");
+        SQLiteStatement updateStatsStm = 
+            getStatement(db,
+                         "UPDATE trip_stats SET engine_time = engine_time + ?," +
+                         "sailing_time = sailing_time + ?");
+
+        double timeSincePrevious = 0;
+        if (null != previousEventInsertTime) {
+            timeSincePrevious = Math.round((float) (new Date().getTime() - 
+                                                    previousEventInsertTime.getTime()) 
+                                                    / 1000.0);
+        }
+        
+        double sailTimeToAdd = (0 != sailPlan ? timeSincePrevious : 0);
+        double engineTimeToAdd = (0 != engineStatus ? timeSincePrevious : 0);
+
         try {
             db.beginTransaction();
+            
+            if (engineStatus != previousEngineStatus ||
+                sailPlan != previousSailPlan) {
 
-            insertEvStm.bindLong(1, engineStatus);
-            insertEvStm.bindLong(2, sailPlan);
-            insertEvStm.executeInsert();
+                insertEvStm.bindLong(1, engineStatus);
+                insertEvStm.bindLong(2, sailPlan);
+                insertEvStm.executeInsert();               
+            }
+            
+            updateStatsStm.bindDouble(1, engineTimeToAdd);
+            updateStatsStm.bindDouble(2, sailTimeToAdd);
+            updateStatsStm.executeInsert();
+            
             db.setTransactionSuccessful();
+
+            previousEventInsertTime = new Date();
+            previousEngineStatus = engineStatus;
+            previousSailPlan = sailPlan;
         }
         finally {
             db.endTransaction();
         }
+    }
+
+    public void setPreviousEventTimeForTesting(Date timestamp) {
+        previousEventInsertTime = timestamp;
     }
 
     public TripStats getTripStats() {
@@ -177,4 +210,8 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
             c.close();
         }
     }
+
+    private Date previousEventInsertTime;
+    private int previousSailPlan = -1;
+    private int previousEngineStatus = -1;
 }

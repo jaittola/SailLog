@@ -1,6 +1,7 @@
 package com.ja.saillog.database;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.Speed;
@@ -36,6 +37,12 @@ public interface TrackDBInterface {
                                Distance distanceFromPrevious, double accuracy);
 
     public void insertEvent(int engineStatus, int sailPlan);
+
+    /**
+     * Set the timestamp of the event that was just inserted to
+     * a specific time. To be used for testing purposes only.
+     */
+    public void setPreviousEventTimeForTesting(Date timestamp);
 
     public TripStats getTripStats();
 

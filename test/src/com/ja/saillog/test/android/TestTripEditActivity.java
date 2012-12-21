@@ -58,9 +58,9 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
                             toText.getText().toString());
         Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).stringValueWithUnit(),
                             totalDistanceText.getText().toString());
-        Assert.assertEquals(String.format("%.1f", trackdb.mSailingTime),
+        Assert.assertEquals(String.format("%.1f min", trackdb.mSailingTime / 60.0),
                             totalSailingTimeText.getText().toString());
-        Assert.assertEquals(String.format("%.1f", trackdb.mEngineTime),
+        Assert.assertEquals(String.format("%.1f min", trackdb.mEngineTime / 60.0),
                             totalEngineTimeText.getText().toString());
     }
 
