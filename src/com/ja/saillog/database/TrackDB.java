@@ -33,13 +33,6 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
             "create_trip_stats",
             "insert_trip_stats_entry",
         };
-        
-        upgradeDbStatements = new DBUpgradeStatement [] {
-            new DBUpgradeStatement("update_trip_stats1", 2),
-            new DBUpgradeStatement("update_trip_stats2", 2),
-        };
-        
-        dbVersion = 2;
     }
 
     public void insertPosition(double latitude, double longitude,
