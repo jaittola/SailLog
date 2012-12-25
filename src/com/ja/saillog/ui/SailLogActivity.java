@@ -168,7 +168,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         }
 
         TripDBInterface tripDB = DBProvider.getTripDB(this);
-        TripInfo ti = tripDB.getSelectedTrip();
+        TripInfo ti = tripDB.getActiveTrip();
 
         if (null == ti) {
             tripNameView.setText("");

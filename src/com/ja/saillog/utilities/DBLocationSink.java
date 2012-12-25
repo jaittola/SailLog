@@ -1,6 +1,7 @@
 package com.ja.saillog.utilities;
 
 import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.database.TripDBInterface.TripInfo;
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
@@ -13,12 +14,26 @@ public class DBLocationSink implements LocationSink {
         filter = new LocationFilter();
     }
 
+    // To be removed.
     public DBLocationSink(TrackDBInterface db) {
         filter = new LocationFilter();
 
         this.db = db;
     }
 
+    public void setActiveTrip(TripInfo ti) {
+        // Create trackdb based on tripInfo.
+    }
+    
+    public void startLocationListening() {
+        // Register to LocationServiceProvider.
+    }
+    
+    public void stopLocationListening() {
+        // Unregister from LocationServiceProvider.
+    }
+    
+    // TODO, to be removed.
     public void setDb(TrackDBInterface db) {
         this.db = db;
     }

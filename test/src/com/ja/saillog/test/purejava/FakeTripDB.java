@@ -35,7 +35,7 @@ public class FakeTripDB implements TripDBInterface {
     }
 
     @Override
-    public TripInfo getSelectedTrip() {
+    public TripInfo getActiveTrip() {
         return selectedTrip;
     }
 

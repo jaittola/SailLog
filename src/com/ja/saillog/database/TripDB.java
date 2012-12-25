@@ -189,7 +189,7 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
         }
     }
 
-    public TripInfo getSelectedTrip() {
+    public TripInfo getActiveTrip() {
         String [] selectionArgs = {};
 
         return queryTripInfo("SELECT " +

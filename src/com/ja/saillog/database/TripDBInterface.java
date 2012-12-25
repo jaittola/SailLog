@@ -34,7 +34,7 @@ public interface TripDBInterface {
 
     public void deleteTrip(long tripId);
 
-    public TripInfo getSelectedTrip();
+    public TripInfo getActiveTrip();
 
     public void close();
 

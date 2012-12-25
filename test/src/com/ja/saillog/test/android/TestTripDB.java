@@ -119,7 +119,7 @@ public class TestTripDB extends TestDbBase {
 
     void selectTripAndVerify(TripInfo tdi) {
         dbif.selectTrip(tdi.tripId);
-        TripInfo selectedTdi = dbif.getSelectedTrip();
+        TripInfo selectedTdi = dbif.getActiveTrip();
         Assert.assertEquals(tdi.tripId, selectedTdi.tripId);
 
         verifySelectionCount(1);
@@ -141,7 +141,7 @@ public class TestTripDB extends TestDbBase {
         dbif.selectTrip(tdi.tripId);
     	dbif.unselectTrips();
 
-    	TripInfo selectedTdi = dbif.getSelectedTrip();
+    	TripInfo selectedTdi = dbif.getActiveTrip();
     	Assert.assertEquals(selectedTdi, null);
         verifySelectionCount(0);
     }

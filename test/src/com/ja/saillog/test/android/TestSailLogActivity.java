@@ -131,10 +131,10 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
 
         // Check own consistency.
         if (withTrip == haveTrip) {
-            Assert.assertNotNull(DBProvider.getTripDB(sl).getSelectedTrip());
+            Assert.assertNotNull(DBProvider.getTripDB(sl).getActiveTrip());
         }
         else {
-            Assert.assertNull(DBProvider.getTripDB(sl).getSelectedTrip());
+            Assert.assertNull(DBProvider.getTripDB(sl).getActiveTrip());
         }
 
         findViews();
