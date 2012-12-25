@@ -121,9 +121,10 @@
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:inputType="none"
+            android:lines="1"
             android:linksClickable="false"
-            android:longClickable="false"
-            android:lines="1" >
+            android:longClickable="false" >
 
           <requestFocus />
         </EditText>
@@ -147,9 +148,10 @@
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:inputType="none"
+            android:lines="1"
             android:linksClickable="false"
-            android:longClickable="false"
-            android:lines="1" >
+            android:longClickable="false" >
 
           <requestFocus />
         </EditText>
@@ -173,9 +175,10 @@
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:inputType="none"
+            android:lines="1"
             android:linksClickable="false"
-            android:longClickable="false"
-            android:lines="1" >
+            android:longClickable="false" >
 
           <requestFocus />
         </EditText>
@@ -194,14 +197,16 @@
 
         <EditText
             android:id="@+id/totalSailingTimeText"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:inputType="datetime"
+            android:lines="1"
             android:linksClickable="false"
-            android:longClickable="false"
-            android:lines="1" >
+            android:longClickable="false" >
+
           <requestFocus />
         </EditText>
       </TableRow>
@@ -219,14 +224,16 @@
 
         <EditText
             android:id="@+id/totalEngineTimeText"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:inputType="datetime"
+            android:lines="1"
             android:linksClickable="false"
-            android:longClickable="false"
-            android:lines="1" >
+            android:longClickable="false" >
+
           <requestFocus />
         </EditText>
       </TableRow>
