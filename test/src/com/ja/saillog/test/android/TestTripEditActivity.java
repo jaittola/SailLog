@@ -58,12 +58,12 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
                             fromText.getText().toString());
         Assert.assertEquals(tripdb.aTrip.endLocation,
                             toText.getText().toString());
-        Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).stringValueWithUnit(),
+        Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).withUnit(),
                             totalDistanceText.getText().toString());
-        Assert.assertEquals(String.format("%.1f min", trackdb.mSailingTime / 60.0),
+        Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).withUnit(),
+                            totalDistanceText.getText().toString());
+        Assert.assertEquals(QuantityFactory.hourMinSec(trackdb.mSailingTime).withUnit(),
                             totalSailingTimeText.getText().toString());
-        Assert.assertEquals(String.format("%.1f min", trackdb.mEngineTime / 60.0),
-                            totalEngineTimeText.getText().toString());
         Assert.assertEquals(SimpleDateFormat.getDateTimeInstance().format(trackdb.mFirstEntry),
                             startTime.getText().toString());
         Assert.assertEquals(SimpleDateFormat.getDateTimeInstance().format(trackdb.mLastEntry),
@@ -75,19 +75,9 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         trackdb.mLastEntry = null;
  
         runTea(withTripId);
-               
-        Assert.assertEquals(tripdb.aTrip.tripName,
-                            tripNameText.getText().toString());
-        Assert.assertEquals(tripdb.aTrip.startLocation,
-                            fromText.getText().toString());
-        Assert.assertEquals(tripdb.aTrip.endLocation,
-                            toText.getText().toString());
-        Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).stringValueWithUnit(),
-                            totalDistanceText.getText().toString());
-        Assert.assertEquals(String.format("%.1f min", trackdb.mSailingTime / 60.0),
-                            totalSailingTimeText.getText().toString());
-        Assert.assertEquals(String.format("%.1f min", trackdb.mEngineTime / 60.0),
-                            totalEngineTimeText.getText().toString());
+
+        // To avoid duplication with testSetupWithId(),
+        // we test here only the values that are different.
         Assert.assertEquals("",
                             startTime.getText().toString());
         Assert.assertEquals("",

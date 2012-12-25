@@ -50,4 +50,10 @@ public abstract class QuantityFactory {
         }
         return new Speed(value, UnitFactory.knots);
     }
+    
+    // Times
+    // HourMinSec has no conversion to anything at the moment.
+    public static Time hourMinSec(double value) {
+        return new Time(value, UnitFactory.hourMinSec);
+    }
 }

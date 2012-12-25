@@ -24,11 +24,11 @@ public abstract class Quantity {
         this.unit = newUnit;
     }
     
-    public String stringValueWithUnit() {
+    public String withUnit() {
         return unit.applyConversionWithUnit(valueInBaseUnit);
     }
     
-    public String stringValueWithoutUnit() {
+    public String withoutUnit() {
         return unit.applyConversionWithoutUnit(valueInBaseUnit);
     }
     

@@ -24,19 +24,19 @@ public class TestQuantities extends TestCase {
     public void testValueExtractMethods() {
         Assert.assertEquals(ms.num(), msValue);
         Assert.assertEquals(String.format("%.1f m/s", msValue),
-                            ms.stringValueWithUnit());
+                            ms.withUnit());
         Assert.assertEquals(String.format("%.1f", msValue),
-                            ms.stringValueWithoutUnit());       
+                            ms.withoutUnit());       
     }
     
     public void testSameUnitConversion() {
         Speed ms2 = QuantityFactory.metersPerSecond(ms);
         
         Assert.assertEquals(ms.num(), ms2.num());
-        Assert.assertEquals(ms.stringValueWithoutUnit(), 
-                            ms2.stringValueWithoutUnit());        
-        Assert.assertEquals(ms.stringValueWithUnit(), 
-                            ms2.stringValueWithUnit());
+        Assert.assertEquals(ms.withoutUnit(), 
+                            ms2.withoutUnit());        
+        Assert.assertEquals(ms.withUnit(), 
+                            ms2.withUnit());
     }
     
     public void testSpeedConversion() {

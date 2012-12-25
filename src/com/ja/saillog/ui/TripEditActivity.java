@@ -74,11 +74,9 @@ public class TripEditActivity extends SailLogActivityBase {
 
                 totalDistanceText.setText(QuantityFactory
                                           .nauticalMiles(ts.distance)
-                                          .stringValueWithUnit());
-                totalSailingTimeText.setText(String.format("%.1f min",
-                                                           ts.sailingTime / 60.0));
-                totalEngineTimeText.setText(String.format("%.1f min",
-                                                          ts.engineTime / 60.0));
+                                          .withUnit());
+                totalSailingTimeText.setText(QuantityFactory.hourMinSec(ts.sailingTime).withUnit());
+                totalEngineTimeText.setText(QuantityFactory.hourMinSec(ts.engineTime).withUnit());
                 
                 if (null != ts.firstEntry) {
                     startTime.setText(SimpleDateFormat.getDateTimeInstance().format(ts.firstEntry));

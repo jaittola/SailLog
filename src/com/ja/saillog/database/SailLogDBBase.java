@@ -57,6 +57,11 @@ public abstract class SailLogDBBase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db,
                           int oldVersion,
                           int newVersion) {
+
+        if (true == db.isReadOnly()) {
+            return;
+        }
+        
         if (null == upgradeDbStatements) {
             return;
         }

@@ -37,6 +37,15 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     }
 
     @Override
+    public void onStop() {
+        // Do a sailing events status update 
+        // before leaving this view.
+        sailingEvents();
+        
+        super.onStop();
+    }
+    
+    @Override
     public void onDestroy() {
         if (null != trackDB) {
             trackDB.close();
@@ -53,7 +62,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
                                long time) {
 
         // TODO, remove hard-coded speed unit.
-        speedView.setText(QuantityFactory.knots(speed).stringValueWithUnit());
+        speedView.setText(QuantityFactory.knots(speed).withUnit());
         headingView.setText(String.format("%.0f¡",
                                           bearing));
         latView.setText(LocationFormatter.formatLatitude(latitude));
