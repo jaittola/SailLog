@@ -59,7 +59,6 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
 
         ensureButtonsEnabled(false);
         ensureStaticWidgetStates();
-
     }
 
     public void testUIStateWhenHaveTrip() {
@@ -119,10 +118,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         runSl(withoutTrip);
         
         tripNameText.performClick();
-        verifyTripSelectionStart();
-    }
-        
-    public void verifyTripSelectionStart() {
+ 
         Assert.assertEquals(TripSelectorActivity.myIntentRequestCode, getStartedActivityRequest());
         Assert.assertEquals(TripSelectorActivity.myIntentName, getStartedActivityIntent().getAction());     
     }

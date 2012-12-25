@@ -25,7 +25,10 @@ public class LocationServiceProvider {
         locationManager.removeUpdates(listener);
     }
 
-    static public LocationServiceProvider get(Activity activity) {
+    // Below is the static part of the class, which 
+    // permits the tests to insert their own providers
+    // to replace this class.
+    public static LocationServiceProvider get(Activity activity) {
         setDefaultProvider(activity);
         return provider;
     }

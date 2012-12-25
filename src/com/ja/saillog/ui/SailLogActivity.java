@@ -50,6 +50,7 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         if (null != trackDB) {
             trackDB.close();
         }
+        dbSink.setDb(null);
 
         super.onDestroy();
     }
