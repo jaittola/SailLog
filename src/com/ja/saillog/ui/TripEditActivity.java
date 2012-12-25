@@ -2,6 +2,7 @@ package com.ja.saillog.ui;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.AlertDialog;
@@ -78,6 +79,13 @@ public class TripEditActivity extends SailLogActivityBase {
                                                            ts.sailingTime / 60.0));
                 totalEngineTimeText.setText(String.format("%.1f min",
                                                           ts.engineTime / 60.0));
+                
+                if (null != ts.firstEntry) {
+                    startTime.setText(SimpleDateFormat.getDateTimeInstance().format(ts.firstEntry));
+                }
+                if (null != ts.lastEntry) {
+                    endTime.setText(SimpleDateFormat.getDateTimeInstance().format(ts.lastEntry));
+                }
             }
             else {
                 // Well, the trip should exist.

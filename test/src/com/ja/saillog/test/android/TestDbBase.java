@@ -38,6 +38,15 @@ public abstract class TestDbBase extends AndroidTestCase {
             Assert.assertFalse(c.isNull(col));
         }
     }
+    
+    protected void doSleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        }
+        catch (Exception ex) {
+            Assert.fail("Caught exception while sleeping");
+        }
+    }
 
     protected abstract SQLiteDatabase getWritableDatabase();
     

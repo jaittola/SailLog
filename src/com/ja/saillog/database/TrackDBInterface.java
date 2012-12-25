@@ -19,17 +19,23 @@ public interface TrackDBInterface {
         public TripStats(Distance distance,
                          double engineTime,
                          double sailingTime,
-                         double estimatedAvgSpeed) {
+                         double estimatedAvgSpeed,
+                         Date firstEntry,
+                         Date lastEntry) {
             this.distance = distance;
             this.engineTime = engineTime;
             this.sailingTime = sailingTime;
             this.estimatedAvgSpeed = estimatedAvgSpeed;
+            this.firstEntry = firstEntry;
+            this.lastEntry = lastEntry;
         }
 
         public Distance distance = null;
         public double engineTime = -1;
         public double sailingTime = -1;
         public double estimatedAvgSpeed = -1;
+        public Date firstEntry = null;
+        public Date lastEntry = null;
     }
 
     public void insertPosition(double latitude, double longitude,

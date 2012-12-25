@@ -199,6 +199,8 @@ public class TestTrackDB extends TestDbBase {
                 }
 
                 interval += 1;
+                // TODO: Here the time stamps of the events go backwards. 
+                // Should probably fix.
                 eventTimestamp.setTime(new Date().getTime() -
                                        (long) (interval) * 1000);
             }
@@ -236,6 +238,31 @@ public class TestTrackDB extends TestDbBase {
         }
     }
 
+    public void testEventStats() {
+        TripStats ts = dbif.getTripStats();
+        
+        Assert.assertNull(ts.firstEntry);
+        Assert.assertNull(ts.lastEntry);
+        
+        insertEvents();
+        
+        Date now = new Date();
+        ts = dbif.getTripStats();
+        Assert.assertEquals(ts.firstEntry.getTime(), ts.lastEntry.getTime());
+        Assert.assertTrue(now.getTime() - ts.firstEntry.getTime() < 1000);
+
+        doSleep(1001);
+        
+        insertPositions();
+
+        Date now2 = new Date();
+        ts = dbif.getTripStats();
+        System.err.println("Last entry " + ts.lastEntry.getTime());
+        System.err.println("First entry " + ts.firstEntry.getTime());
+        Assert.assertTrue(ts.lastEntry.getTime() > ts.firstEntry.getTime());
+        Assert.assertTrue(now2.getTime() - ts.lastEntry.getTime() < 1000);
+    }
+    
     public void testDbExport() {
         File dbCopy = null;
 

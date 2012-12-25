@@ -11,6 +11,16 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Pair;
 
 public abstract class SailLogDBBase extends SQLiteOpenHelper {
+    
+    protected class DBUpgradeStatement {
+        public DBUpgradeStatement(String sql, int toVersion) {
+            this.sql = sql;
+            this.toVersion = toVersion;
+        }
+        
+        public String sql;
+        public int toVersion;
+    }
 
     public SailLogDBBase(Context context, String databaseName) {
         super(context, databaseName, null, dbVersion);
@@ -47,6 +57,17 @@ public abstract class SailLogDBBase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db,
                           int oldVersion,
                           int newVersion) {
+        if (null == upgradeDbStatements) {
+            return;
+        }
+        
+        for (int v = oldVersion + 1; v <= newVersion; ++v) {
+            for (DBUpgradeStatement stm: upgradeDbStatements) {
+                if (stm.toVersion == v) {
+                    db.execSQL(sqlBundle.getString(stm.sql));
+                }
+            }
+        }
     }
 
     protected SQLiteStatement getStatement(SQLiteDatabase db,
@@ -62,12 +83,16 @@ public abstract class SailLogDBBase extends SQLiteOpenHelper {
         return stm;
     }
 
-    protected static final int dbVersion = 1;
+    protected static int dbVersion = 1;
     protected ResourceBundle sqlBundle;
 
     // The strings in this array refer to SQL clauses
     // in the sql.properties file.
     protected String[] createDbStatements = null;
+ 
+    // Similar to createDbStatements, but contains
+    // db version numbers.
+    protected DBUpgradeStatement[] upgradeDbStatements = null;
 
     /**
      * Cached statements for this database.

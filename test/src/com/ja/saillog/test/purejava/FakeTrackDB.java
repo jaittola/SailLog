@@ -10,7 +10,7 @@ import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
 
 
-public class FakeTrackDB implements TrackDBInterface{
+public class FakeTrackDB implements TrackDBInterface {
 
     @Override
     public void insertPosition(double latitude, double longitude,
@@ -38,7 +38,9 @@ public class FakeTrackDB implements TrackDBInterface{
     public TripStats getTripStats() {
         return new TripStats(mTotalDistance,
                              mEngineTime, mSailingTime, 
-                             mAverageSpeed);
+                             mAverageSpeed,
+                             mFirstEntry,
+                             mLastEntry);
     }
 
     @Override
@@ -68,4 +70,7 @@ public class FakeTrackDB implements TrackDBInterface{
     public double mEngineTime = 61.0;
     public double mSailingTime = 121.0;
     public double mAverageSpeed = 5.1;
+    
+    public Date mFirstEntry = new Date(new Date().getTime() - 20000);
+    public Date mLastEntry = new Date();
  }

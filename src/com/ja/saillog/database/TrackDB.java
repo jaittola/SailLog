@@ -33,6 +33,13 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
             "create_trip_stats",
             "insert_trip_stats_entry",
         };
+        
+        upgradeDbStatements = new DBUpgradeStatement [] {
+            new DBUpgradeStatement("update_trip_stats1", 2),
+            new DBUpgradeStatement("update_trip_stats2", 2),
+        };
+        
+        dbVersion = 2;
     }
 
     public void insertPosition(double latitude, double longitude,
@@ -46,7 +53,8 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
                          "VALUES (?, ?, ?, ?, ?)");
         SQLiteStatement updateStatsStm =
             getStatement(db,
-                         "UPDATE trip_stats SET distance = distance + ?");
+                         "UPDATE trip_stats SET distance = distance + ?" + 
+                         tstampUpdateClause);
 
         try {
             db.beginTransaction();
@@ -79,7 +87,8 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
         SQLiteStatement updateStatsStm = 
             getStatement(db,
                          "UPDATE trip_stats SET engine_time = engine_time + ?," +
-                         "sailing_time = sailing_time + ?");
+                         "sailing_time = sailing_time + ?" +
+                         tstampUpdateClause);
 
         double timeSincePrevious = 0;
         if (null != previousEventInsertTime) {
@@ -126,14 +135,19 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT distance, engine_time, sailing_time, " +
-                               "estimated_avg_speed FROM trip_stats " +
+                               "estimated_avg_speed, " +
+                               "strftime('%s', first_entry) as first_entryf, " +
+                               "strftime('%s', last_entry) as last_entryf " +
+                               "FROM trip_stats " +
                                "LIMIT 1", null);
         try {
             if (true == c.moveToNext()) {
                 ts = new TripStats(QuantityFactory.meters(c.getDouble(0)),
                                    c.getDouble(1),
                                    c.getDouble(2),
-                                   c.getDouble(3));
+                                   c.getDouble(3),
+                                   getDate(c, 4),
+                                   getDate(c, 5));
             }
         }
         finally {
@@ -211,6 +225,19 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
         }
     }
 
+    private Date getDate(Cursor c, int column) {
+        if (true == c.isNull(column)) {
+            return null;
+        }
+
+        return new Date(c.getLong(column) * 1000);
+    }
+    
+    
+    private String tstampUpdateClause = 
+        ", first_entry = coalesce(first_entry, datetime('now'))" +
+        ", last_entry = datetime('now')";
+    
     private Date previousEventInsertTime;
     private int previousSailPlan = -1;
     private int previousEngineStatus = -1;

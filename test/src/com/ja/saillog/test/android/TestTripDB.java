@@ -103,15 +103,6 @@ public class TestTripDB extends TestDbBase {
                             c.getString(c.getColumnIndex(TripDB.endLocationColumn)));
     }
 
-    private void doSleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ex) {
-            Assert.fail("Caught exception while sleeping");
-        }
-    }
-
     public void testTripSelection() {
     	String [] tripNames = new String[3];
         String tripNameBase = "Test trip selection ";

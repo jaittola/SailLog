@@ -1,5 +1,7 @@
 package com.ja.saillog.test.android;
 
+import java.text.SimpleDateFormat;
+
 import junit.framework.Assert;
 import android.content.Context;
 import android.content.Intent;
@@ -62,6 +64,35 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
                             totalSailingTimeText.getText().toString());
         Assert.assertEquals(String.format("%.1f min", trackdb.mEngineTime / 60.0),
                             totalEngineTimeText.getText().toString());
+        Assert.assertEquals(SimpleDateFormat.getDateTimeInstance().format(trackdb.mFirstEntry),
+                            startTime.getText().toString());
+        Assert.assertEquals(SimpleDateFormat.getDateTimeInstance().format(trackdb.mLastEntry),
+                            endTime.getText().toString());
+    }
+    
+    public void testSetupWithIdNoStartEndTimes() {
+        trackdb.mFirstEntry = null;
+        trackdb.mLastEntry = null;
+ 
+        runTea(withTripId);
+               
+        Assert.assertEquals(tripdb.aTrip.tripName,
+                            tripNameText.getText().toString());
+        Assert.assertEquals(tripdb.aTrip.startLocation,
+                            fromText.getText().toString());
+        Assert.assertEquals(tripdb.aTrip.endLocation,
+                            toText.getText().toString());
+        Assert.assertEquals(QuantityFactory.nauticalMiles(trackdb.mTotalDistance).stringValueWithUnit(),
+                            totalDistanceText.getText().toString());
+        Assert.assertEquals(String.format("%.1f min", trackdb.mSailingTime / 60.0),
+                            totalSailingTimeText.getText().toString());
+        Assert.assertEquals(String.format("%.1f min", trackdb.mEngineTime / 60.0),
+                            totalEngineTimeText.getText().toString());
+        Assert.assertEquals("",
+                            startTime.getText().toString());
+        Assert.assertEquals("",
+                            endTime.getText().toString());
+        
     }
 
     public void testSelectExistingTrip() {
