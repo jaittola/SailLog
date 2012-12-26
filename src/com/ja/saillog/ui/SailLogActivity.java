@@ -37,10 +37,21 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     }
 
     @Override
+    public void onStart() {
+        eventsSaved = 0;
+        
+        super.onStart();
+    }
+    
+    @Override
     public void onStop() {
-        // Do a sailing events status update 
-        // before leaving this view.
-        sailingEvents();
+        if (0 != eventsSaved) {
+            // Do a sailing events status update 
+            // before leaving this view if there were
+            // events saved while this view was visible.
+            // This needs to be done in a smarter way.
+            sailingEvents();
+        }
         
         super.onStop();
     }
@@ -128,6 +139,8 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
                         (jibCheckbox.isChecked() ? 1 << 1 : 0) |
                         (spinnakerCheckbox.isChecked() ? 1 << 2 : 0));
         dbSink.insertEvent(engineStatus, sailPlan);
+        
+        eventsSaved++;
     }
 
     private void setupWidgets() {
@@ -237,4 +250,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     private TextView latView;
     private TextView lonView;
     private TextView tripNameView;
+    
+    private long eventsSaved = 0;
 }

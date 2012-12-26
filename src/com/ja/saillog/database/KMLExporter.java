@@ -2,13 +2,40 @@ package com.ja.saillog.database;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import java.text.DateFormat;
 
 import com.ja.saillog.utilities.ExportFile;
 
-public class KMLExporter {
+public abstract class KMLExporter {
     static void export(SQLiteDatabase db, ExportFile exportFile) throws IOException {
+        PrintWriter pw = new PrintWriter(exportFile.file(), "utf-8");
+
+        // KML output below.
+        makeKMLHeading(pw);
+
+        // Grey if there is no sail or engine configuration.
+        makeLineStyle(pw, "ff999999", styleUnknown);
+        // Engine with red color.
+        makeLineStyle(pw, "ffff0000", styleEngine);
+        // Sailing with green.
+        makeLineStyle(pw, "ff00ff00", styleSailing);
+        // Motorsailing with lila.
+        makeLineStyle(pw, "ffff00ff", styleMotorSailing);
+
+        writeTrackLine(db, pw);
+        writeEventMarkers(db, pw);
+
+        pw.println("</Document>");
+        pw.println("</kml>");
+
+        pw.close();
+    }
+
+    private static void writeTrackLine(SQLiteDatabase db, PrintWriter pw) {
         String [] selectionArgs = {};
 
         String styleName = "unknown";
@@ -26,7 +53,8 @@ public class KMLExporter {
 
         Cursor positions = db.rawQuery("SELECT p.latitude, p.longitude, " +
                                        "e.event_id, e.position_id, " +
-                                       "e.event_time, e.engine, e.sailplan " +
+                                       "strftime('%s', e.event_time), " +
+                                       "e.engine, e.sailplan " +
                                        "FROM position p " +
                                        "LEFT OUTER JOIN event e " +
                                        "ON p.position_id = e.position_id " +
@@ -46,21 +74,6 @@ public class KMLExporter {
                 positions.close();
                 return;
             }
-
-            PrintWriter pw = new PrintWriter(exportFile.file(), "utf-8");
-
-            // KML output below.
-            makeKMLHeading(pw);
-
-            // Grey if there is no sail or engine configuration.
-            makeStyle(pw, "ff999999", styleUnknown);
-            // Engine with red color.
-            makeStyle(pw, "ffff0000", styleEngine);
-            // Sailing with green.
-            makeStyle(pw, "ff00ff00", styleSailing);
-            // Motorsailing with lila.
-            makeStyle(pw, "ffff00ff", styleMotorSailing);
-
             // Route
             startLineString(pw, styleName);
 
@@ -87,15 +100,71 @@ public class KMLExporter {
             }
 
             endLineString(pw);
-
-            pw.println("</Document>");
-            pw.println("</kml>");
-
-            pw.close();
         } finally {
             positions.close();
             initialConfig.close();
         }
+    }
+
+    private static void writeEventMarkers(SQLiteDatabase db, PrintWriter pw) {
+        String [] selectionArgs = {};
+        Cursor events = db.rawQuery("SELECT e.event_id, e.position_id, " +
+                                    "strftime('%s', e.event_time), e.engine, " +
+                                    "e.sailplan, p.latitude, p.longitude " +
+                                    "FROM event e " +
+                                    "JOIN position p " +
+                                    "ON e.position_id = p.position_id " +
+                                    "ORDER BY e.event_id",
+                                    selectionArgs);
+
+        try {
+            while (true == events.moveToNext()) {
+                writeEventMarker(pw,
+                                 getDate(events, 2),    // timestamp (ms)
+                                 events.getInt(3),      // engine status
+                                 events.getInt(4),      // sailplan
+                                 events.getDouble(5),   // latitude
+                                 events.getDouble(6));  // longitude
+            }
+        } finally {
+            events.close();
+        }
+    }
+
+    private static void writeEventMarker(PrintWriter pw,
+                                         Date timestamp,
+                                         int engine,
+                                         int sailplan,
+                                         double latitude,
+                                         double longitude) {
+        pw.println("<Placemark>");
+        pw.println("<Name>" + writeDate(timestamp) + "</Name>");
+        pw.println("<Description><![CDATA[");
+        p(pw, "At " + writeDate(timestamp));
+        // TODO, coordinate formatting.
+        p(pw, String.format("Coordinates: %.2f %.2f", latitude, longitude));
+        p(pw, "Engine: " + (0 != engine ? "on" : "off") + ", ");
+        // TODO, sail plan formatting.
+        p(pw, "Sails: " + (0 != sailplan ? "up" : "down"));
+        pw.println("]]></Description>");
+        pw.println("<Point>");
+        pw.println("<coordinates>");
+
+        writeCoordinates(pw, longitude, latitude);
+
+        pw.println("</coordinates>");
+        pw.println("</Point>");
+        pw.println("</Placemark>");
+    }
+
+    private static void p(PrintWriter pw, String text) {
+        pw.println("<p>");
+        pw.println(text);
+        pw.println("</p>");
+    }
+
+    private static String writeDate(Date timestamp) {
+        return DateFormat.getDateTimeInstance().format(timestamp);
     }
 
     private static void makeKMLHeading(PrintWriter pw) {
@@ -104,9 +173,9 @@ public class KMLExporter {
         pw.println("<Document>");
     }
 
-    private static void makeStyle(PrintWriter pw,
-                                  String rgb,
-                                  String styleName) {
+    private static void makeLineStyle(PrintWriter pw,
+                                      String rgb,
+                                      String styleName) {
         pw.println("<Style id=\"" + styleName + "\">");
         pw.println("<LineStyle><color>" +
                    rgb +
@@ -148,6 +217,16 @@ public class KMLExporter {
             return styleSailing;
         }
         return styleUnknown;
+    }
+
+    // This is copypasta and should be moved to some
+    // central utility.
+    private static Date getDate(Cursor c, int column) {
+        if (true == c.isNull(column)) {
+            return null;
+        }
+
+        return new Date(c.getLong(column) * 1000);
     }
 
     private static final String styleUnknown = "unknown";

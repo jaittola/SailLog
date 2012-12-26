@@ -43,9 +43,10 @@ public class LocationServiceProvider {
         provider = prov;
     }
 
+    private LocationManager locationManager;
+
     private static LocationServiceProvider provider;
 
-    private LocationManager locationManager;
     private static final int locationMinimumInterval = 2000; // ms
-    private static final int locationMinimumDistance = 20; // meters.
+    private static final int locationMinimumDistance = 0; // meters.
 }
