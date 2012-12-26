@@ -5,17 +5,18 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import android.os.Environment;
 
 public class ExportFile {
-    public ExportFile(String suff) {
-        suffix = suff;
+    public ExportFile(String suffix) {
+        this.suffix = suffix;
     }
     
     public String fileName() {        
         Date now = Calendar.getInstance().getTime();
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(now);
+        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(now);
        
         return String.format("%s%sSailLog-export-%s.%s",
                              Environment.getExternalStorageDirectory().getAbsolutePath(),

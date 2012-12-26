@@ -46,7 +46,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
                          "VALUES (?, ?, ?, ?, ?)");
         SQLiteStatement updateStatsStm =
             getStatement(db,
-                         "UPDATE trip_stats SET distance = distance + ?" + 
+                         "UPDATE trip_stats SET distance = distance + ?" +
                          tstampUpdateClause);
 
         try {
@@ -77,7 +77,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
                          "INSERT INTO event (position_id, engine, sailplan) " +
                          "SELECT COALESCE(MAX(position_id), 0), ?, ? " +
                          "FROM position");
-        SQLiteStatement updateStatsStm = 
+        SQLiteStatement updateStatsStm =
             getStatement(db,
                          "UPDATE trip_stats SET engine_time = engine_time + ?," +
                          "sailing_time = sailing_time + ?" +
@@ -85,29 +85,29 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
         double timeSincePrevious = 0;
         if (null != previousEventInsertTime) {
-            timeSincePrevious = Math.round((float) (new Date().getTime() - 
-                                                    previousEventInsertTime.getTime()) 
+            timeSincePrevious = Math.round((float) (new Date().getTime() -
+                                                    previousEventInsertTime.getTime())
                                                     / 1000.0);
         }
-        
+
         double sailTimeToAdd = (0 != sailPlan ? timeSincePrevious : 0);
         double engineTimeToAdd = (0 != engineStatus ? timeSincePrevious : 0);
 
         try {
             db.beginTransaction();
-            
+
             if (engineStatus != previousEngineStatus ||
                 sailPlan != previousSailPlan) {
 
                 insertEvStm.bindLong(1, engineStatus);
                 insertEvStm.bindLong(2, sailPlan);
-                insertEvStm.executeInsert();               
+                insertEvStm.executeInsert();
             }
-            
+
             updateStatsStm.bindDouble(1, engineTimeToAdd);
             updateStatsStm.bindDouble(2, sailTimeToAdd);
             updateStatsStm.executeInsert();
-            
+
             db.setTransactionSuccessful();
 
             previousEventInsertTime = new Date();
@@ -177,45 +177,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
     }
 
     public void exportDbAsKML(ExportFile exportFile) throws IOException {
-
-        SQLiteDatabase db = getReadableDatabase();
-        String [] selectionArgs = {};
-        Cursor c = db.rawQuery("SELECT position_id, longitude, latitude " +
-                               "FROM position ORDER BY position_id",
-                               selectionArgs);
-
-        if (0 >= c.getCount()) {
-            return;
-        }
-
-        try {
-            PrintWriter pw = new PrintWriter(exportFile.file(), "utf-8");
-
-            // Start of XML.
-            pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            pw.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
-            pw.println("<Document>");
-            pw.println("<Style id=\"red\">");
-            pw.println("<LineStyle><color>ffffff00</color><width>4</width></LineStyle></Style>");
-            pw.println("<Placemark>");
-            pw.println("<styleUrl>#red</styleUrl>");
-            pw.println("<LineString>");
-            pw.println("<coordinates>");
-
-            while (true == c.moveToNext()) {
-                pw.println(String.format("%f,%f", c.getDouble(1), c.getDouble(2)));
-            }
-
-            pw.println("</coordinates>");
-            pw.println("</LineString>");
-            pw.println("</Placemark>");
-            pw.println("</Document>");
-            pw.println("</kml>");
-
-            pw.close();
-        } finally {
-            c.close();
-        }
+        KMLExporter.export(getReadableDatabase(), exportFile);
     }
 
     private Date getDate(Cursor c, int column) {
@@ -225,12 +187,12 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
         return new Date(c.getLong(column) * 1000);
     }
-    
-    
-    private String tstampUpdateClause = 
+
+
+    private String tstampUpdateClause =
         ", first_entry = coalesce(first_entry, datetime('now'))" +
         ", last_entry = datetime('now')";
-    
+
     private Date previousEventInsertTime;
     private int previousSailPlan = -1;
     private int previousEngineStatus = -1;
