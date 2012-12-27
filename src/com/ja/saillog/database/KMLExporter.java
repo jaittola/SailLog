@@ -26,6 +26,13 @@ public abstract class KMLExporter {
         // Motorsailing with lila.
         makeLineStyle(pw, "ffff00ff", styleMotorSailing);
 
+        // TODO
+        // - Trip name
+        // - Trip description
+        // - Names for the events
+        // - Event filtering (no duplicates on the same location).
+        // - Names for the trip sections.
+
         writeTrackLine(db, pw);
         writeEventMarkers(db, pw);
 
@@ -138,15 +145,15 @@ public abstract class KMLExporter {
                                          double latitude,
                                          double longitude) {
         pw.println("<Placemark>");
-        pw.println("<Name>" + writeDate(timestamp) + "</Name>");
-        pw.println("<Description><![CDATA[");
+        pw.println("<name>" + writeDate(timestamp) + "</name>");
+        pw.println("<description><![CDATA[");
         p(pw, "At " + writeDate(timestamp));
         // TODO, coordinate formatting.
         p(pw, String.format("Coordinates: %.2f %.2f", latitude, longitude));
         p(pw, "Engine: " + (0 != engine ? "on" : "off") + ", ");
         // TODO, sail plan formatting.
         p(pw, "Sails: " + (0 != sailplan ? "up" : "down"));
-        pw.println("]]></Description>");
+        pw.println("]]></description>");
         pw.println("<Point>");
         pw.println("<coordinates>");
 
