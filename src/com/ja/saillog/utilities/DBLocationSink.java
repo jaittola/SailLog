@@ -54,7 +54,7 @@ public class DBLocationSink implements LocationSink {
         }
     }
 
-    public void insertEvent(int engineStatus, int sailPlan) {
+    public void insertEvent(int engineStatus, long sailPlan) {
         if (null != db) {
             db.insertEvent(engineStatus, sailPlan);
         }

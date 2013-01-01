@@ -4,19 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
 import java.util.Date;
-
-import com.ja.saillog.quantity.quantity.Distance;
-import com.ja.saillog.quantity.quantity.QuantityFactory;
-import com.ja.saillog.quantity.quantity.Speed;
-import com.ja.saillog.utilities.ExportFile;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+
+import com.ja.saillog.quantity.quantity.Distance;
+import com.ja.saillog.quantity.quantity.QuantityFactory;
+import com.ja.saillog.quantity.quantity.Speed;
+import com.ja.saillog.utilities.ExportFile;
 
 public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
@@ -68,7 +67,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
         }
     }
 
-    public void insertEvent(int engineStatus, int sailPlan) {
+    public void insertEvent(int engineStatus, long sailPlan) {
 
         SQLiteDatabase db = getWritableDatabase();
 
@@ -194,6 +193,6 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
         ", last_entry = datetime('now')";
 
     private Date previousEventInsertTime;
-    private int previousSailPlan = -1;
+    private long previousSailPlan = -1;
     private int previousEngineStatus = -1;
 }

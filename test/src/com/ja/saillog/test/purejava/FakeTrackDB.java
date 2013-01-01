@@ -25,7 +25,7 @@ public class FakeTrackDB implements TrackDBInterface {
     }
 
     @Override
-    public void insertEvent(int engineStatus, int sailPlan) {
+    public void insertEvent(int engineStatus, long sailPlan) {
         mEngineStatus = engineStatus;
         mSailPlan = sailPlan;
     }
@@ -64,7 +64,7 @@ public class FakeTrackDB implements TrackDBInterface {
     public double mAccuracy = -1;
 
     public int mEngineStatus = -1;
-    public int mSailPlan = -1;
+    public long mSailPlan = -1;
 
     public Distance mTotalDistance = QuantityFactory.meters(24);
     public double mEngineTime = 61.0;

@@ -7,6 +7,7 @@
     <string name="delete_this_trip">Delete</string>
     <string name="delete_confirmation">Are you sure you want to delete this trip?</string>
     <string name="destination">Destination</string>
+    <string name="sail_down">Down</string>
     <string name="end_time">End time</string>
     <string name="engine">Engine</string>
     <string name="enter_trip_name">Enter name for a new trip</string>
@@ -23,15 +24,21 @@
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="main_sail">Main sail</string>
+    <string name="motoring">Motoring</string>
+    <string name="motorsailing">Motorsailing</string>
     <string name="new_trip">Name of new trip or leg</string>
     <string name="no">No</string>
+    <string name="no_sail_plan">No sail plan</string>
     <string name="nothing_to_export">Nothing to export</string>
     <string name="no_position_data">Position: -</string>
     <string name="no_speed_heading_data">Speed: -, Heading: -</string>
     <string name="no_trip_selected">Click to select a trip</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
     <string name="onoff">On/Off</string>
     <string name="position">Position</string>
     <string name="save">Save</string>
+    <string name="sailing">Sailing</string>
     <string name="select_this_trip">Select</string>
     <string name="select_a_trip">Pick a trip</string>
     <string name="short_export_db">Export db</string>
@@ -49,5 +56,6 @@
     <string name="trip_stats">Trip statistics</string>
     <string name="trip_to">End location</string>
     <string name="trip_to_select">Select: %s</string>
+    <string name="sail_up">Up</string>
     <string name="yes">Yes</string>
 </resources>

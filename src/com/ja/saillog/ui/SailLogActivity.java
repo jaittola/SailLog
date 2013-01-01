@@ -20,13 +20,21 @@ import com.ja.saillog.utilities.LocationFormatter;
 import com.ja.saillog.utilities.LocationServiceProvider;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationSinkAdapter;
+import com.ja.saillog.utilities.SailPlan;
+import com.ja.saillog.utilities.StaticStrings;
 
-public class SailLogActivity extends SailLogActivityBase implements LocationSink {
+public class SailLogActivity
+    extends SailLogActivityBase
+    implements LocationSink {
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        StaticStrings.setup(this); // App-wide generic setup.
+
+        setupSailPlan();
         setupWidgets();
 
         dbSink = new DBLocationSink(null);
@@ -39,23 +47,23 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     @Override
     public void onStart() {
         eventsSaved = 0;
-        
+
         super.onStart();
     }
-    
+
     @Override
     public void onStop() {
         if (0 != eventsSaved) {
-            // Do a sailing events status update 
+            // Do a sailing events status update
             // before leaving this view if there were
             // events saved while this view was visible.
             // This needs to be done in a smarter way.
             sailingEvents();
         }
-        
+
         super.onStop();
     }
-    
+
     @Override
     public void onDestroy() {
         if (null != trackDB) {
@@ -79,8 +87,10 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
                                           bearing));
         latView.setText(LocationFormatter.formatLatitude(latitude));
         lonView.setText(LocationFormatter.formatLongitude(longitude));
-        setLocationAvailable(true);   // This also is wrong. But the fake location data seems
-                                      // to have the location availability status with random content.
+
+        // This is wrong. But the fake location data seems to have the
+        // location availability status with random content.
+        setLocationAvailable(true);
     }
 
     // TODO, would need connecting to the provider.
@@ -126,21 +136,31 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
         }
 
         setLocationAvailable(isChecked);
-        currentTrackingStatus = isChecked;
     }
 
     private void sailingEvents() {
         // Accumulate statuses from all event widgets.
+
         // We should actually combine several sail change events
         // to the same one. That may have to be done on the db
         // level, though.
         int engineStatus = engineStatusCheckbox.isChecked() ? 1 : 0;
-        int sailPlan = ((mainSailCheckbox.isChecked() ? 1 : 0) |
-                        (jibCheckbox.isChecked() ? 1 << 1 : 0) |
-                        (spinnakerCheckbox.isChecked() ? 1 << 2 : 0));
-        dbSink.insertEvent(engineStatus, sailPlan);
-        
+
+        sp.setSail(mainSailId, mainSailCheckbox.isChecked());
+        sp.setSail(jibId, jibCheckbox.isChecked());
+        sp.setSail(spinnakerId, spinnakerCheckbox.isChecked());
+
+        dbSink.insertEvent(engineStatus, sp.getSailPlan());
+
         eventsSaved++;
+    }
+
+    private void setupSailPlan() {
+        mainSailId = SailPlan.addSail(getString(R.string.main_sail));
+        jibId = SailPlan.addSail(getString(R.string.jib));
+        spinnakerId = SailPlan.addSail(getString(R.string.spinnaker));
+
+        sp = new SailPlan();
     }
 
     private void setupWidgets() {
@@ -232,7 +252,12 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
             }
         };
 
-    boolean currentTrackingStatus = false;
+    // These are public to make testing easier. You should regard them
+    // as private though.
+    public SailPlan sp;
+    public int mainSailId = -1;
+    public int jibId = -1;
+    public int spinnakerId = -1;
 
     private TrackDBInterface trackDB;
 
@@ -250,6 +275,6 @@ public class SailLogActivity extends SailLogActivityBase implements LocationSink
     private TextView latView;
     private TextView lonView;
     private TextView tripNameView;
-    
+
     private long eventsSaved = 0;
 }

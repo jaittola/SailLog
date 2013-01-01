@@ -42,7 +42,7 @@ public interface TrackDBInterface {
                                double bearing, Speed speed,
                                Distance distanceFromPrevious, double accuracy);
 
-    public void insertEvent(int engineStatus, int sailPlan);
+    public void insertEvent(int engineStatus, long sailPlan);
 
     /**
      * Set the timestamp of the event that was just inserted to

@@ -3,12 +3,17 @@ package com.ja.saillog.database;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Pair;
+
 import java.text.DateFormat;
 
 import com.ja.saillog.utilities.ExportFile;
+import com.ja.saillog.utilities.SailPlan;
+import com.ja.saillog.utilities.StaticStrings;
 
 public abstract class KMLExporter {
     static void export(SQLiteDatabase db, ExportFile exportFile) throws IOException {
@@ -29,9 +34,7 @@ public abstract class KMLExporter {
         // TODO
         // - Trip name
         // - Trip description
-        // - Names for the events
         // - Event filtering (no duplicates on the same location).
-        // - Names for the trip sections.
 
         writeTrackLine(db, pw);
         writeEventMarkers(db, pw);
@@ -45,10 +48,12 @@ public abstract class KMLExporter {
     private static void writeTrackLine(SQLiteDatabase db, PrintWriter pw) {
         String [] selectionArgs = {};
 
-        String styleName = "unknown";
+        String styleName = styleUnknown;
         String nextStyleName = null;
         double currLat = Double.NaN;
         double currLon = Double.NaN;
+        int engineStatus = 0;
+        SailPlan sailPlan = new SailPlan();
 
         Cursor initialConfig = db.rawQuery("SELECT engine, sailplan " +
                                            "FROM event " +
@@ -72,8 +77,11 @@ public abstract class KMLExporter {
             if (0 < initialConfig.getCount()) {
                 initialConfig.moveToNext();
 
-                styleName = getLineStyle(initialConfig.getInt(0),
-                                         initialConfig.getInt(1));
+                engineStatus = initialConfig.getInt(0);
+                sailPlan = getSailPlan(initialConfig, 1);
+                
+                styleName = getLineStyle(engineStatus, 
+                                         sailPlan.getSailPlan());
             }
 
             if (0 >= positions.getCount()) {
@@ -81,20 +89,26 @@ public abstract class KMLExporter {
                 positions.close();
                 return;
             }
-            // Route
-            startLineString(pw, styleName);
+
+            // Write out a line that shows the route.
+            
+            startLineString(pw, styleName, eventName(engineStatus, sailPlan));
 
             while (true == positions.moveToNext()) {
                 // If there is event information, fetch the next line style.
                 if (false == positions.isNull(5) &&
                     false == positions.isNull(6)) {
-                    nextStyleName = getLineStyle(positions.getInt(5),
-                                                 positions.getInt(6));
+                    engineStatus = positions.getInt(5);
+                    sailPlan = getSailPlan(positions, 6);
+                    
+                    nextStyleName = getLineStyle(engineStatus,
+                                                 sailPlan.getSailPlan());
                     if (false == nextStyleName.equals(styleName)) {
                         styleName = nextStyleName;
 
                         endLineString(pw);
-                        startLineString(pw, styleName);
+                        startLineString(pw, styleName, 
+                                        eventName(engineStatus, sailPlan));
 
                         writeCoordinates(pw, currLon, currLat);
 
@@ -129,7 +143,7 @@ public abstract class KMLExporter {
                 writeEventMarker(pw,
                                  getDate(events, 2),    // timestamp (ms)
                                  events.getInt(3),      // engine status
-                                 events.getInt(4),      // sailplan
+                                 getSailPlan(events, 4),
                                  events.getDouble(5),   // latitude
                                  events.getDouble(6));  // longitude
             }
@@ -141,18 +155,25 @@ public abstract class KMLExporter {
     private static void writeEventMarker(PrintWriter pw,
                                          Date timestamp,
                                          int engine,
-                                         int sailplan,
+                                         SailPlan sailplan,
                                          double latitude,
                                          double longitude) {
         pw.println("<Placemark>");
-        pw.println("<name>" + writeDate(timestamp) + "</name>");
+        pw.println("<name>" + eventName(engine, sailplan) + "</name>");
         pw.println("<description><![CDATA[");
-        p(pw, "At " + writeDate(timestamp));
+        p(pw, date(timestamp));
         // TODO, coordinate formatting.
         p(pw, String.format("Coordinates: %.2f %.2f", latitude, longitude));
-        p(pw, "Engine: " + (0 != engine ? "on" : "off") + ", ");
-        // TODO, sail plan formatting.
-        p(pw, "Sails: " + (0 != sailplan ? "up" : "down"));
+
+        p(pw, StaticStrings.engine() + ": " +
+                (0 != engine ? 
+                 StaticStrings.on(): StaticStrings.off()));
+        
+        List<Pair<String, String> > sails = sailplan.currentSails();
+        for (Pair<String, String> p: sails) {
+            p(pw, p.first + ": " + p.second);
+        }
+        
         pw.println("]]></description>");
         pw.println("<Point>");
         pw.println("<coordinates>");
@@ -170,10 +191,14 @@ public abstract class KMLExporter {
         pw.println("</p>");
     }
 
-    private static String writeDate(Date timestamp) {
+    private static String date(Date timestamp) {
         return DateFormat.getDateTimeInstance().format(timestamp);
     }
 
+    private static String eventName(int engine, SailPlan sp) {
+        return sp.generalDescription(0 != engine);
+    }
+    
     private static void makeKMLHeading(PrintWriter pw) {
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         pw.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
@@ -191,8 +216,10 @@ public abstract class KMLExporter {
     }
 
     private static void startLineString(PrintWriter pw,
-                                        String styleName) {
+                                        String styleName, 
+                                        String name) {
         pw.println("<Placemark>");
+        pw.println("<name>" + name + "</name>");
         pw.println("<styleUrl>#" + styleName + "</styleUrl>");
         pw.println("<LineString>");
         pw.println("<coordinates>");
@@ -213,14 +240,14 @@ public abstract class KMLExporter {
         }
     }
 
-    private static String getLineStyle(int engineStatus, int sailPlan) {
-        if (0 != engineStatus && 0 == sailPlan) {
+    private static String getLineStyle(int engineStatus, long sailPlanNum) {
+        if (0 != engineStatus && 0 == sailPlanNum) {
             return styleEngine;
         }
-        if (0 != engineStatus && 0 != sailPlan) {
+        if (0 != engineStatus && 0 != sailPlanNum) {
             return styleMotorSailing;
         }
-        if (0 == engineStatus && 0 != sailPlan) {
+        if (0 == engineStatus && 0 != sailPlanNum) {
             return styleSailing;
         }
         return styleUnknown;
@@ -234,6 +261,16 @@ public abstract class KMLExporter {
         }
 
         return new Date(c.getLong(column) * 1000);
+    }
+    
+    private static SailPlan getSailPlan(Cursor c, int column) {
+        SailPlan sp = new SailPlan();
+        
+        if (false == c.isNull(column)) {
+            sp.setSailPlan(c.getLong(column));
+        }
+        
+        return sp;
     }
 
     private static final String styleUnknown = "unknown";

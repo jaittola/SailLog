@@ -7,7 +7,6 @@ import android.test.ActivityUnitTestCase;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.ja.saillog.R;
 import com.ja.saillog.database.DBProvider;
@@ -16,8 +15,10 @@ import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.test.purejava.FakeTrackDB;
 import com.ja.saillog.test.purejava.FakeTripDB;
+import com.ja.saillog.test.purejava.SailPlanTestHelper;
 import com.ja.saillog.ui.SailLogActivity;
 import com.ja.saillog.ui.TripSelectorActivity;
+import com.ja.saillog.utilities.SailPlan;
 
 
 /*!
@@ -49,6 +50,8 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     }
 
     protected void tearDown() throws Exception {
+        SailPlan.clearSails();
+
         super.tearDown();
     }
 
@@ -92,8 +95,9 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         String expHeadingStr = String.format("%.0f¡", heading);
         String expLatStr = String.format("N %.0f¡ ", lat);
         String expLonStr = String.format("E %.0f¡ ", lon);
- 
-        sl.updateLocation(lat, lon, QuantityFactory.metersPerSecond(42), heading, 21, 3);        
+
+        sl.updateLocation(lat, lon,
+                          QuantityFactory.metersPerSecond(42), heading, 21, 3);
 
         Assert.assertEquals(expSpeedStr, speedText.getText().toString());
         Assert.assertEquals(expHeadingStr, headingText.getText().toString());
@@ -113,14 +117,45 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         Assert.assertTrue(latText.getText().toString().length() == 0);
         Assert.assertTrue(lonText.getText().toString().length() == 0);
     }
-    
+
     public void testTripSelectionWithTextField() {
         runSl(withoutTrip);
-        
+
         tripNameText.performClick();
- 
-        Assert.assertEquals(TripSelectorActivity.myIntentRequestCode, getStartedActivityRequest());
-        Assert.assertEquals(TripSelectorActivity.myIntentName, getStartedActivityIntent().getAction());     
+
+        Assert.assertEquals(TripSelectorActivity.myIntentRequestCode,
+                            getStartedActivityRequest());
+        Assert.assertEquals(TripSelectorActivity.myIntentName,
+                            getStartedActivityIntent().getAction());
+    }
+
+    public void testSailEngineEvents() {
+        runSl(withTrip);
+
+        mainButton.performClick();
+        verifyEventsDb(0, SailPlan.up, SailPlan.down, SailPlan.down);
+        
+        jibButton.performClick();
+        verifyEventsDb(0, SailPlan.up, SailPlan.up, SailPlan.down);
+        
+        spinnakerButton.performClick();
+        verifyEventsDb(0, SailPlan.up, SailPlan.up, SailPlan.up);
+
+        jibButton.performClick();
+        verifyEventsDb(0, SailPlan.up, SailPlan.down, SailPlan.up);
+        
+        spinnakerButton.performClick();
+        engineStatusButton.performClick();
+        verifyEventsDb(1, SailPlan.up, SailPlan.down, SailPlan.down);
+    }
+    
+    private void verifyEventsDb(int engine, 
+                                boolean mainUp, 
+                                boolean jibUp, 
+                                boolean spinUp) {
+        th.verifySailPlan(mainUp, jibUp, spinUp);
+        Assert.assertEquals(th.sp.getSailPlan(), trackdb.mSailPlan);
+        Assert.assertEquals(engine, trackdb.mEngineStatus);
     }
 
     private void runSl(boolean haveTrip) {
@@ -138,6 +173,20 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         }
 
         findViews();
+
+        setupSailPlanTestHelper();
+    }
+
+    private void setupSailPlanTestHelper() {
+        th = new SailPlanTestHelper(sl.getString(R.string.main_sail),
+                                    sl.getString(R.string.jib),
+                                    sl.getString(R.string.spinnaker),
+                                    sl.getString(R.string.sail_up),
+                                    sl.getString(R.string.sail_down),
+                                    sl.mainSailId,
+                                    sl.jibId,
+                                    sl.spinnakerId,
+                                    sl.sp);
     }
 
     private void ensureStaticWidgetStates() {
@@ -169,45 +218,44 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     }
 
     private void ensureButtonsEnabled(boolean canBeClicked) {
-        int [] buttonIds = {
-           R.id.trackLocationButton,
-           R.id.engineStatusButton,
-           R.id.mainSailCheckbox,
-           R.id.jibCheckbox,
-           R.id.spinnakerCheckbox,
-        };
-
-        View view = null;
-
-        for (int i = 0; i < buttonIds.length; ++i) {
-            view = sl.findViewById(buttonIds[i]);
-            Assert.assertNotNull(String.format("View for ID %d (%d th item) not found", buttonIds[i], i), view);
-            Assert.assertEquals(String.format("View for ID %d (%d th item) has wrong enable status",
-                                              buttonIds[i], i),
-                                canBeClicked, view.isEnabled());
-        }
+        Assert.assertEquals(canBeClicked, trackLocationButton.isEnabled());
+        Assert.assertEquals(canBeClicked, engineStatusButton.isEnabled());
+        Assert.assertEquals(canBeClicked, mainButton.isEnabled());
+        Assert.assertEquals(canBeClicked, jibButton.isEnabled());
+        Assert.assertEquals(canBeClicked, spinnakerButton.isEnabled());
    }
 
     private void findViews() {
         tripNameText = (EditText) sl.findViewById(R.id.tripNameText);
-        trackLocationButton = (CheckBox) sl.findViewById(R.id.trackLocationButton);
+        trackLocationButton = (CheckBox)
+            sl.findViewById(R.id.trackLocationButton);
+        engineStatusButton = (CheckBox)
+            sl.findViewById(R.id.engineStatusButton);
+        mainButton = (CheckBox) sl.findViewById(R.id.mainSailCheckbox);
+        jibButton = (CheckBox) sl.findViewById(R.id.jibCheckbox);
+        spinnakerButton = (CheckBox) sl.findViewById(R.id.spinnakerCheckbox);
         speedText = (EditText) sl.findViewById(R.id.speedText);
         headingText = (EditText) sl.findViewById(R.id.headingText);
         latText = (EditText) sl.findViewById(R.id.latText);
         lonText = (EditText) sl.findViewById(R.id.lonText);
     }
 
-    SailLogActivity sl;
-    FakeTripDB tripdb = new FakeTripDB();
-    FakeTrackDB trackdb = new FakeTrackDB();
+    private SailLogActivity sl = null;
+    private FakeTripDB tripdb = new FakeTripDB();
+    private FakeTrackDB trackdb = new FakeTrackDB();
 
-    EditText tripNameText;
-    ImageButton selectTripButton;
-    CheckBox trackLocationButton;
-    EditText speedText;
-    EditText headingText;
-    EditText latText;
-    EditText lonText;
+    private EditText tripNameText;
+    private CheckBox trackLocationButton;
+    private CheckBox engineStatusButton;
+    private CheckBox mainButton;
+    private CheckBox jibButton;
+    private CheckBox spinnakerButton;
+    private EditText speedText;
+    private EditText headingText;
+    private EditText latText;
+    private EditText lonText;
+
+    private SailPlanTestHelper th;
 
     public static boolean withTrip = true;
     public static boolean withoutTrip = false;
