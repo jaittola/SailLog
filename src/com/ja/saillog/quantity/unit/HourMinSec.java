@@ -1,5 +1,7 @@
 package com.ja.saillog.quantity.unit;
 
+import java.util.Locale;
+
 public class HourMinSec extends TimeUnit {
 
     public HourMinSec(long unitId) {
@@ -8,45 +10,50 @@ public class HourMinSec extends TimeUnit {
 
     public String applyConversionWithUnit(double baseUnitValue) {
         long[] hms = hourMinSec(baseUnitValue);
-        
-        StringBuffer resultBuff = 
-                new StringBuffer(writeVal(hms[0], "h", conditional))
-                .append(writeVal(hms[1], "min", conditional))
-                .append(writeVal(hms[2], "s", unconditional));
-        
-        return resultBuff.toString().trim();
+
+        return String.format("%s%s%s",
+                             writeVal(hms[0], "h", conditional, withSpace),
+                             writeVal(hms[1], "min", conditional, withSpace),
+                             writeVal(hms[2], "s", unconditional, noSpace));
     }
-    
+
     public String applyConversionWithoutUnit(double baseUnitValue) {
         // Do not use this.
         return "";
     }
-    
-    private long[] hourMinSec(double value) {
+
+    private long[] hourMinSec(double seconds) {
         long[] result = new long[3];
-        
+
         // seconds
-        result[2] = (long) (value % 60.0);
-        
-        double minutes = value / 60.0;
+        result[2] = (long) (seconds % 60.0);
+
+        double minutes = seconds / 60.0;
         result[1] = (long) (minutes % 60.0);
-        
-        result[0] = ((long) minutes) / 60;
-        
+
+        result[0] = (long) (minutes / 60.0);
+
         return result;
     }
-    
-    private StringBuffer writeVal(long val, String unit, boolean isConditional) {
-        StringBuffer resultBuffer = new StringBuffer();
-        
-        if (unconditional == isConditional ||
-            0 != val) {
-            resultBuffer = resultBuffer.append(" " + val + " " + unit);
+
+    private String writeVal(long val,
+                            String unit,
+                            boolean isConditional,
+                            boolean appendSpace) {
+        if (0 != val ||
+            unconditional == isConditional) {
+            return String.format(Locale.getDefault(),
+                                 "%d %s%s",
+                                 val,
+                                 unit,
+                                 (withSpace == appendSpace ? " ": ""));
         }
         
-        return resultBuffer;
+        return "";
     }
-    
+
     private static final boolean conditional = true;
     private static final boolean unconditional = false;
+    private static final boolean withSpace = true;
+    private static final boolean noSpace = false;
 }

@@ -16,7 +16,6 @@ import com.ja.saillog.database.TripDBInterface.TripInfo;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.DBLocationSink;
-import com.ja.saillog.utilities.LocationFormatter;
 import com.ja.saillog.utilities.LocationServiceProvider;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationSinkAdapter;
@@ -85,8 +84,8 @@ public class SailLogActivity
         speedView.setText(QuantityFactory.knots(speed).withUnit());
         headingView.setText(String.format("%.0f¡",
                                           bearing));
-        latView.setText(LocationFormatter.formatLatitude(latitude));
-        lonView.setText(LocationFormatter.formatLongitude(longitude));
+        latView.setText(QuantityFactory.dmsLatitude(latitude).withUnit());
+        lonView.setText(QuantityFactory.dmsLongitude(longitude).withUnit());
 
         // This is wrong. But the fake location data seems to have the
         // location availability status with random content.

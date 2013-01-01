@@ -2,6 +2,7 @@ package com.ja.saillog.quantity.quantity;
 
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.Speed;
+import com.ja.saillog.quantity.quantity.Coordinate;
 import com.ja.saillog.quantity.unit.UnitFactory;
 
 public abstract class QuantityFactory {
@@ -50,10 +51,20 @@ public abstract class QuantityFactory {
         }
         return new Speed(value, UnitFactory.knots);
     }
-    
+
     // Times
     // HourMinSec has no conversion to anything at the moment.
     public static Time hourMinSec(double value) {
         return new Time(value, UnitFactory.hourMinSec);
+    }
+
+    // Coordinates.
+    // No conversions for coordinates either.
+    public static Coordinate dmsLatitude(double value) {
+        return new Coordinate(value, UnitFactory.dmsLatitude);
+    }
+
+    public static Coordinate dmsLongitude(double value) {
+        return new Coordinate(value, UnitFactory.dmsLongitude);
     }
 }

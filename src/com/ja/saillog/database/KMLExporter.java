@@ -2,6 +2,7 @@ package com.ja.saillog.database;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Pair;
 
-import java.text.DateFormat;
-
+import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.utilities.ExportFile;
 import com.ja.saillog.utilities.SailPlan;
 import com.ja.saillog.utilities.StaticStrings;
@@ -162,9 +162,10 @@ public abstract class KMLExporter {
         pw.println("<name>" + eventName(engine, sailplan) + "</name>");
         pw.println("<description><![CDATA[");
         p(pw, date(timestamp));
-        // TODO, coordinate formatting.
-        p(pw, String.format("Coordinates: %.2f %.2f", latitude, longitude));
-
+        p(pw, 
+          String.format("%s<br>%s", 
+                        QuantityFactory.dmsLatitude(latitude).withUnit(), 
+                        QuantityFactory.dmsLongitude(longitude).withUnit()));
         p(pw, StaticStrings.engine() + ": " +
                 (0 != engine ? 
                  StaticStrings.on(): StaticStrings.off()));
