@@ -65,15 +65,34 @@ public abstract class KMLExporter {
                                            "   WHERE position_id = 0)",
                                            selectionArgs);
 
-        Cursor positions = db.rawQuery("SELECT p.latitude, p.longitude, " +
-                                       "e.event_id, e.position_id, " +
-                                       "strftime('%s', e.event_time), " +
-                                       "e.engine, e.sailplan " +
-                                       "FROM position p " +
-                                       "LEFT OUTER JOIN event e " +
-                                       "ON p.position_id = e.position_id " +
-                                       "ORDER BY p.position_id",
-                                       selectionArgs);
+        Cursor positions =
+            db.rawQuery("SELECT position_id, " +
+                        "       latitude, " +
+                        "       longitude, " +
+                        "       NULL, " +
+                        "       NULL, " +
+                        "       NULL, " +
+                        "       NULL " +
+                        "FROM position " +
+                        "WHERE position_id NOT IN " +
+                        "    (SELECT DISTINCT(position_id) " +
+                        "     FROM event " +
+                        "     WHERE position_id IS NOT NULL) " +
+                        "UNION ALL " +
+                        "SELECT p.position_id, " +
+                        "       p.latitude, " +
+                        "       p.longitude, " +
+                        "       e.event_id, " +
+                        "       strftime('%s', e.event_time), " +
+                        "       e.engine, " +
+                        "       e.sailplan " +
+                        "FROM POSITION p " +
+                        "JOIN event e ON p.position_id = e.position_id " +
+                        "WHERE event_id IN (SELECT MAX(event_id) " +
+                        "                   FROM event " +
+                        "                   GROUP BY position_id) " +
+                        "ORDER BY position_id",
+                        selectionArgs);
 
         try {
             if (0 < initialConfig.getCount()) {
@@ -116,8 +135,8 @@ public abstract class KMLExporter {
 
                     }
                 }
-                currLat = positions.getDouble(0);
-                currLon = positions.getDouble(1);
+                currLat = positions.getDouble(1);
+                currLon = positions.getDouble(2);
 
                 writeCoordinates(pw, currLon, currLat);
             }

@@ -31,8 +31,7 @@ public class TestKMLExport extends AndroidTestCase {
     // the test data needs to be supplied to the device.
     // Alternatively we could generate the test data.
     // Hence private.
-    // TODO TODO
-    public void testKMLExport1() {
+    private void testKMLExport1() {
         String inputDbFile = "/mnt/sdcard/sle-koe-2.db";
         
         TrackDB tdb = new TrackDB(mContext, inputDbFile);
