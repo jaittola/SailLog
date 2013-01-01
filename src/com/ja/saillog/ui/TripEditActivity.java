@@ -316,7 +316,7 @@ public class TripEditActivity extends SailLogActivityBase {
     private class ExportDbAsKMLTask extends ExportDbTask {
         public ExportDbAsKMLTask() {
             super();
-            exportFile = new ExportFile("kml");
+            exportFile = new ExportFile("kml", "kmz");
         }
 
         protected void doExport() throws IOException {

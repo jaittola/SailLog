@@ -1,10 +1,13 @@
 package com.ja.saillog.database;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,7 +22,17 @@ public abstract class KMLExporter {
     static void export(SQLiteDatabase db, ExportFile exportFile)
         throws IOException {
 
-        PrintWriter pw = new PrintWriter(exportFile.file(), "utf-8");
+        ZipOutputStream zos = null;
+        PrintWriter pw = null;
+
+        if (null == exportFile.compressedFileName()) {
+            pw = new PrintWriter(exportFile.file(), "utf-8");
+        }
+        else {
+            zos = new ZipOutputStream(new FileOutputStream(exportFile.compressedFileName()));
+            zos.putNextEntry(new ZipEntry(exportFile.uncompressedFileNameNoPath()));
+            pw = new PrintWriter(zos);
+        }
 
         // KML output below.
         makeKMLHeading(pw);
@@ -44,7 +57,16 @@ public abstract class KMLExporter {
         pw.println("</Document>");
         pw.println("</kml>");
 
-        pw.close();
+        pw.flush();
+        
+        if (null != zos) {
+            zos.closeEntry();
+            pw.close();
+            zos.close();
+        }
+        else {
+            pw.close();
+        }
     }
 
     private static void writeTrackLine(SQLiteDatabase db, PrintWriter pw) {

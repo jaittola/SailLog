@@ -35,10 +35,12 @@ public class TestKMLExport extends AndroidTestCase {
         String inputDbFile = "/mnt/sdcard/sle-koe-2.db";
         
         TrackDB tdb = new TrackDB(mContext, inputDbFile);
-        ExportFile ef = new ExportFile("kml");
+        ExportFile compressedEf = new ExportFile("kml", "kmz");
+        ExportFile plainEf = new ExportFile("kml");
         
         try {
-            tdb.exportDbAsKML(ef);
+            tdb.exportDbAsKML(compressedEf);
+            tdb.exportDbAsKML(plainEf);
         }
         catch (IOException ex) {
             Assert.fail("Got IOException: " + ex.toString());

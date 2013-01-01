@@ -14,15 +14,25 @@ public class ExportFile {
         this.suffix = suffix;
     }
     
-    public String fileName() {        
-        Date now = Calendar.getInstance().getTime();
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(now);
-       
-        return String.format("%s%sSailLog-export-%s.%s",
-                             Environment.getExternalStorageDirectory().getAbsolutePath(),
-                             File.separator,
-                             timestamp,
-                             suffix);
+    public ExportFile(String suffix, String compressedSuffix) {
+        this.suffix = suffix;
+        this.compressedSuffix = compressedSuffix;
+    }
+    
+    public String fileName() {
+        return String.format("%s.%s", fileNameWithPath(), suffix);
+    }
+        
+    public String compressedFileName() {
+        if (null == compressedSuffix) {
+            return null;
+        }
+        
+        return String.format("%s.%s", fileNameWithPath(), compressedSuffix);
+    }
+    
+    public String uncompressedFileNameNoPath() {
+        return String.format("%s.%s", fileNameBody(), suffix);
     }
     
     public File file() throws IOException {
@@ -36,6 +46,27 @@ public class ExportFile {
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
+    private String fileNameWithPath() {
+        return String.format("%s%s%s", 
+                             Environment.getExternalStorageDirectory().getAbsolutePath(),
+                             File.separator,
+                             fileNameBody());
+    }
     
-    private String suffix;
+    private String fileNameBody() {
+        if (null == fileNameBody) {
+            Date now = Calendar.getInstance().getTime();
+       
+            fileNameBody = 
+                    "SailLog-export-" + 
+                    new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(now);
+        }
+        
+        return fileNameBody;
+    }
+
+    
+    private String fileNameBody = null;
+    private String suffix = null;
+    private String compressedSuffix = null;
 }
