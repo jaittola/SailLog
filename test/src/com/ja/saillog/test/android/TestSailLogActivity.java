@@ -11,6 +11,7 @@ import android.widget.EditText;
 import com.ja.saillog.R;
 import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
+import com.ja.saillog.database.TripDB;
 import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.test.purejava.FakeTrackDB;
@@ -37,7 +38,11 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     }
 
     protected void setUp() throws Exception {
-       DBProvider.setProvider(new DBProvider() {
+        tripdb = new FakeTripDB();
+        trackdb = new FakeTrackDB();
+        prevTrackdb = null;
+
+        DBProvider.setProvider(new DBProvider() {
                 protected TripDBInterface getTripDBInstance(Context context) {
                     return tripdb;
                 }
@@ -51,6 +56,9 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
 
     protected void tearDown() throws Exception {
         SailPlan.clearSails();
+        tripdb = null;
+        trackdb = null;
+        prevTrackdb = null;
 
         super.tearDown();
     }
@@ -129,29 +137,87 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
                             getStartedActivityIntent().getAction());
     }
 
+    // This shows a testing anti-pattern: one case
+    // should not verify many different cases.
+    // This stuff is rather simple and hence
+    // an exception here.
     public void testSailEngineEvents() {
         runSl(withTrip);
 
         mainButton.performClick();
         verifyEventsDb(0, SailPlan.up, SailPlan.down, SailPlan.down);
-        
+
         jibButton.performClick();
         verifyEventsDb(0, SailPlan.up, SailPlan.up, SailPlan.down);
-        
+
         spinnakerButton.performClick();
         verifyEventsDb(0, SailPlan.up, SailPlan.up, SailPlan.up);
 
         jibButton.performClick();
         verifyEventsDb(0, SailPlan.up, SailPlan.down, SailPlan.up);
-        
+
         spinnakerButton.performClick();
         engineStatusButton.performClick();
         verifyEventsDb(1, SailPlan.up, SailPlan.down, SailPlan.down);
     }
-    
-    private void verifyEventsDb(int engine, 
-                                boolean mainUp, 
-                                boolean jibUp, 
+
+    // Test returning from the trip selection views
+    // with the trip changed.
+    public void testTripChange() {
+        simulateTripListViewVisitAndVerify(FakeTripDB.defaultSelectedTripId + 1,
+                                           "somethingtoo");
+
+        // The trip database must have been closed and a new one
+        // been taken into use.
+        Assert.assertTrue(prevTrackdb.isClosed);
+    }
+
+    // Test returning from the trip selection views
+    // without changing the current selected trip.
+    public void testTripSelectionViewReturnSameTrip() {
+
+        simulateTripListViewVisitAndVerify(null, "something");
+
+        Assert.assertEquals(tripdb.selectedTripName(),
+                            tripNameText.getText().toString());
+    }
+
+    private void simulateTripListViewVisitAndVerify(Long newSelectedTripId,
+                                                    String newNameId) {
+
+        runSl(withTrip);
+
+        // Make these selections checked.
+        trackLocationButton.performClick();
+        engineStatusButton.performClick();
+
+        // Simulate new trip selection, and going and returning from another view.
+        if (null != newSelectedTripId) {
+            tripdb.selectTrip(newSelectedTripId);
+            prevTrackdb = trackdb;
+            trackdb = new FakeTrackDB();
+        }
+        if (null != newNameId) {
+            tripdb.selectedTripNameIdentifier = newNameId;
+        }
+
+        sl.onActivityResult(TripSelectorActivity.myIntentRequestCode, -1, null);
+
+        // The buttons must keep the same states as before.
+        Assert.assertTrue(trackLocationButton.isChecked());
+        Assert.assertTrue(engineStatusButton.isChecked());
+
+        // Close must not have been called for the current track db:
+        //  - if the track db was changed, the current one is the new one,
+        //    and it must  be open.
+        //  - if it was not closed, the same one must be in use and remain
+        //    open.
+        Assert.assertFalse(trackdb.isClosed);
+    }
+
+    private void verifyEventsDb(int engine,
+                                boolean mainUp,
+                                boolean jibUp,
                                 boolean spinUp) {
         th.verifySailPlan(mainUp, jibUp, spinUp);
         Assert.assertEquals(th.sp.getSailPlan(), trackdb.mSailPlan);
@@ -214,7 +280,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
                                               view.getId(), item),
                                 false, view.isFocusable());
             ++item;
-       }
+        }
     }
 
     private void ensureButtonsEnabled(boolean canBeClicked) {
@@ -223,7 +289,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         Assert.assertEquals(canBeClicked, mainButton.isEnabled());
         Assert.assertEquals(canBeClicked, jibButton.isEnabled());
         Assert.assertEquals(canBeClicked, spinnakerButton.isEnabled());
-   }
+    }
 
     private void findViews() {
         tripNameText = (EditText) sl.findViewById(R.id.tripNameText);
@@ -241,8 +307,9 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     }
 
     private SailLogActivity sl = null;
-    private FakeTripDB tripdb = new FakeTripDB();
-    private FakeTrackDB trackdb = new FakeTrackDB();
+    private FakeTripDB tripdb = null;
+    private FakeTrackDB trackdb = null;
+    private FakeTrackDB prevTrackdb = null;
 
     private EditText tripNameText;
     private CheckBox trackLocationButton;

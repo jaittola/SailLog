@@ -51,7 +51,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
 
     public void testSetupWithId() {
         runTea(withTripId);
-        
+
         Assert.assertEquals(tripdb.aTrip.tripName,
                             tripNameText.getText().toString());
         Assert.assertEquals(tripdb.aTrip.startLocation,
@@ -69,11 +69,11 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertEquals(SimpleDateFormat.getDateTimeInstance().format(trackdb.mLastEntry),
                             endTime.getText().toString());
     }
-    
+
     public void testSetupWithIdNoStartEndTimes() {
         trackdb.mFirstEntry = null;
         trackdb.mLastEntry = null;
- 
+
         runTea(withTripId);
 
         // To avoid duplication with testSetupWithId(),
@@ -82,7 +82,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
                             startTime.getText().toString());
         Assert.assertEquals("",
                             endTime.getText().toString());
-        
+
     }
 
     public void testSelectExistingTrip() {
@@ -90,7 +90,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
 
         selectButton.performClick();
 
-        Assert.assertEquals(tripdb.aTrip.tripId, tripdb.selectedTrip.tripId);
+        Assert.assertEquals(tripdb.aTrip.tripId, tripdb.selectedTripId.longValue());
 
         Assert.assertTrue(isFinishCalled());
     }
@@ -99,7 +99,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     public void testSaveExistingTrip() {
         tripdb.setupTrips();
         runTea(withTripId);
- 
+
         String tripName = "My updated trip";
         String startLocation = "Särkän satama";
         String endLocation = "Granlandetin saaritukikohta";
@@ -115,7 +115,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertEquals(tripName, tripdb.updatedTrip.tripName);
         Assert.assertEquals(startLocation, tripdb.updatedTrip.startLocation);
         Assert.assertEquals(endLocation, tripdb.updatedTrip.endLocation);
-        
+
         Assert.assertFalse(isFinishCalled());
     }
 
@@ -135,7 +135,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertEquals(tripdb.insertedTrip.tripName, tripName);
         Assert.assertEquals(tripdb.insertedTrip.startLocation, startLocation);
         Assert.assertEquals(tripdb.insertedTrip.endLocation, endLocation);
-        
+
         Assert.assertFalse(isFinishCalled());
     }
 
@@ -143,7 +143,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         runTea(withoutTripId);
 
         tripNameText.setText("");
-        
+
         saveButton.performClick();
 
         // TODO, how to verify the showing of the confirmation dialog.
@@ -160,7 +160,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         tripNameText.setText("");
         fromText.setText("");
         toText.setText("");
-        
+
         saveButton.performClick();
 
         // TODO, how to verify the showing of the confirmation dialog.
@@ -171,17 +171,17 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertFalse(isFinishCalled());
     }
 
-    
+
     public void testSelectNewTrip() {
         String tripName = "My trip for select";
 
         runTea(withoutTripId);
-        
+
         tripNameText.setText(tripName);
         selectButton.performClick();
 
         Assert.assertEquals(tripName, tripdb.insertedTrip.tripName);
-        Assert.assertEquals(tripdb.insertedTrip.tripId, tripdb.selectedTrip.tripId);
+        Assert.assertEquals(tripdb.insertedTrip.tripId, tripdb.selectedTripId.longValue());
 
         Assert.assertTrue(isFinishCalled());
     }
@@ -245,13 +245,13 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         };
         allViews = myEmptyViewsAtStart;
     }
-    
+
     private void verifyFieldsHaveDefaults() {
         for (TextView v: allViews) {
             Assert.assertEquals(v.getText().toString().length(), 0);
         }
-        
-        Assert.assertEquals(tea.defaultTripName(), 
+
+        Assert.assertEquals(tea.defaultTripName(),
                             tripNameText.getText().toString());
     }
 

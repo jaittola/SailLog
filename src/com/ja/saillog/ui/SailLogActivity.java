@@ -45,8 +45,6 @@ public class SailLogActivity
 
     @Override
     public void onStart() {
-        eventsSaved = 0;
-
         super.onStart();
     }
 
@@ -183,21 +181,15 @@ public class SailLogActivity
     }
 
 
-    protected void onActivityResult(int requestCode,
-                                    int resultCode,
-                                    Intent data) {
+    public void onActivityResult(int requestCode,
+                                 int resultCode,
+                                 Intent data) {
         if (TripSelectorActivity.myIntentRequestCode == requestCode) {
             setupTripInfo();
         }
     }
 
     private void setupTripInfo() {
-        // Set db info to NULL to prevent any further updates.
-        if (null != trackDB) {
-            dbSink.setDb(null);
-            trackDB.close();
-            trackDB = null;
-        }
 
         TripDBInterface tripDB = DBProvider.getTripDB(this);
         TripInfo ti = tripDB.getActiveTrip();
@@ -205,25 +197,44 @@ public class SailLogActivity
         if (null == ti) {
             tripNameView.setText("");
             enableControls(false);
+            eventsSaved = 0;
         }
         else {
-            trackDB = DBProvider.getTrackDB(this, ti.dbFileName);
+            if (null == activeTrip ||
+                false == activeTrip.isSame(ti)) {
 
+                // Set db info to NULL to prevent any further updates.
+                if (null != trackDB) {
+                    sailingEvents();
+                    dbSink.setDb(null);
+                    trackDB.close();
+                    trackDB = null;
+                }
+
+                trackDB = DBProvider.getTrackDB(this, ti.dbFileName);
+
+                enableControls(true);
+
+                dbSink.setDb(trackDB);
+                eventsSaved = 0;
+            }
+
+            // Update trip name always, it could have been changed.
             tripNameView.setText(ti.tripName);
-            enableControls(true);
-
-            dbSink.setDb(trackDB);
         }
 
+        activeTrip = ti;
         tripDB.close();
     }
 
     private void enableControls(boolean enabled) {
-        trackLocationButton.setChecked(false);
-        engineStatusCheckbox.setChecked(false);
-        mainSailCheckbox.setChecked(false);
-        jibCheckbox.setChecked(false);
-        spinnakerCheckbox.setChecked(false);
+        if (false == enabled) {
+            trackLocationButton.setChecked(false);
+            engineStatusCheckbox.setChecked(false);
+            mainSailCheckbox.setChecked(false);
+            jibCheckbox.setChecked(false);
+            spinnakerCheckbox.setChecked(false);
+        }
 
         trackLocationButton.setEnabled(enabled);
         engineStatusCheckbox.setEnabled(enabled);
@@ -234,6 +245,7 @@ public class SailLogActivity
 
     private OnCheckedChangeListener locationTrackStartListener = new OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                sailingEvents();
                 trackingStatusChanged(isChecked);
             }
         };
@@ -246,6 +258,7 @@ public class SailLogActivity
 
     private OnClickListener tripSelectClickListener = new OnClickListener() {
             public void onClick(View v) {
+                sailingEvents();
                 startActivityForResult(new Intent(TripSelectorActivity.myIntentName),
                                        TripSelectorActivity.myIntentRequestCode);
             }
@@ -259,6 +272,7 @@ public class SailLogActivity
     public int spinnakerId = -1;
 
     private TrackDBInterface trackDB;
+    private TripInfo activeTrip;
 
     private DBLocationSink dbSink;
     private LocationSinkAdapter dbSinkAdapter;
@@ -277,3 +291,4 @@ public class SailLogActivity
 
     private long eventsSaved = 0;
 }
+

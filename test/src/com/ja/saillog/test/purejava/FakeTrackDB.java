@@ -12,6 +12,8 @@ import com.ja.saillog.utilities.ExportFile;
 
 public class FakeTrackDB implements TrackDBInterface {
 
+    public static int createCount = 0;
+
     @Override
     public void insertPosition(double latitude, double longitude,
                                double bearing, Speed speed,
@@ -26,18 +28,19 @@ public class FakeTrackDB implements TrackDBInterface {
 
     @Override
     public void insertEvent(int engineStatus, long sailPlan) {
+        eventsSaved++;
         mEngineStatus = engineStatus;
         mSailPlan = sailPlan;
     }
 
     @Override
-    public void setPreviousEventTimeForTesting(Date timestamp) {        
+    public void setPreviousEventTimeForTesting(Date timestamp) {
     }
 
     @Override
     public TripStats getTripStats() {
         return new TripStats(mTotalDistance,
-                             mEngineTime, mSailingTime, 
+                             mEngineTime, mSailingTime,
                              mAverageSpeed,
                              mFirstEntry,
                              mLastEntry);
@@ -53,9 +56,10 @@ public class FakeTrackDB implements TrackDBInterface {
 
     @Override
     public void close() {
+        isClosed = true;
     }
 
-
+    public int eventsSaved = 0;
     public double mLatitude = -91;
     public double mLongitude = -181;
     public double mBearing = -1;
@@ -70,7 +74,9 @@ public class FakeTrackDB implements TrackDBInterface {
     public double mEngineTime = 61.0;
     public double mSailingTime = 121.0;
     public double mAverageSpeed = 5.1;
-    
+
     public Date mFirstEntry = new Date(new Date().getTime() - 20000);
     public Date mLastEntry = new Date();
+
+    public boolean isClosed = false;
  }

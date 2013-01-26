@@ -65,7 +65,6 @@ public class TestExportFile extends AndroidTestCase {
 
         try {
             f = exf.file();
-            System.err.println("testFileWritable: name is " + f.getAbsolutePath());
 
             Assert.assertTrue(f.canWrite());
 

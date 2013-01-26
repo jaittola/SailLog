@@ -23,7 +23,6 @@ public class DegMinSec extends CoordinateUnit {
                                  Math.floor(Math.abs(baseUnitValue)),
                                  Math.floor(Math.abs(results[0])),
                                  Math.abs(results[1]));
-        System.err.println("Resulting value is " + s);
         return s;
     }
 

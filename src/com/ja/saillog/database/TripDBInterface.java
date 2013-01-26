@@ -19,6 +19,10 @@ public interface TripDBInterface {
             this.dbFileName = dbFileName;
         }
 
+        public boolean isSame(TripInfo other) {
+            return other.tripId == tripId;
+        }
+
         public long tripId;
         public String tripName;
         public String startLocation;
@@ -41,5 +45,4 @@ public interface TripDBInterface {
     public TripInfo getTripById(long tripId);
 
     void selectTrip(long tripId);
-
 }

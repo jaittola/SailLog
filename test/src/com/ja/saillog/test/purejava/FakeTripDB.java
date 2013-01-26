@@ -12,8 +12,8 @@ public class FakeTripDB implements TripDBInterface {
     }
 
     @Override
-    public TripInfo insertTrip(String tripName, 
-                               String startLocation, 
+    public TripInfo insertTrip(String tripName,
+                               String startLocation,
                                String endLocation) {
         insertedTrip = new TripInfo();
         insertedTrip.tripId = rand.nextLong();
@@ -36,11 +36,19 @@ public class FakeTripDB implements TripDBInterface {
 
     @Override
     public TripInfo getActiveTrip() {
-        return selectedTrip;
+        if (null == selectedTripId) {
+                return null;
+        }
+        return new TripInfo(selectedTripId,
+                            selectedTripName(),
+                            "FromSelected",
+                            "ToSelected",
+                            "theSelectedTripFile.db");
     }
 
     @Override
     public void close() {
+        isClosed = true;
     }
 
     @Override
@@ -50,30 +58,31 @@ public class FakeTripDB implements TripDBInterface {
 
     public void setupTrips() {
         aTrip = new TripInfo(1, "MyTestingTrip",
-                             "FromLocationTesting", 
+                             "FromLocationTesting",
                              "ToLocationTesting",
                              "aFileNameForTesting.db");
-        selectedTrip = new TripInfo(42, "MySelectedTrip",
-                                    "FromSelected", 
-                                    "ToSelected",
-                                    "theSelectedTripFile.db");
+        selectedTripId = defaultSelectedTripId;
+    }
+
+    public String selectedTripName() {
+        return "MySelectedTrip" + selectedTripNameIdentifier +
+                        selectedTripId;
     }
 
     @Override
     public void selectTrip(long tripId) {
-        if (tripId == aTrip.tripId) {
-            selectedTrip = aTrip;
-        }
-        else {
-            selectedTrip.tripId = tripId;
-        }
+        selectedTripId = tripId;
     }
 
+    public Long selectedTripId = null;
+    public String selectedTripNameIdentifier = "";
     public TripInfo aTrip;
-    public TripInfo selectedTrip;
     public TripInfo updatedTrip;
     public TripInfo insertedTrip;
     public Long deletedTripId;
 
     private Random rand;
+
+    public boolean isClosed = false;
+    public static final long defaultSelectedTripId = 42;
  }

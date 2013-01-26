@@ -257,8 +257,6 @@ public class TestTrackDB extends TestDbBase {
 
         Date now2 = new Date();
         ts = dbif.getTripStats();
-        System.err.println("Last entry " + ts.lastEntry.getTime());
-        System.err.println("First entry " + ts.firstEntry.getTime());
         Assert.assertTrue(ts.lastEntry.getTime() > ts.firstEntry.getTime());
         Assert.assertTrue(now2.getTime() - ts.lastEntry.getTime() < 1000);
     }
@@ -290,9 +288,7 @@ public class TestTrackDB extends TestDbBase {
             Assert.assertTrue("The database copy is empty", dbCopy.length() > 0);
         }
         catch (Exception ex) {
-            System.err.println("Got exception: " + ex.toString());
-            System.err.println(ex.getStackTrace());
-            Assert.fail();
+            Assert.fail("Got exception + " + ex.toString());
         }
         finally {
             if (null != dbCopy) {
