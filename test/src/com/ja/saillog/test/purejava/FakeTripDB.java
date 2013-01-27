@@ -43,7 +43,8 @@ public class FakeTripDB implements TripDBInterface {
                             selectedTripName(),
                             "FromSelected",
                             "ToSelected",
-                            "theSelectedTripFile.db");
+                            "theSelectedTripFile.db",
+                            TripInfo.selected);
     }
 
     @Override
@@ -53,6 +54,9 @@ public class FakeTripDB implements TripDBInterface {
 
     @Override
     public TripInfo getTripById(long tripId) {
+        if (tripId == selectedTripId) {
+            return getActiveTrip();
+        }
         return aTrip;
     }
 
@@ -60,7 +64,8 @@ public class FakeTripDB implements TripDBInterface {
         aTrip = new TripInfo(1, "MyTestingTrip",
                              "FromLocationTesting",
                              "ToLocationTesting",
-                             "aFileNameForTesting.db");
+                             "aFileNameForTesting.db",
+                             TripInfo.notSelected);
         selectedTripId = defaultSelectedTripId;
     }
 
@@ -84,5 +89,6 @@ public class FakeTripDB implements TripDBInterface {
     private Random rand;
 
     public boolean isClosed = false;
+    
     public static final long defaultSelectedTripId = 42;
  }

@@ -11,12 +11,14 @@ public interface TripDBInterface {
                         String tripName,
                         String startLocation,
                         String endLocation,
-                        String dbFileName) {
+                        String dbFileName,
+                        boolean selectionStatus) {
             this.tripId = tripId;
             this.tripName = tripName;
             this.startLocation = startLocation;
             this.endLocation = endLocation;
             this.dbFileName = dbFileName;
+            this.selectionStatus = selectionStatus;
         }
 
         public boolean isSame(TripInfo other) {
@@ -28,6 +30,10 @@ public interface TripDBInterface {
         public String startLocation;
         public String endLocation;
         public String dbFileName;
+        public boolean selectionStatus;
+        
+        public static final boolean selected = true;
+        public static final boolean notSelected = false;
     }
 
     public TripInfo insertTrip(String tripName,

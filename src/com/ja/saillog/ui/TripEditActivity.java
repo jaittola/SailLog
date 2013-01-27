@@ -90,9 +90,11 @@ public class TripEditActivity extends SailLogActivityBase {
                 // Make a new TripInfo structure with this
                 // trip id so that the trip gets
                 // inserted as a new one (if the user wishes to save).
-                ti = new TripInfo(tripId, defaultTripName(), "", "", null);
+                ti = new TripInfo(tripId, defaultTripName(), "", "", null, TripInfo.notSelected);
             }
         }
+            
+        setDeleteButtonState();
     }
 
     @Override
@@ -156,6 +158,13 @@ public class TripEditActivity extends SailLogActivityBase {
                     setResult(RESULT_OK);
                     finish();
                 } else {
+                    // Deleting the selected trip is not permitted.
+                    // Verify here again.
+                    if (TripInfo.selected == ti.selectionStatus) {
+                        toast(getString(R.string.cannot_delete_selected));
+                        return;
+                    }
+                    
                     if (true == alreadyConfirmed) {
                         doDelete();
                     }
@@ -219,11 +228,25 @@ public class TripEditActivity extends SailLogActivityBase {
             tripDB.updateTrip(ti);
         }
 
+        setDeleteButtonState();
+        
         return true;
     }
 
     public String defaultTripName() {
         return DateFormat.getDateInstance().format(new Date());
+    }
+    
+    private void setDeleteButtonState() {
+        // You can delete only if the trip is not selected 
+        // (i.e., not saving current data into it).
+        if (null != ti &&
+            TripInfo.notSelected == ti.selectionStatus) {
+            deleteButton.setEnabled(true);
+        }
+        else {
+            deleteButton.setEnabled(false);
+        }
     }
     
     // Menu below.

@@ -76,7 +76,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
             // returned from the insert is the same as the trip id,
             // because our trip ID is an 'integer primary key'.
             ti = new TripInfo(rowid, tripName,
-                              startLocation, endLocation, tripDbFile);
+                              startLocation, endLocation, tripDbFile,
+                              TripInfo.notSelected);
         } finally {
             db.endTransaction();
         }
@@ -212,7 +213,8 @@ public class TripDB extends SailLogDBBase implements TripDBInterface {
                                c.getString(c.getColumnIndex(tripNameColumn)),
                                c.getString(c.getColumnIndex(startLocationColumn)),
                                c.getString(c.getColumnIndex(endLocationColumn)),
-                               c.getString(c.getColumnIndex(tripFileNameColumn)));
+                               c.getString(c.getColumnIndex(tripFileNameColumn)),
+                               (0 != c.getInt(c.getColumnIndex(selectedColumn))));
         }
         c.close();
 

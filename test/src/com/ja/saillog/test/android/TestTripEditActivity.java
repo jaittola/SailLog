@@ -27,6 +27,9 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
     }
 
     protected void setUp() throws Exception {
+        tripdb = new FakeTripDB();
+        trackdb = new FakeTrackDB();
+        
         DBProvider.setProvider(new DBProvider() {
                 protected TripDBInterface getTripDBInstance(Context context) {
                     return tripdb;
@@ -47,6 +50,8 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         runTea(withoutTripId);
 
         verifyFieldsHaveDefaults();
+
+        Assert.assertFalse(deleteButton.isEnabled());
     }
 
     public void testSetupWithId() {
@@ -68,6 +73,13 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
                             startTime.getText().toString());
         Assert.assertEquals(SimpleDateFormat.getDateTimeInstance().format(trackdb.mLastEntry),
                             endTime.getText().toString());
+        Assert.assertTrue(deleteButton.isEnabled());
+    }
+    
+    public void testSetupWithSelectedTrip() {
+        runTeaWithTripId(true, FakeTripDB.defaultSelectedTripId);
+
+        Assert.assertFalse(deleteButton.isEnabled());
     }
 
     public void testSetupWithIdNoStartEndTimes() {
@@ -117,6 +129,8 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertEquals(endLocation, tripdb.updatedTrip.endLocation);
 
         Assert.assertFalse(isFinishCalled());
+        // After save, the delete button should always end up being enabled.
+        Assert.assertTrue(deleteButton.isEnabled());      
     }
 
     public void testSaveNewTrip() {
@@ -137,6 +151,8 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertEquals(tripdb.insertedTrip.endLocation, endLocation);
 
         Assert.assertFalse(isFinishCalled());
+        // After save, the delete button should always end up being enabled.
+        Assert.assertTrue(deleteButton.isEnabled());      
     }
 
     public void testSaveNewTripWithEmptyDetails() {
@@ -152,6 +168,7 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertNull(tripdb.updatedTrip);
 
         Assert.assertFalse(isFinishCalled());
+        Assert.assertFalse(deleteButton.isEnabled());      
     }
 
     public void testUpdateTripWithEmptyDetails() {
@@ -193,7 +210,6 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         deleteButton.performClick();
 
         Assert.assertEquals(tripdb.aTrip.tripId, tripdb.deletedTripId.longValue());
-
         Assert.assertTrue(isFinishCalled());
     }
 
@@ -206,19 +222,34 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
         Assert.assertTrue(isFinishCalled());
     }
 
+    public void testDeleteSelected() {
+        runTeaWithTripId(withTripId, FakeTripDB.defaultSelectedTripId);
+        
+        tea.alreadyConfirmed = true;
+        deleteButton.performClick();
+        
+        Assert.assertNull(tripdb.deletedTripId);
+        Assert.assertFalse(isFinishCalled());
+    }
+    
     private void runTea(boolean haveTripId) {
+        runTeaWithTripId(haveTripId, null);
+    }
+    
+    private void runTeaWithTripId(boolean haveTripId, Long tripId) {
         tripdb.setupTrips();
 
         Intent intent = new Intent();
         if (true == haveTripId) {
-            intent.putExtra("tripId", tripdb.aTrip.tripId);
+            long tid = (null != tripId ? tripId : tripdb.aTrip.tripId);
+            intent.putExtra("tripId", tid);
         }
         tea = startActivity(intent, null, null);
         tea.onStart();
 
         findViews();
     }
-
+      
     private void findViews() {
         tripNameText = (EditText) tea.findViewById(R.id.tripNameText);
         fromText = (EditText) tea.findViewById(R.id.fromText);
@@ -269,8 +300,8 @@ public class TestTripEditActivity extends ActivityUnitTestCase<TripEditActivity>
 
     private TextView [] allViews;
 
-    private FakeTripDB tripdb = new FakeTripDB();
-    private FakeTrackDB trackdb = new FakeTrackDB();
+    private FakeTripDB tripdb;
+    private FakeTrackDB trackdb;
 
     private TripEditActivity tea;
 

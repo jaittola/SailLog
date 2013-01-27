@@ -58,4 +58,5 @@
     <string name="trip_to_select">Select: %s</string>
     <string name="sail_up">Up</string>
     <string name="yes">Yes</string>
+    <string name="cannot_delete_selected">You cannot delete the selected trip</string>
 </resources>

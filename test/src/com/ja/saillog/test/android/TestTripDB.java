@@ -120,8 +120,9 @@ public class TestTripDB extends TestDbBase {
     void selectTripAndVerify(TripInfo tdi) {
         dbif.selectTrip(tdi.tripId);
         TripInfo selectedTdi = dbif.getActiveTrip();
-        Assert.assertEquals(tdi.tripId, selectedTdi.tripId);
 
+        Assert.assertEquals(tdi.tripId, selectedTdi.tripId);
+        Assert.assertEquals(TripInfo.selected, selectedTdi.selectionStatus);
         verifySelectionCount(1);
     }
 
@@ -142,8 +143,11 @@ public class TestTripDB extends TestDbBase {
     	dbif.unselectTrips();
 
     	TripInfo selectedTdi = dbif.getActiveTrip();
-    	Assert.assertEquals(selectedTdi, null);
+        Assert.assertEquals(selectedTdi, null);
         verifySelectionCount(0);
+ 
+        TripInfo previouslySelectedTdi = dbif.getTripById(tdi.tripId);
+    	Assert.assertEquals(TripInfo.notSelected, previouslySelectedTdi.selectionStatus);
     }
 
     public void testNonExistentTrip() {
@@ -175,7 +179,8 @@ public class TestTripDB extends TestDbBase {
     public void testUpdateTrip() {
         TripInfo ti = dbif.insertTrip("MyTestUpdateTrip", "", "");
 
-        TripInfo ti2 = new TripInfo(ti.tripId, "New Name", "", "", "");
+        TripInfo ti2 = new TripInfo(ti.tripId, "New Name", "", "", "", 
+                                    TripInfo.notSelected);
         dbif.updateTrip(ti2);
 
         TripInfo ti3 = dbif.getTripById(ti.tripId);
