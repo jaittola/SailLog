@@ -1,13 +1,17 @@
 package com.ja.saillog.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -40,11 +44,20 @@ public class TripEditActivity extends SailLogActivityBase {
         saveButton.setOnClickListener(tripSaveClickListener);
         deleteButton.setOnClickListener(tripDeleteClickListener);
     }
-
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        
+        deleteTemporaryFiles();
+    }
+    
     @Override
     public void onStart() {
         super.onStart();
 
+        deleteTemporaryFiles();
+        
         tripDB = DBProvider.getTripDB(this);
 
         Intent intent = getIntent();
@@ -122,6 +135,15 @@ public class TripEditActivity extends SailLogActivityBase {
         totalSailingTimeText.setText("");
     }
 
+    private void deleteTemporaryFiles() {
+        
+        for (String filename: temporaryFiles) {
+            new File(filename).delete();
+        }
+ 
+        temporaryFiles.clear();
+    }
+    
     private void getWidgets() {
         tripNameText = (EditText) findViewById(R.id.legNameText);
         fromText = (EditText) findViewById(R.id.fromText);
@@ -266,6 +288,10 @@ public class TripEditActivity extends SailLogActivityBase {
             return true;
         case R.id.export_kml:
             exportDataAsKML();
+            return true;
+        case R.id.export_and_open_google_earth:
+            exportAndShowInGoogleEarth();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -322,7 +348,7 @@ public class TripEditActivity extends SailLogActivityBase {
         protected abstract void doExport() throws IOException;
 
         protected ExportFile exportFile;
-        private String preExecError;
+        protected String preExecError;
     }
 
     private class ExportDbAsSQLiteTask extends ExportDbTask {
@@ -347,12 +373,49 @@ public class TripEditActivity extends SailLogActivityBase {
         }
     }
 
+    private class ExportGoogleEarthTask extends ExportDbAsKMLTask {
+        @Override
+        protected String doInBackground(Void... ignore) {
+            if (null != preExecError) {
+                return preExecError;
+            }
+
+            try {
+                doExport();
+            } catch (IOException ex) {
+                return String.format(getString(R.string.gen_export_failed),
+                                     ex.getLocalizedMessage());
+            }
+
+            return String.format(getString(R.string.starting_google_earth));
+        }
+        
+        protected void doExport() throws IOException {
+            // Write to file.
+            super.doExport();
+            
+            // Put the file to the temp files list so it gets
+            // wiped out.
+            temporaryFiles.add(exportFile.compressedFileName());
+            
+            // Launch earth.
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.fromFile(new File(exportFile.compressedFileName())),
+                                  "application/vnd.google-earth.kmz");
+            startActivity(intent);
+        }
+    }
+    
     private void exportData() {
         new ExportDbAsSQLiteTask().execute();
     }
 
     private void exportDataAsKML() {
         new ExportDbAsKMLTask().execute();
+    }
+    
+    private void exportAndShowInGoogleEarth() {
+        new ExportGoogleEarthTask().execute();
     }
 
 
@@ -376,6 +439,8 @@ public class TripEditActivity extends SailLogActivityBase {
     private TripInfo ti;
     private TrackDBInterface trackDB = null;
     private boolean exporting = false;
+    
+    private List<String> temporaryFiles = new LinkedList<String>();
 
     final public static int myIntentRequestCode = 2;
     final public static String myIntentName = "com.ja.saillog.ui.tripEdit";

@@ -28,7 +28,7 @@
     <string name="motorsailing">Motorsailing</string>
     <string name="new_trip">Name of new trip or leg</string>
     <string name="no">No</string>
-    <string name="no_sail_plan">No sail plan</string>
+    <string name="no_sail_plan">Sails down and engine off</string>
     <string name="nothing_to_export">Nothing to export</string>
     <string name="no_position_data">Position: -</string>
     <string name="no_speed_heading_data">Speed: -, Heading: -</string>
@@ -59,4 +59,6 @@
     <string name="sail_up">Up</string>
     <string name="yes">Yes</string>
     <string name="cannot_delete_selected">You cannot delete the selected trip</string>
+    <string name="show_in_google_earth">Show in Google Earth</string>
+    <string name="starting_google_earth">Starting Google Earth</string>
 </resources>

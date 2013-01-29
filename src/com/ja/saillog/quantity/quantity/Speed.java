@@ -6,7 +6,7 @@ public class Speed extends Quantity {
     public Speed(double rawValue, Unit unit) {
         super(rawValue, unit);
     }
-    
+
     public Speed(Speed value, Unit newUnit) {
         super(value, newUnit);
     }

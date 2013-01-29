@@ -3,5 +3,5 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/export_db" android:titleCondensed="@string/short_export_db" android:id="@+id/export_db"></item>
     <item android:title="@string/export_kml" android:id="@+id/export_kml" android:titleCondensed="@string/export_kml_short"></item>
-    
+    <item android:id="@+id/export_and_open_google_earth" android:title="@string/show_in_google_earth" android:titleCondensed="@string/show_in_google_earth"></item>
 </menu>
