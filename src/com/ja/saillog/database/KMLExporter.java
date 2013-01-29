@@ -58,7 +58,7 @@ public abstract class KMLExporter {
         pw.println("</kml>");
 
         pw.flush();
-        
+
         if (null != zos) {
             zos.closeEntry();
             pw.close();
@@ -117,8 +117,7 @@ public abstract class KMLExporter {
                         selectionArgs);
 
         try {
-            if (0 < initialConfig.getCount()) {
-                initialConfig.moveToNext();
+            if (true == initialConfig.moveToNext()) {
 
                 engineStatus = initialConfig.getInt(0);
                 sailPlan = getSailPlan(initialConfig, 1);
@@ -128,8 +127,6 @@ public abstract class KMLExporter {
             }
 
             if (0 >= positions.getCount()) {
-                initialConfig.close();
-                positions.close();
                 return;
             }
 
@@ -173,7 +170,7 @@ public abstract class KMLExporter {
     private static void writeEventMarkers(SQLiteDatabase db, PrintWriter pw) {
         String [] selectionArgs = {};
         Cursor events = db.rawQuery("SELECT e.event_id, " +
-                                    "       e.position_id, " +
+                                    "       p.position_id, " +
                                     "       strftime('%s', e.event_time), " +
                                     "       e.engine, " +
                                     "       e.sailplan, " +
@@ -181,12 +178,27 @@ public abstract class KMLExporter {
                                     "       p.longitude " +
                                     "FROM event e " +
                                     "JOIN position p " +
+                                    "WHERE e.event_id = (SELECT MAX(event_id) "+
+                                    "                    FROM event " +
+                                    "                    WHERE position_id= 0) "+
+                                    "AND p.position_id = (SELECT " +
+                                    "                     MIN(position_id) " +
+                                    "                     FROM position) " +
+                                    "UNION ALL " +
+                                    "SELECT e.event_id, " +
+                                    "       p.position_id, " +
+                                    "       strftime('%s', e.event_time), " +
+                                    "       e.engine, " +
+                                    "       e.sailplan, " +
+                                    "       p.latitude, " +
+                                    "       p.longitude " +
+                                    "FROM EVENT e " +
+                                    "JOIN position p " +
                                     "ON e.position_id = p.position_id " +
-                                    "WHERE e.event_id IN " +
-                                    "    (SELECT MAX(event_id) " +
-                                    "     FROM event " +
-                                    "     GROUP BY position_id) " +
-                                    "ORDER BY e.event_id",
+                                    "WHERE e.event_id IN (SELECT MAX(event_id) "+
+                                    "                     FROM event " +
+                                    "                     GROUP BY position_id) "+
+                                    "ORDER BY event_id",
                                     selectionArgs);
 
         try {
