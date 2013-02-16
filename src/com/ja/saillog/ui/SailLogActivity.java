@@ -19,7 +19,7 @@ import com.ja.saillog.utilities.DBLocationSink;
 import com.ja.saillog.utilities.LocationServiceProvider;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationSinkAdapter;
-import com.ja.saillog.utilities.SailPlan;
+import com.ja.saillog.utilities.Propulsion;
 import com.ja.saillog.utilities.StaticStrings;
 
 public class SailLogActivity
@@ -153,11 +153,11 @@ public class SailLogActivity
     }
 
     private void setupSailPlan() {
-        mainSailId = SailPlan.addSail(getString(R.string.main_sail));
-        jibId = SailPlan.addSail(getString(R.string.jib));
-        spinnakerId = SailPlan.addSail(getString(R.string.spinnaker));
+        mainSailId = Propulsion.addSail(getString(R.string.main_sail));
+        jibId = Propulsion.addSail(getString(R.string.jib));
+        spinnakerId = Propulsion.addSail(getString(R.string.spinnaker));
 
-        sp = new SailPlan();
+        sp = new Propulsion();
     }
 
     private void setupWidgets() {
@@ -266,7 +266,7 @@ public class SailLogActivity
 
     // These are public to make testing easier. You should regard them
     // as private though.
-    public SailPlan sp;
+    public Propulsion sp;
     public int mainSailId = -1;
     public int jibId = -1;
     public int spinnakerId = -1;

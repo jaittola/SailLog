@@ -176,7 +176,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
     }
 
     public void exportDbAsKML(ExportFile exportFile) throws IOException {
-        KMLExporter.export(getReadableDatabase(), exportFile);
+        new KMLExporter().export(getReadableDatabase(), exportFile);
     }
 
     private Date getDate(Cursor c, int column) {

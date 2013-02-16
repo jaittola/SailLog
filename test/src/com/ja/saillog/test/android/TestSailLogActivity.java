@@ -19,7 +19,7 @@ import com.ja.saillog.test.purejava.FakeTripDB;
 import com.ja.saillog.test.purejava.SailPlanTestHelper;
 import com.ja.saillog.ui.SailLogActivity;
 import com.ja.saillog.ui.TripSelectorActivity;
-import com.ja.saillog.utilities.SailPlan;
+import com.ja.saillog.utilities.Propulsion;
 
 
 /*!
@@ -55,7 +55,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
     }
 
     protected void tearDown() throws Exception {
-        SailPlan.clearSails();
+        Propulsion.clearSails();
         tripdb = null;
         trackdb = null;
         prevTrackdb = null;
@@ -145,20 +145,20 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         runSl(withTrip);
 
         mainButton.performClick();
-        verifyEventsDb(0, SailPlan.up, SailPlan.down, SailPlan.down);
+        verifyEventsDb(0, Propulsion.up, Propulsion.down, Propulsion.down);
 
         jibButton.performClick();
-        verifyEventsDb(0, SailPlan.up, SailPlan.up, SailPlan.down);
+        verifyEventsDb(0, Propulsion.up, Propulsion.up, Propulsion.down);
 
         spinnakerButton.performClick();
-        verifyEventsDb(0, SailPlan.up, SailPlan.up, SailPlan.up);
+        verifyEventsDb(0, Propulsion.up, Propulsion.up, Propulsion.up);
 
         jibButton.performClick();
-        verifyEventsDb(0, SailPlan.up, SailPlan.down, SailPlan.up);
+        verifyEventsDb(0, Propulsion.up, Propulsion.down, Propulsion.up);
 
         spinnakerButton.performClick();
         engineStatusButton.performClick();
-        verifyEventsDb(1, SailPlan.up, SailPlan.down, SailPlan.down);
+        verifyEventsDb(1, Propulsion.up, Propulsion.down, Propulsion.down);
     }
 
     // Test returning from the trip selection views

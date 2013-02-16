@@ -7,7 +7,7 @@ import junit.framework.Assert;
 
 import android.util.Pair;
 
-import com.ja.saillog.utilities.SailPlan;
+import com.ja.saillog.utilities.Propulsion;
 
 
 public class SailPlanTestHelper {
@@ -22,7 +22,7 @@ public class SailPlanTestHelper {
                               int mainId,
                               int jibId,
                               int spinnakerId,
-                              SailPlan sp) {
+                              Propulsion sp) {
         this.mainSailString = mainSailString;
         this.jibString = jibString;
         this.spinnakerString = spinnakerString;
@@ -65,7 +65,7 @@ public class SailPlanTestHelper {
 
     public String sailStatus(boolean isUp) {
 
-        if (SailPlan.up == isUp) {
+        if (Propulsion.up == isUp) {
             return upString;
         }
         return downString;
@@ -81,5 +81,5 @@ public class SailPlanTestHelper {
     public String driftingString;
     public String upString;
     public String downString;
-    public SailPlan sp;
+    public Propulsion sp;
 }

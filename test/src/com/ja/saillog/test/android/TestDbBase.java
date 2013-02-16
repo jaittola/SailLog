@@ -21,6 +21,10 @@ public abstract class TestDbBase extends AndroidTestCase {
     }
 
     public void testDbSetUp() {
+        if (null == expectedTables) {
+            return;
+        }
+        
         checkTablesExist(getWritableDatabase(), expectedTables);
      }
 

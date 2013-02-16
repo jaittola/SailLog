@@ -4,7 +4,7 @@ package com.ja.saillog.test.purejava;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import com.ja.saillog.utilities.SailPlan;
+import com.ja.saillog.utilities.Propulsion;
 
 public class TestSailPlan extends TestCase {
 
@@ -12,18 +12,18 @@ public class TestSailPlan extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        mainId = SailPlan.addSail(mainSailString);
-        jibId = SailPlan.addSail(jibString);
-        spinId = SailPlan.addSail(spinnakerString);
+        mainId = Propulsion.addSail(mainSailString);
+        jibId = Propulsion.addSail(jibString);
+        spinId = Propulsion.addSail(spinnakerString);
 
-        SailPlan.configure(sailingString,
+        Propulsion.configure(sailingString,
                            motorSailingString,
                            motoringString,
                            driftingString,
                            upString,
                            downString);
 
-        sp = new SailPlan();
+        sp = new Propulsion();
 
         th = new SailPlanTestHelper(mainSailString,
                                     jibString,
@@ -40,7 +40,7 @@ public class TestSailPlan extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        SailPlan.clearSails();
+        Propulsion.clearSails();
     }
 
     public void testCorrectClassSetup() {
@@ -54,13 +54,13 @@ public class TestSailPlan extends TestCase {
         // within SailPlan.
         Assert.assertEquals(0, sp.getSailPlan());
 
-        sp.setSail(mainId, SailPlan.up);
+        sp.setSail(mainId, Propulsion.up);
         Assert.assertEquals(1, sp.getSailPlan());
 
-        sp.setSail(jibId, SailPlan.up);
+        sp.setSail(jibId, Propulsion.up);
         Assert.assertEquals(3, sp.getSailPlan());
 
-        sp.setSail(mainId, SailPlan.down);
+        sp.setSail(mainId, Propulsion.down);
         Assert.assertEquals(2, sp.getSailPlan());
     }
 
@@ -73,48 +73,44 @@ public class TestSailPlan extends TestCase {
     }
 
     public void testGenericStatusStrings() {
-        sp.setSailPlan(0);
+        sp.setPropulsion(0, Propulsion.engineOn);
         Assert.assertEquals(motoringString,
-                            sp.generalDescription(SailPlan.engineOn));
+                            sp.generalDescription());
 
-        sp.setSailPlan(1);
+        sp.setPropulsion(1, Propulsion.engineOn);
         Assert.assertEquals(motorSailingString,
-                            sp.generalDescription(SailPlan.engineOn));
+                            sp.generalDescription());
 
-        sp.setSailPlan(0);
-        Assert.assertEquals(motoringString,
-                            sp.generalDescription(SailPlan.engineOn));
-
-        sp.setSailPlan(0);
+        sp.setPropulsion(0, Propulsion.engineOff);
         Assert.assertEquals(driftingString,
-                            sp.generalDescription(SailPlan.engineOff));
+                            sp.generalDescription());
     }
 
     public void testSailConfiguration() {
-        th.setAndVerifySailPlan(SailPlan.up,
-                                SailPlan.down,
-                                SailPlan.down);
-        th.setAndVerifySailPlan(SailPlan.up,
-                                SailPlan.up,
-                                SailPlan.up);
-        th.setAndVerifySailPlan(SailPlan.down,
-                                SailPlan.down,
-                                SailPlan.down);
-        th.setAndVerifySailPlan(SailPlan.up,
-                                SailPlan.up,
-                                SailPlan.down);
-        th.setAndVerifySailPlan(SailPlan.up,
-                                SailPlan.down,
-                                SailPlan.up);
+        th.setAndVerifySailPlan(Propulsion.up,
+                                Propulsion.down,
+                                Propulsion.down);
+        th.setAndVerifySailPlan(Propulsion.up,
+                                Propulsion.up,
+                                Propulsion.up);
+        th.setAndVerifySailPlan(Propulsion.down,
+                                Propulsion.down,
+                                Propulsion.down);
+        th.setAndVerifySailPlan(Propulsion.up,
+                                Propulsion.up,
+                                Propulsion.down);
+        th.setAndVerifySailPlan(Propulsion.up,
+                                Propulsion.down,
+                                Propulsion.up);
    }
 
     public void testBadSailId() {
         sp.setSailPlan(0);
-        sp.setSail(3, SailPlan.up);
+        sp.setSail(3, Propulsion.up);
         Assert.assertEquals(0, sp.getSailPlan());
     }
 
-    private SailPlan sp;
+    private Propulsion sp;
     private SailPlanTestHelper th;
 
     private String mainSailString = "main";

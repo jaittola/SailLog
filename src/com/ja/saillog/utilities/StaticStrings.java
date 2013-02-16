@@ -18,7 +18,7 @@ public abstract class StaticStrings {
         onS = activity.getString(R.string.on);
         offS = activity.getString(R.string.off);
         
-        SailPlan.configure(activity.getString(R.string.sailing),
+        Propulsion.configure(activity.getString(R.string.sailing),
                            activity.getString(R.string.motorsailing),
                            activity.getString(R.string.motoring),
                            activity.getString(R.string.no_sail_plan),
