@@ -16,6 +16,19 @@ public class Propulsion {
         setPropulsion(numericalSailPlan, engineStatus);
     }
 
+    
+    /**
+     * Compares this propulsion object to another. 
+     */
+    public boolean equals(Propulsion other) {
+        if (this.sailPlan == other.sailPlan &&
+            this.engineStatus == other.engineStatus) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     /**
      * Returns a sail id that must be used when updating the sail plan.
      *

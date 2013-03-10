@@ -71,46 +71,43 @@ public class KMLExporter {
 
     public void writeTrackLine(SQLiteDatabase db, PrintWriter pw) {
 
-        String styleName = styleUnknown;
-        String nextStyleName = null;
+        Propulsion initialPropulsion = null;
+        Propulsion currentPropulsion = null;
         double currLat = Double.NaN;
         double currLon = Double.NaN;
-        Propulsion propulsion = new Propulsion();
-
+ 
         Cursor positions = null;
-        
+
         try {
             positions = getPositionQuery(db);
-            
+
             if (0 >= positions.getCount()) {
                 return;
             }
 
-            styleName = getLineStyle(getInitialPropulsionConfiguration(db));
+            initialPropulsion = getInitialPropulsionConfiguration(db);
 
             // Write out a line that shows the route.
-
-            startLineString(pw, styleName, eventName(propulsion));
 
             while (true == positions.moveToNext()) {
                 currLat = positions.getDouble(1);
                 currLon = positions.getDouble(2);
                 
-                // If there is event information, end the line, swap the style,
-                // and begin a new line.
-                propulsion = getPropulsion(positions, 6, 5);
-                if (null != propulsion) {
-                    nextStyleName = getLineStyle(propulsion);
-                    if (false == nextStyleName.equals(styleName)) {
-                        styleName = nextStyleName;
+                Propulsion nextPropulsion = 
+                            getNextPropulsion(initialPropulsion,
+                                              currentPropulsion,
+                                              getPropulsion(positions, 6, 5));
+                if (null != nextPropulsion) {
+                    if (null != currentPropulsion) {
                         writeCoordinates(pw, currLon, currLat);
-                        
                         endLineString(pw);
-                        startLineString(pw, styleName,
-                                        eventName(propulsion));
                     }
+                    currentPropulsion = nextPropulsion;
+                    startLineString(pw, 
+                                    getLineStyle(currentPropulsion), 
+                                    eventName(currentPropulsion));
                 }
-
+                
                 writeCoordinates(pw, currLon, currLat);
             }
 
@@ -120,13 +117,39 @@ public class KMLExporter {
         }
     }
 
-    public void writeEventMarkers(SQLiteDatabase db, PrintWriter pw) {
- 
-        Cursor events = null;
+    
+    /**
+     * Returns the next propulsion configuration if it is different from
+     * the previous one.
+     */
+    private Propulsion getNextPropulsion(Propulsion initialPropulsion,
+                                         Propulsion currentPropulsion,
+                                         Propulsion nextPropulsionFromDb) {
+        if (null == nextPropulsionFromDb) {
+            if (null == currentPropulsion) {
+                return initialPropulsion;
+            }
+        }
+        else {
+            if (null == currentPropulsion ||
+                false == nextPropulsionFromDb.equals(currentPropulsion)) {
+                // Swap to the next propulsion as it is different from what 
+                // was in use before.
+                return nextPropulsionFromDb;
+            }
+        }
         
+        // In all other cases no changes.
+        return null;
+    }
+    
+    public void writeEventMarkers(SQLiteDatabase db, PrintWriter pw) {
+
+        Cursor events = null;
+
         try {
             events = getEventMarkerQuery(db);
-            
+
             while (true == events.moveToNext()) {
                 writeEventMarker(pw,
                                  getDate(events, 2),    // timestamp (ms)
@@ -183,6 +206,9 @@ public class KMLExporter {
     }
 
     private String eventName(Propulsion propulsion) {
+        if (null == propulsion) {
+            return new Propulsion().generalDescription();
+        }
         return propulsion.generalDescription();
     }
 
@@ -229,9 +255,9 @@ public class KMLExporter {
 
     private String getLineStyle(Propulsion config) {
         if (null == config) {
-            return styleUnknown;
+            return null;
         }
-        
+
         if (Propulsion.engineOn == config.getEngine()) {
             if (0 == config.getSailPlan()) {
                 return styleEngine;
@@ -263,7 +289,7 @@ public class KMLExporter {
                 return getPropulsion(initialConfig, 1, 0);
             }
 
-            return null;
+            return new Propulsion();
         }
         finally {
             initialConfig.close();
@@ -272,7 +298,7 @@ public class KMLExporter {
 
     public Cursor getPositionQuery(SQLiteDatabase db) {
         String [] selectionArgs = {};
-        
+
         return db.rawQuery("SELECT position_id, " +
                 "       latitude, " +
                 "       longitude, " +
@@ -301,7 +327,7 @@ public class KMLExporter {
                 "ORDER BY position_id",
                 selectionArgs);
     }
-    
+
     public Cursor getEventMarkerQuery(SQLiteDatabase db) {
         String [] selectionArgs = {};
         return db.rawQuery("SELECT e.event_id, " +
@@ -336,9 +362,9 @@ public class KMLExporter {
                                     "ORDER BY event_id",
                                     selectionArgs);
 
-        
+
     }
-    
+
     // This is copypasta and should be moved to some
     // central utility.
     private Date getDate(Cursor c, int column) {
@@ -357,7 +383,6 @@ public class KMLExporter {
             return new Propulsion(c.getLong(sailPlanColumn),
                                   0 != c.getLong(engineColumn));
         }
-
         return null;
     }
 

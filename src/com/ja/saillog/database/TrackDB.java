@@ -97,7 +97,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
             if (engineStatus != previousEngineStatus ||
                 sailPlan != previousSailPlan) {
-
+                
                 insertEvStm.bindLong(1, engineStatus);
                 insertEvStm.bindLong(2, sailPlan);
                 insertEvStm.executeInsert();
