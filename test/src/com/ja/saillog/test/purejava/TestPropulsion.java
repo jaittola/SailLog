@@ -4,9 +4,11 @@ package com.ja.saillog.test.purejava;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import android.os.Bundle;
+
 import com.ja.saillog.utilities.Propulsion;
 
-public class TestSailPlan extends TestCase {
+public class TestPropulsion extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
@@ -108,6 +110,25 @@ public class TestSailPlan extends TestCase {
         sp.setSailPlan(0);
         sp.setSail(3, Propulsion.up);
         Assert.assertEquals(0, sp.getSailPlan());
+    }
+    
+    public void testPropulsionFromBundle() {
+        Bundle b = new Bundle();
+        b.putBoolean(Propulsion.engineStatusBundleKey, true);
+        b.putLong(Propulsion.sailPlanBundleKey, 0x3L);
+        
+        Propulsion p = new Propulsion(b);
+        Assert.assertEquals(0x3L, p.getSailPlan());
+        Assert.assertEquals(true, p.getEngine());
+    }
+    
+    public void testPropulsionToBundle() {
+       
+        Propulsion p = new Propulsion(0x3L, true);
+
+        Bundle b = p.toBundle();
+        Assert.assertTrue(b.getBoolean(Propulsion.engineStatusBundleKey));
+        Assert.assertEquals(0x3L, b.getLong(Propulsion.sailPlanBundleKey));
     }
 
     private Propulsion sp;

@@ -4,6 +4,7 @@ package com.ja.saillog.utilities;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.os.Bundle;
 import android.util.Pair;
 
 
@@ -16,6 +17,19 @@ public class Propulsion {
         setPropulsion(numericalSailPlan, engineStatus);
     }
 
+    public Propulsion(Bundle bundle) {
+        setPropulsion(bundle.getLong(sailPlanBundleKey),
+                      bundle.getBoolean(engineStatusBundleKey));
+    }
+    
+    public Bundle toBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(engineStatusBundleKey, engineStatus);
+        bundle.putLong(sailPlanBundleKey, sailPlan);
+        
+        return bundle;
+    }
+    
     
     /**
      * Compares this propulsion object to another. 
@@ -133,9 +147,9 @@ public class Propulsion {
     /**
      * Get a string representation of the current sail plan.
      */
-    public List<Pair<String, String> > currentSails() {
-        LinkedList<Pair<String, String> > sails =
-            new LinkedList<Pair<String, String> >();
+    public List<Pair<String, String>> currentSails() {
+        LinkedList<Pair<String, String>> sails =
+            new LinkedList<Pair<String, String>>();
 
         int idx = 0;
         for (String sail: sailNames) {
@@ -191,4 +205,8 @@ public class Propulsion {
     private static String drifting = "drifting";
     private static String upString = "up";
     private static String downString = "down";
+    
+    // Public for test access to these values.
+    public static final String engineStatusBundleKey = "engineStatus";
+    public static final String sailPlanBundleKey = "sailPlan"; 
 }

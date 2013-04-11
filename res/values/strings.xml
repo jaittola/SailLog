@@ -60,5 +60,7 @@
     <string name="yes">Yes</string>
     <string name="cannot_delete_selected">You cannot delete the selected trip</string>
     <string name="show_in_google_earth">Show in Google Earth</string>
+    <string name="start_saving_failed">Saving location data failed. Please restart the application.</string>
     <string name="starting_google_earth">Starting Google Earth</string>
+    <string name="location_data_saving">SailLog Location Data Saving</string>
 </resources>

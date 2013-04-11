@@ -7,6 +7,6 @@
     <instrumentation android:targetPackage="com.ja.saillog" android:name="android.test.InstrumentationTestRunner" />
     <application android:icon="@drawable/icon" android:label="@string/app_name">
 
-    <uses-library android:name="android.test.runner" />
+        <uses-library android:name="android.test.runner" />
     </application>
 </manifest>

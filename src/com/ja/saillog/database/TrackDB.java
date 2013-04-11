@@ -16,6 +16,7 @@ import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
+import com.ja.saillog.utilities.Propulsion;
 
 public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
@@ -67,7 +68,7 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
         }
     }
 
-    public void insertEvent(int engineStatus, long sailPlan) {
+    public void insertEvent(Propulsion propulsion) {
 
         SQLiteDatabase db = getWritableDatabase();
 
@@ -89,6 +90,9 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
                                                     / 1000.0);
         }
 
+        long sailPlan = propulsion.getSailPlan();
+        long engineStatus = (propulsion.getEngine() ? 1 : 0);
+        
         double sailTimeToAdd = (0 != sailPlan ? timeSincePrevious : 0);
         double engineTimeToAdd = (0 != engineStatus ? timeSincePrevious : 0);
 
@@ -194,5 +198,5 @@ public class TrackDB extends SailLogDBBase implements TrackDBInterface {
 
     private Date previousEventInsertTime;
     private long previousSailPlan = -1;
-    private int previousEngineStatus = -1;
+    private long previousEngineStatus = -1;
 }

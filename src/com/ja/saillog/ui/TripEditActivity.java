@@ -442,8 +442,8 @@ public class TripEditActivity extends SailLogActivityBase {
     
     private List<String> temporaryFiles = new LinkedList<String>();
 
-    final public static int myIntentRequestCode = 2;
-    final public static String myIntentName = "com.ja.saillog.ui.tripEdit";
-    final public static String tripIdInIntent = "tripId";
-    final public static int selectedResult = RESULT_FIRST_USER + 1;
+    public static final int myIntentRequestCode = 2;
+    public static final String myIntentName = "com.ja.saillog.ui.tripEdit";
+    public static final String tripIdInIntent = "tripId";
+    public static final int selectedResult = RESULT_FIRST_USER + 1;
 }

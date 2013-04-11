@@ -270,8 +270,8 @@ public class TestKMLExport extends TestDbBase {
                                   1.0);
             }
             if (null != tdi.sails && null != tdi.engine) {
-                db.insertEvent(tdi.engine.intValue(),
-                               tdi.sails.longValue());
+                db.insertEvent(new Propulsion(tdi.sails.longValue(),
+                                              0 != tdi.engine));
             }
         }
     }

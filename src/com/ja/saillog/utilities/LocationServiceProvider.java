@@ -7,10 +7,12 @@ import android.location.LocationManager;
 
 public class LocationServiceProvider {
 
-    protected LocationServiceProvider(Activity activity) {
+    protected LocationServiceProvider() { }
+    
+    protected LocationServiceProvider(Context context) {
         if (null == locationManager) {
             locationManager = (LocationManager)
-                activity.getSystemService(Context.LOCATION_SERVICE);
+                context.getSystemService(Context.LOCATION_SERVICE);
         }
     }
 
@@ -28,14 +30,14 @@ public class LocationServiceProvider {
     // Below is the static part of the class, which 
     // permits the tests to insert their own providers
     // to replace this class.
-    public static LocationServiceProvider get(Activity activity) {
-        setDefaultProvider(activity);
+    public static LocationServiceProvider get(Context context) {
+        setDefaultProvider(context);
         return provider;
     }
 
-    private static void setDefaultProvider(Activity activity) {
+    private static void setDefaultProvider(Context context) {
         if (null == provider) {
-            provider = new LocationServiceProvider(activity);
+            provider = new LocationServiceProvider(context);
         }
     }
 

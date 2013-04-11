@@ -11,7 +11,6 @@ import android.widget.EditText;
 import com.ja.saillog.R;
 import com.ja.saillog.database.DBProvider;
 import com.ja.saillog.database.TrackDBInterface;
-import com.ja.saillog.database.TripDB;
 import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.test.purejava.FakeTrackDB;
@@ -32,12 +31,16 @@ import com.ja.saillog.utilities.Propulsion;
  * to the db using a fake sink.
  */
 public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
-
     public TestSailLogActivity() {
         super(SailLogActivity.class);
     }
 
     protected void setUp() throws Exception {
+        if (true) {
+            // TODO, enable
+            throw new Exception("Not in use");
+        }
+        
         tripdb = new FakeTripDB();
         trackdb = new FakeTrackDB();
         prevTrackdb = null;
@@ -145,20 +148,20 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         runSl(withTrip);
 
         mainButton.performClick();
-        verifyEventsDb(0, Propulsion.up, Propulsion.down, Propulsion.down);
+        verifyEventsDb(false, Propulsion.up, Propulsion.down, Propulsion.down);
 
         jibButton.performClick();
-        verifyEventsDb(0, Propulsion.up, Propulsion.up, Propulsion.down);
+        verifyEventsDb(false, Propulsion.up, Propulsion.up, Propulsion.down);
 
         spinnakerButton.performClick();
-        verifyEventsDb(0, Propulsion.up, Propulsion.up, Propulsion.up);
+        verifyEventsDb(false, Propulsion.up, Propulsion.up, Propulsion.up);
 
         jibButton.performClick();
-        verifyEventsDb(0, Propulsion.up, Propulsion.down, Propulsion.up);
+        verifyEventsDb(false, Propulsion.up, Propulsion.down, Propulsion.up);
 
         spinnakerButton.performClick();
         engineStatusButton.performClick();
-        verifyEventsDb(1, Propulsion.up, Propulsion.down, Propulsion.down);
+        verifyEventsDb(true, Propulsion.up, Propulsion.down, Propulsion.down);
     }
 
     // Test returning from the trip selection views
@@ -215,13 +218,13 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
         Assert.assertFalse(trackdb.isClosed);
     }
 
-    private void verifyEventsDb(int engine,
+    private void verifyEventsDb(boolean engineRunning,
                                 boolean mainUp,
                                 boolean jibUp,
                                 boolean spinUp) {
         th.verifySailPlan(mainUp, jibUp, spinUp);
         Assert.assertEquals(th.sp.getSailPlan(), trackdb.mSailPlan);
-        Assert.assertEquals(engine, trackdb.mEngineStatus);
+        Assert.assertEquals(engineRunning, trackdb.mEngineStatus);
     }
 
     private void runSl(boolean haveTrip) {
@@ -252,7 +255,7 @@ public class TestSailLogActivity extends ActivityUnitTestCase<SailLogActivity> {
                                     sl.mainSailId,
                                     sl.jibId,
                                     sl.spinnakerId,
-                                    sl.sp);
+                                    sl.propulsion);
     }
 
     private void ensureStaticWidgetStates() {

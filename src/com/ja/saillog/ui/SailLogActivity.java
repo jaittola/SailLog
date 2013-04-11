@@ -1,7 +1,14 @@
 package com.ja.saillog.ui;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
@@ -15,7 +22,7 @@ import com.ja.saillog.database.TripDBInterface;
 import com.ja.saillog.database.TripDBInterface.TripInfo;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
-import com.ja.saillog.utilities.DBLocationSink;
+import com.ja.saillog.serv.TrackSavingServiceConstants;
 import com.ja.saillog.utilities.LocationServiceProvider;
 import com.ja.saillog.utilities.LocationSink;
 import com.ja.saillog.utilities.LocationSinkAdapter;
@@ -33,32 +40,55 @@ public class SailLogActivity
 
         StaticStrings.setup(this); // App-wide generic setup.
 
-        setupSailPlan();
+        setupSailPlan();  // TODO: this might be problematic because of the service.
         setupWidgets();
 
-        dbSink = new DBLocationSink(null);
-
         setupTripInfo();
-        setLocationAvailable(false);  // We start with everything turned off.
-                                      // This may need changing.
+        setLocationAvailable(false);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        bindToTrackSaver();
     }
 
     @Override
     public void onStop() {
-        if (0 != eventsSaved) {
-            // Do a sailing events status update
-            // before leaving this view if there were
-            // events saved while this view was visible.
-            // This needs to be done in a smarter way.
-            sailingEvents();
-        }
-
+        unbindFromTrackSaver();
         super.onStop();
+    }
+
+    private void bindToTrackSaver() {
+        if (null == trackSaverConnection) {
+            trackSaverConnection = new ServiceConnection() {
+
+                public void onServiceConnected(ComponentName name,
+                        IBinder binder) {
+                    System.err.println("onServiceConnected");
+                    trackSaverMessenger = new Messenger(binder);
+                    trackSaverConnection = this;
+                    
+                    // TODO, maybe also disable & enable buttons?
+                }
+
+                public void onServiceDisconnected(ComponentName name) {
+                    trackSaverMessenger = null;
+                    trackSaverConnection = null;
+                }
+            };
+        }
+        
+        startService(trackSaverIntent);
+        bindService(trackSaverIntent, trackSaverConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void unbindFromTrackSaver() {
+        if (null != trackSaverConnection) {
+            this.unbindService(trackSaverConnection);
+        }
+        trackSaverMessenger = null;
+        trackSaverConnection = null;
     }
 
     @Override
@@ -66,7 +96,6 @@ public class SailLogActivity
         if (null != trackDB) {
             trackDB.close();
         }
-        dbSink.setDb(null);
 
         super.onDestroy();
     }
@@ -103,6 +132,8 @@ public class SailLogActivity
     }
 
     private void trackingStatusChanged(boolean isChecked) {
+        boolean msgResult = true;
+
         // Enable or disable location tracking.
         if (true == isChecked) {
             if (null == trackDB) {
@@ -115,10 +146,8 @@ public class SailLogActivity
                     uiSinkAdapter = new LocationSinkAdapter(this);
                     LocationServiceProvider.get(this).requestUpdates(uiSinkAdapter);
                 }
-                if (null == dbSinkAdapter) {
-                    dbSinkAdapter = new LocationSinkAdapter(dbSink);
-                    LocationServiceProvider.get(this).requestUpdates(dbSinkAdapter);
-                }
+
+                msgResult = sendToTrackSaver(TrackSavingServiceConstants.MSG_START_SAVING);
             }
         }
         else {
@@ -126,30 +155,48 @@ public class SailLogActivity
                 LocationServiceProvider.get(this).stopUpdates(uiSinkAdapter);
                 uiSinkAdapter = null;
             }
-            if (null != dbSinkAdapter) {
-                LocationServiceProvider.get(this).stopUpdates(dbSinkAdapter);
-                dbSinkAdapter = null;
-            }
+
+            msgResult = sendToTrackSaver(TrackSavingServiceConstants.MSG_STOP_SAVING);
         }
 
+        if (false == msgResult) {
+            toast(getString(R.string.start_saving_failed));
+            isChecked = false;
+        }
+
+        enablePropulsionControls(isChecked);
         setLocationAvailable(isChecked);
     }
 
+    private boolean sendToTrackSaver(Message message) {
+        if (null == trackSaverMessenger) {
+            System.err.println("Messenger is null");
+            return false;
+        }
+        
+        try {
+            trackSaverMessenger.send(message);
+            System.err.println("Message sent, type " + message.what);
+            return true;
+        } catch (RemoteException rex) {
+            System.err.println("Exception in remote operation: " + rex);
+            return false;
+        }
+    }
+    
+    private boolean sendToTrackSaver(int msgType) {
+       return sendToTrackSaver(Message.obtain(null, msgType));
+    }
+
     private void sailingEvents() {
-        // Accumulate statuses from all event widgets.
+        propulsion.setEngine(engineStatusCheckbox.isChecked());
+        propulsion.setSail(mainSailId, mainSailCheckbox.isChecked());
+        propulsion.setSail(jibId, jibCheckbox.isChecked());
+        propulsion.setSail(spinnakerId, spinnakerCheckbox.isChecked());
 
-        // We should actually combine several sail change events
-        // to the same one. That may have to be done on the db
-        // level, though.
-        int engineStatus = engineStatusCheckbox.isChecked() ? 1 : 0;
-
-        sp.setSail(mainSailId, mainSailCheckbox.isChecked());
-        sp.setSail(jibId, jibCheckbox.isChecked());
-        sp.setSail(spinnakerId, spinnakerCheckbox.isChecked());
-
-        dbSink.insertEvent(engineStatus, sp.getSailPlan());
-
-        eventsSaved++;
+        Message msg = Message.obtain(null, TrackSavingServiceConstants.MSG_CHANGE_PROPULSION);
+        msg.setData(propulsion.toBundle());
+        sendToTrackSaver(msg);
     }
 
     private void setupSailPlan() {
@@ -157,7 +204,7 @@ public class SailLogActivity
         jibId = Propulsion.addSail(getString(R.string.jib));
         spinnakerId = Propulsion.addSail(getString(R.string.spinnaker));
 
-        sp = new Propulsion();
+        propulsion = new Propulsion();
     }
 
     private void setupWidgets() {
@@ -196,17 +243,19 @@ public class SailLogActivity
 
         if (null == ti) {
             tripNameView.setText("");
+            sendToTrackSaver(TrackSavingServiceConstants.MSG_STOP_SAVING);
             enableControls(false);
-            eventsSaved = 0;
         }
         else {
             if (null == activeTrip ||
                 false == activeTrip.isSame(ti)) {
 
-                // Set db info to NULL to prevent any further updates.
+                enableControls(false);
+                
+                // Stop saving location info.
                 if (null != trackDB) {
                     sailingEvents();
-                    dbSink.setDb(null);
+                    sendToTrackSaver(TrackSavingServiceConstants.MSG_STOP_SAVING);
                     trackDB.close();
                     trackDB = null;
                 }
@@ -214,9 +263,6 @@ public class SailLogActivity
                 trackDB = DBProvider.getTrackDB(this, ti.dbFileName);
 
                 enableControls(true);
-
-                dbSink.setDb(trackDB);
-                eventsSaved = 0;
             }
 
             // Update trip name always, it could have been changed.
@@ -230,13 +276,19 @@ public class SailLogActivity
     private void enableControls(boolean enabled) {
         if (false == enabled) {
             trackLocationButton.setChecked(false);
-            engineStatusCheckbox.setChecked(false);
-            mainSailCheckbox.setChecked(false);
-            jibCheckbox.setChecked(false);
-            spinnakerCheckbox.setChecked(false);
         }
 
         trackLocationButton.setEnabled(enabled);
+        enablePropulsionControls(false);  // Propulsion widgets get enabled
+                                          // only after enabling track saving.
+    }
+
+    private void enablePropulsionControls(boolean enabled) {
+        engineStatusCheckbox.setChecked(false);
+        mainSailCheckbox.setChecked(false);
+        jibCheckbox.setChecked(false);
+        spinnakerCheckbox.setChecked(false);
+
         engineStatusCheckbox.setEnabled(enabled);
         mainSailCheckbox.setEnabled(enabled);
         jibCheckbox.setEnabled(enabled);
@@ -266,7 +318,7 @@ public class SailLogActivity
 
     // These are public to make testing easier. You should regard them
     // as private though.
-    public Propulsion sp;
+    public Propulsion propulsion;
     public int mainSailId = -1;
     public int jibId = -1;
     public int spinnakerId = -1;
@@ -274,8 +326,6 @@ public class SailLogActivity
     private TrackDBInterface trackDB;
     private TripInfo activeTrip;
 
-    private DBLocationSink dbSink;
-    private LocationSinkAdapter dbSinkAdapter;
     private LocationSinkAdapter uiSinkAdapter;
 
     private CompoundButton trackLocationButton;
@@ -289,6 +339,7 @@ public class SailLogActivity
     private TextView lonView;
     private TextView tripNameView;
 
-    private long eventsSaved = 0;
+    private Intent trackSaverIntent = new Intent(TrackSavingServiceConstants.intentName);
+    private ServiceConnection trackSaverConnection;
+    private Messenger trackSaverMessenger;
 }
-

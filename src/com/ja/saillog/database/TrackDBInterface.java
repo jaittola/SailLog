@@ -6,6 +6,7 @@ import java.util.Date;
 import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
+import com.ja.saillog.utilities.Propulsion;
 
 /**
  * An Interface for implementing mocks of the actual
@@ -42,7 +43,7 @@ public interface TrackDBInterface {
                                double bearing, Speed speed,
                                Distance distanceFromPrevious, double accuracy);
 
-    public void insertEvent(int engineStatus, long sailPlan);
+    public void insertEvent(Propulsion propulsion);
 
     /**
      * Set the timestamp of the event that was just inserted to

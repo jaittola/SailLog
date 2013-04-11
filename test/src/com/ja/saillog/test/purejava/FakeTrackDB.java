@@ -8,12 +8,13 @@ import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
+import com.ja.saillog.utilities.Propulsion;
 
 
 public class FakeTrackDB implements TrackDBInterface {
 
     public static int createCount = 0;
-
+ 
     @Override
     public void insertPosition(double latitude, double longitude,
                                double bearing, Speed speed,
@@ -27,10 +28,10 @@ public class FakeTrackDB implements TrackDBInterface {
     }
 
     @Override
-    public void insertEvent(int engineStatus, long sailPlan) {
+    public void insertEvent(Propulsion propulsion) {
         eventsSaved++;
-        mEngineStatus = engineStatus;
-        mSailPlan = sailPlan;
+        mEngineStatus = propulsion.getEngine();
+        mSailPlan = propulsion.getSailPlan();
     }
 
     @Override
@@ -67,7 +68,7 @@ public class FakeTrackDB implements TrackDBInterface {
     public Distance mDistanceFromPrevious = null;
     public double mAccuracy = -1;
 
-    public int mEngineStatus = -1;
+    public boolean mEngineStatus = false;
     public long mSailPlan = -1;
 
     public Distance mTotalDistance = QuantityFactory.meters(24);

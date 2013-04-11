@@ -14,6 +14,7 @@ import com.ja.saillog.quantity.quantity.Distance;
 import com.ja.saillog.quantity.quantity.QuantityFactory;
 import com.ja.saillog.quantity.quantity.Speed;
 import com.ja.saillog.utilities.ExportFile;
+import com.ja.saillog.utilities.Propulsion;
 
 
 public class TestTrackDB extends TestDbBase {
@@ -188,7 +189,8 @@ public class TestTrackDB extends TestDbBase {
                 int engineStatus = eventValues[i][0];
                 int sailConfiguration = eventValues[i][1];
 
-                dbif.insertEvent(engineStatus, sailConfiguration);
+                dbif.insertEvent(new Propulsion(sailConfiguration,
+                                                (0 != engineStatus)));
                 dbif.setPreviousEventTimeForTesting(eventTimestamp);
 
                 if (0 != sailConfiguration) {
@@ -315,8 +317,8 @@ public class TestTrackDB extends TestDbBase {
 
     private void insertEvents() {
         for (EventContainer ev: eventS) {
-            dbif.insertEvent(ev.myEngine,
-                             ev.mySailplan);
+            dbif.insertEvent(new Propulsion(ev.mySailplan,
+                                            (0 != ev.myEngine)));
         }
     }
 
